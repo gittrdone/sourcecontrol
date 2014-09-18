@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<style>
+.centered {
+  margin-left: auto;
+  margin-right: auto;
+  width: 800px;
+}
+table, td {
+  border: 1px solid;
+}
+</style>
+</head>
+<body>
+<div class="centered">
+	<form action="/count_files" method="GET">
+		<input name="repo" type="textbox"></input>
+		<input id="submitRepo" type="submit" value="Store Repository"></input> 
+	</form>
+<br />
+{% if repo_list %}
+  <table>
+  <tr><td>URL</td><td>File count</td></tr>
+  {% for repo in repo_list %}
+    <tr><td>{{ repo.gitRepositoryURL }}</td><td>{{ repo.numFiles }}</td></tr>
+  {% endfor %}
+  </table>
+{% endif %}
+</div>
+</body>
+</html>

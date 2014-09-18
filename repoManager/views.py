@@ -6,7 +6,7 @@ from django.http import HttpResponse
 
 # Create your views here.
 def index(request):
-	return render(request, 'static/gitRepoDemo.html', {})
+	return render(request, 'gitRepoDemo.html', { 'repo_list': GitStore.objects.all() })
 
 def count_files(request):
 	repo_url = request.GET['repo']
