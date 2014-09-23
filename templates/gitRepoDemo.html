@@ -1,32 +1,28 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-<style>
-.centered {
-  margin-left: auto;
-  margin-right: auto;
-  width: 800px;
-}
-table, td {
-  border: 1px solid;
-}
-</style>
-</head>
-<body>
-<div class="centered">
-	<form action="/count_files" method="GET">
-		<input name="repo" type="textbox"></input>
-		<input id="submitRepo" type="submit" value="Store Repository"></input> 
-	</form>
-<br />
-{% if repo_list %}
-  <table>
-  <tr><td>URL</td><td>File count</td></tr>
-  {% for repo in repo_list %}
-    <tr><td>{{ repo.gitRepositoryURL }}</td><td>{{ repo.numFiles }}</td></tr>
-  {% endfor %}
-  </table>
-{% endif %}
-</div>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="card">
+        <form action="/count_files" method="GET">
+            <input name="repo" type="textbox"></input>
+            <input id="submitRepo" type="submit" value="Store Repository"></input>
+        </form>
+        {% if repo_url %}
+            <div class="greentext">The repository at {{ repo_url }} has {{ count }} files.</div>
+        {% endif %}
+    </div>
+
+    {% if repo_list %}
+        {% for repo in repo_list %}
+            <div class="large-12 columns card">
+                <div class="large-10 columns">
+                    <h5><b>{{ repo.gitRepositoryURL }}</b></h5>
+                </div>
+                <div class="large-2 columns" style="font-size:20px;color:darkblue;">
+                    {{ repo.numFiles }}
+                    <br/><div style="font-size:14px;color:black;">files</div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+{% endblock %}

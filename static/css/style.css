@@ -1,0 +1,20 @@
+body {
+    background: lightgray;
+}
+
+.card {
+    background: white;
+    box-shadow: 0px 2px 5px #AAAAAA;
+    margin-top: 25px;
+    padding: 20px;
+}
+
+.columnswithbottompadding {
+    padding-bottom: 20px;
+}
+
+.greentext {
+    color: green;
+    font-style:italic;
+    font-weight:bold;
+}
