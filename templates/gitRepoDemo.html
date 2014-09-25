@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="card">
+    <div class="large-12 columns card">
         <form action="/count_files" method="GET">
-            <input name="repo" type="textbox"></input>
-            <input id="submitRepo" type="submit" value="Store Repository"></input>
+            <input name="repo" type="text" placeholder="Repository">
+            <input id="submitRepo" type="submit" value="Store" class="button"></input>
         </form>
         {% if repo_url %}
             <div class="greentext">The repository at {{ repo_url }} has {{ count }} files.</div>
