@@ -6,14 +6,16 @@
         <span style="color: red;">Error logging in: incorrect name or password</span>
     {% endif %}
 
-	<form id="signup" action="do_login" method="POST">
-	    <input name="user_name" id="userName" placeholder="Username" type="text">
+    <div class="card">
+        <form id="signup" action="do_login" method="POST">
+            <input name="user_name" id="userName" placeholder="Username" type="text">
 
-        <input name="password" id="passwordInput" placeholder="Password" type="password">
+            <input name="password" id="passwordInput" placeholder="Password" type="password">
 
-        <input class="button" id="submitButton" value="Log In" type="submit">
+            <input class="button" id="submitButton" value="Log In" type="submit">
 
-        {% csrf_token %}
-	</form>
+            {% csrf_token %}
+        </form>
+    </div>
 
 {% endblock %}

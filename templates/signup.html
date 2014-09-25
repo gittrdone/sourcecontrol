@@ -2,22 +2,24 @@
 
 {% block content %}
 
-	<form id="signup" action="do_signup" method="POST">
-	    <input name="user_name" id="userName" placeholder="Username" type="text"></input>
-        <div id="userCheck" style="display:none;"></div>
+    <div class="card">
+        <form id="signup" action="do_signup" method="POST">
+            <input name="user_name" id="userName" placeholder="Username" type="text"></input>
+            <div id="userCheck" style="display:none;"></div>
 
-        <input name="email"  id="emailInput" placeholder="Email" type="text"></input>
-        <div id="emailCheck" style="display:none;"></div>
+            <input name="email"  id="emailInput" placeholder="Email" type="text"></input>
+            <div id="emailCheck" style="display:none;"></div>
 
-        <input name="password" id="passwordInput" placeholder="Password" type="password"></input>
-        <div id="passwordCheck" style="display:none;"></div>
+            <input name="password" id="passwordInput" placeholder="Password" type="password"></input>
+            <div id="passwordCheck" style="display:none;"></div>
 
-        <input name="password_validate" id="passwordValidate" placeholder="Re-type Password" type="password"></input>
-        <div id="passwordValidateCheck" style="display:none;"></div>
+            <input name="password_validate" id="passwordValidate" placeholder="Re-type Password" type="password"></input>
+            <div id="passwordValidateCheck" style="display:none;"></div>
 
-        <input class="button" id="sign_up_button" name="sign_up_button" value="Sign Up" type="submit"></input>
-        {% csrf_token %}
-	</form>
+            <input class="button" id="sign_up_button" name="sign_up_button" value="Sign Up" type="submit"></input>
+            {% csrf_token %}
+        </form>
+    </div>
 
     <script>
         var theButton = document.querySelector("#sign_up_button");
