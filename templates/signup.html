@@ -1,0 +1,108 @@
+{%  extends "base.html" %}
+
+{% block content %}
+
+	<form id="signup" action="do_signup" method="POST">
+	    <input name="user_name" id="userName" placeholder="Username" type="text"></input>
+        <div id="userCheck" style="display:none;"></div>
+
+        <input name="email"  id="emailInput" placeholder="Email" type="text"></input>
+        <div id="emailCheck" style="display:none;"></div>
+
+        <input name="password" id="passwordInput" placeholder="Password" type="password"></input>
+        <div id="passwordCheck" style="display:none;"></div>
+
+        <input name="password_validate" id="passwordValidate" placeholder="Re-type Password" type="password"></input>
+        <div id="passwordValidateCheck" style="display:none;"></div>
+
+        <input class="button" id="sign_up_button" name="sign_up_button" value="Sign Up" type="submit"></input>
+        {% csrf_token %}
+	</form>
+
+    <script>
+        var theButton = document.querySelector("#sign_up_button");
+        theButton.addEventListener("click", register);
+
+        function register(e)
+        {
+            var userField = document.getElementById("userName");
+            var emailField = document.getElementById("emailInput");
+            var passwordField = document.getElementById("passwordInput");
+            var passwordValidateField = document.getElementById("passwordValidate");
+
+            var userCheck = document.getElementById("userCheck");
+            var emailCheck = document.getElementById("emailCheck");
+            var passwordCheck = document.getElementById("passwordCheck");
+            var passwordValCheck = document.getElementById("passwordValidateCheck");
+
+            var didWork = true;
+
+            if(userField.value == "")
+            {
+                userCheck.style.display = "block";
+                userCheck.style.color = "red";
+                userCheck.innerHTML = "Please submit a username";
+                didWork = false;
+            }
+            else
+            {
+                userCheck.innerHTML="";
+                userCheck.style.display="none";
+            }
+
+            if (emailField.value == "")
+            {
+                emailCheck.style.display = "block";
+                emailCheck.style.color = "red";
+                emailCheck.innerHTML = "Please submit an email";
+                didWork = false;
+            }
+            else
+            {
+                emailCheck.style.display = "none";
+                emailCheck.style.innerHTML = "";
+            }
+
+            if(passwordField.value == "")
+            {
+                passwordCheck.style.display = "block";
+                passwordCheck.style.color = "red";
+                passwordCheck.innerHTML = "Please submit a password";
+                didWork = false;
+            }
+            else
+            {
+                passwordCheck.innerHTML = "";
+                passwordCheck.style.display = "none";
+            }
+
+            if(passwordValidateField.value == "")
+            {
+                passwordValCheck.style.display = "block";
+                passwordValCheck.style.color = "red";
+                passwordValCheck.innerHTML = "Please validate your password";
+                didWork = false;
+            }
+            else if(passwordValidateField.value != passwordField.value)
+            {
+                passwordValCheck.style.display = "block";
+                passwordValCheck.style.color = "red";
+                passwordValCheck.innerHTML = "Your passwords did not match";
+                didWork = false;
+            }
+            else
+            {
+                passwordValCheck.style.display = "none";
+                passwordValCheck.innerHTML = "";
+            }
+
+            if(didWork == false)
+            {
+                e.preventDefault();
+            }
+
+            return didWork;
+        }
+    </script>
+
+{% endblock %}

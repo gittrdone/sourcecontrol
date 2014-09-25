@@ -26,6 +26,18 @@
         <section class="top-bar-section">
 
             <ul class="right">
+            	<li class="divider"></li>
+            	{% if user.is_authenticated %}
+            	 <li class="divider"></li>
+                 <li><a> Hello {{ user.username }}</a></li>
+                 <li class="divider"></li>
+                 <li><a href="/logout">Logout</a></li>
+            	{% else %}
+            	 <li class="divider"></li>
+            	 <li><a href="/login">Log In</a></li>
+            	 <li class="divider"></li>
+            	 <li><a href="/signup">Sign Up</a></li>
+            	{% endif %}
                 <li class="divider"></li>
                 <li class="has-dropdown">
                     <a href="#">Main Item 1</a>
@@ -53,19 +65,7 @@
                         <li><a href="#">See all &rarr;</a></li>
                     </ul>
                 </li>
-                <li class="divider"></li>
-                <li><a href="#">Main Item 2</a></li>
-                <li class="divider"></li>
-                <li class="has-dropdown">
-                    <a href="#">Main Item 3</a>
-                    <ul class="dropdown">
-                        <li><a href="#">Dropdown Option</a></li>
-                        <li><a href="#">Dropdown Option</a></li>
-                        <li><a href="#">Dropdown Option</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">See all &rarr;</a></li>
-                    </ul>
-                </li>
+
             </ul>
         </section>
     </nav>
