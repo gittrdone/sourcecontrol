@@ -63,6 +63,19 @@ WSGI_APPLICATION = 'sourcecontrol.wsgi.application'
 DATABASES = {
     'default': dj_database_url.parse("postgres://hafakpnbntxptw:eIQ-5IT99M_hJU6J9kzuHXeuj-@ec2-54-225-101-124.compute-1.amazonaws.com:5432/ddmpsjrctf6gde")
 }
+if 'TRAVIS' in os.environ:
+    DATABASES = {
+            'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'travisci',
+            'USER': 'postgres',
+            'PASSWORD': '',
+            'HOST': 'localhost',
+            'PORT': '',
+        }
+    }
+elif "test" in sys.argv:
+    DATABASES['default'] = { "ENGINE": "django.db.backends.sqlite3" }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
@@ -85,7 +98,3 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, '..' ,'static')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
-
-# When testing, use sqlite3 for test database
-if "test" in sys.argv:
-    DATABASES['default'] = { "ENGINE": "django.db.backends.sqlite3" }
