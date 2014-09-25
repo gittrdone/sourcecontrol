@@ -7,6 +7,8 @@ https://docs.djangoproject.com/en/1.7/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
+import sys
+
 #DB URL support
 import dj_database_url
 
@@ -83,3 +85,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, '..' ,'static')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
+
+# When testing, use sqlite3 for test database
+if "test" in sys.argv:
+    DATABASES['default'] = { "ENGINE": "django.db.backends.sqlite3" }
