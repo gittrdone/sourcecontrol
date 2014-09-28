@@ -1,14 +1,20 @@
 from django.shortcuts import render, render_to_response
-from repoManager.models import GitStore
+from repoManager.models import GitStore, SourceControlUser
 from repoManager.repo_mgmt import GitRepo
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User 
 
 # Create your views here.
 def index(request):
-    return render(request, 'gitRepoDemo.html', { 'repo_list': GitStore.objects.all() })
+    if request.user.is_authenticated():
+        user = request.user
+        repos = user.sourcecontroluser.ownedRepos.all() 
+    else:
+        repos = []
+        #have it throw an error saying to log in
+    return render(request, 'gitRepoDemo.html', { 'repo_list': repos })
 
 def count_files(request):
     context_instance = RequestContext(request)
@@ -19,11 +25,19 @@ def count_files(request):
     num_files = repo.count_files()
 
     # Store object and render page
-    GitStore.objects.get_or_create(gitRepositoryURL = repo_url, numFiles = num_files) #PROBLEMATIC LINE
+    gitStore = GitStore.objects.get_or_create(gitRepositoryURL = repo_url, numFiles = num_files)[0] #PROBLEMATIC LINE
     context_instance["repo_url"] = repo_url
     context_instance["count"] = num_files
     context_instance["repo_list"] = GitStore.objects.all()
-    return render_to_response("gitRepoDemo.html", context_instance)
+    
+
+    if request.user.is_authenticated():
+	    user = request.user
+	    sourceControlUser = user.sourcecontroluser
+	    sourceControlUser.ownedRepos.add(gitStore) 
+	    return render_to_response("gitRepoDemo.html", context_instance)
+    else:
+    	return render_to_response("gitRepoDemo.html", {}) 
 
 def logon(request):
     return render(request, 'login.html', { "failed": False })
@@ -56,6 +70,8 @@ def do_signup(request):
 
     auth_result = authenticate(username = user_name, password = password)
     login(request, auth_result)
+    
+    sourceControlUser = SourceControlUser.objects.create(user=user) 
     return redirect('index')
 
 def do_logout(request):
