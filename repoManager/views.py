@@ -28,13 +28,12 @@ def count_files(request):
     gitStore = GitStore.objects.get_or_create(gitRepositoryURL = repo_url, numFiles = num_files)[0] #PROBLEMATIC LINE
     context_instance["repo_url"] = repo_url
     context_instance["count"] = num_files
-    context_instance["repo_list"] = GitStore.objects.all()
     
-
     if request.user.is_authenticated():
 	    user = request.user
 	    sourceControlUser = user.sourcecontroluser
 	    sourceControlUser.ownedRepos.add(gitStore) 
+	    context_instance["repo_list"] = sourceControlUser.ownedRepos.all() 
 	    return render_to_response("gitRepoDemo.html", context_instance)
     else:
     	return render_to_response("gitRepoDemo.html", {}) 
