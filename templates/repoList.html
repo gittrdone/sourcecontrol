@@ -6,7 +6,10 @@
             <input name="repo" type="text" placeholder="Repository">
             <input id="submitRepo" type="submit" value="Store" class="button"></input>
         </form>
-        {% if repo_url %}
+        {% if git_error %}
+            <div class="errortext">{{ repo_url }} is not a valid repository!</div>
+        {% endif %}
+        {% if count %}
             <div class="greentext">The repository at {{ repo_url }} has {{ count }} files.</div>
         {% endif %}
     </div>

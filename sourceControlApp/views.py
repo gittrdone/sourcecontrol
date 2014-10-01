@@ -20,23 +20,31 @@ def count_files(request):
     context_instance = RequestContext(request)
     repo_url = request.GET['repo']
 
+    #user = request.user
+    #sourceControlUser = user.sourcecontroluser
+    #sourceControlUser.ownedRepos.add(gitStore)
+    #context_instance["repo_list"] = sourceControlUser.ownedRepos.all()
+
     # Count files
     repo = GitRepo(repo_url)
     num_files = repo.count_files()
-
-    # Store object and render page
-    gitStore = GitStore.objects.get_or_create(gitRepositoryURL = repo_url, numFiles = num_files)[0] #PROBLEMATIC LINE
-    context_instance["repo_url"] = repo_url
-    context_instance["count"] = num_files
     
     if request.user.is_authenticated():
-	    user = request.user
-	    sourceControlUser = user.sourcecontroluser
-	    sourceControlUser.ownedRepos.add(gitStore) 
-	    context_instance["repo_list"] = sourceControlUser.ownedRepos.all() 
-	    return render_to_response("repoList.html", context_instance)
+        user = request.user
+        sourceControlUser = user.sourcecontroluser
+        if num_files < 0:
+            context_instance["git_error"] = True
+        else:
+            gitStore = GitStore.objects.get_or_create(gitRepositoryURL = repo_url, numFiles = num_files)[0] #PROBLEMATIC LINE
+            sourceControlUser.ownedRepos.add(gitStore)
+            context_instance["count"] = num_files
+
+        # Store object and render page
+        context_instance["repo_url"] = repo_url
+        context_instance["repo_list"] = sourceControlUser.ownedRepos.all()
+        return render_to_response("repoList.html", context_instance)
     else:
-    	return render_to_response("repoList.html", {})
+        return render_to_response("repoList.html", {})
 
 def logon(request):
     return render(request, 'login.html', { "failed": False })
