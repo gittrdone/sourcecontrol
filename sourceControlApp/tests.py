@@ -1,5 +1,5 @@
 from django.test import TestCase
-from repoManager.models import GitStore
+from sourceControlApp.models import GitStore
 
 # Create your tests here.
 class GitStoreTest(TestCase):

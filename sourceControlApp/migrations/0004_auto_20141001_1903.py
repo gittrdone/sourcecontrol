@@ -7,7 +7,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('repoManager', '0003_auto_20140930_1448'),
+        ('sourceControlApp', '0003_auto_20140930_1448'),
     ]
 
     operations = [

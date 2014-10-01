@@ -1,4 +1,4 @@
-from repoManager.models import SourceControlUser
+from sourceControlApp.models import SourceControlUser
 from django.contrib.auth.models import User
 from django import forms
 

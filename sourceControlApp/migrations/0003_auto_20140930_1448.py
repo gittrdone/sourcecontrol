@@ -7,7 +7,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('repoManager', '0002_sourcecontroluser'),
+        ('sourceControlApp', '0002_sourcecontroluser'),
     ]
 
     operations = [
@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sourcecontroluser',
             name='ownedRepos',
-            field=models.ManyToManyField(to='repoManager.GitStore'),
+            field=models.ManyToManyField(to='sourceControlApp.GitStore'),
             preserve_default=True,
         ),
     ]

@@ -1,6 +1,6 @@
 from django.shortcuts import render, render_to_response
-from repoManager.models import GitStore, SourceControlUser
-from repoManager.repo_mgmt import GitRepo
+from sourceControlApp.models import GitStore, SourceControlUser
+from sourceControlApp.repo_mgmt import GitRepo
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect

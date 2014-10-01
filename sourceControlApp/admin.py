@@ -1,5 +1,5 @@
 from django.contrib import admin
-from repoManager.models import GitStore
+from sourceControlApp.models import GitStore
 
 class GitStoreAdmin(admin.ModelAdmin):
     list_display = ["gitRepositoryURL", "numFiles"]

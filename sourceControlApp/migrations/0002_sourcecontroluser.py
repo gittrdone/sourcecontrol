@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('repoManager', '0001_initial'),
+        ('sourceControlApp', '0001_initial'),
     ]
 
     operations = [
