@@ -15,7 +15,7 @@
         {% for repo in repo_list %}
             <div class="large-12 columns card">
                 <div class="large-10 columns">
-                    <h5><b>{{ repo.gitRepositoryURL }}</b></h5>
+                    <h5><b><a href="/repo_detail?repo={{ repo.gitRepositoryURL }}">{{ repo.gitRepositoryURL }}</a></b></h5>
                 </div>
                 <div class="large-2 columns" style="font-size:20px;color:darkblue;">
                     {{ repo.numFiles }}

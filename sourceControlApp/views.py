@@ -15,7 +15,11 @@ def index(request):
     else:
         repos = []
         #have it throw an error saying to log in
-    return render(request, 'repoList.html', { 'repo_list': repos })
+
+    if request.user.is_authenticated():
+        return render(request, 'repoList.html', { 'repo_list': repos })
+    else:
+        return render(request, 'index.html', {})
 
 def add_repo(request):
     context_instance = RequestContext(request)
@@ -38,6 +42,18 @@ def add_repo(request):
         return render_to_response("repoList.html", context_instance)
     else:
         return render_to_response("repoList.html", {})
+
+def repo_detail(request):
+    repo_url = request.GET['repo']
+
+    repo = GitStore.objects.get(gitRepositoryURL=repo_url)
+
+    context_instance = RequestContext(request)
+    context_instance['repo'] = repo
+    context_instance['authors'] = repo.codeauthor_set.all()
+
+    return render_to_response("repoDetail.html", context_instance)
+
 
 def logon(request):
     return render(request, 'login.html', { "failed": False })

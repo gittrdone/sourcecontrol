@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="large-12 columns card">
+        <div class="large-6 columns">
+            <h5><b>{{ repo.gitRepositoryURL }}</b></h5>
+        </div>
+        <div class="large-2 columns" style="font-size:20px;color:darkblue;">
+            {{ repo.numFiles }}
+            <br/><div style="font-size:14px;color:black;">files</div>
+        </div>
+
+        <div class="large-2 columns" style="font-size:20px;color:darkblue;">
+            {{ repo.numCommits }}
+            <br/><div style="font-size:14px;color:black;">commits</div>
+        </div>
+
+        <div class="large-2 columns" style="font-size:20px;color:darkblue;">
+            {{ authors|length }}
+            <br/><div style="font-size:14px;color:black;">committers</div>
+        </div>
+    </div>
+
+    <div class="large-12 columns card">
+        {% for author in authors %}
+            <div class="large-10 columns">
+                    <h5><b>{{ author.name }}</b></h5>
+                </div>
+                <div class="large-2 columns" style="font-size:20px;color:darkblue;">
+                    {{ author.num_commits }}
+                    <br/><div style="font-size:14px;color:black;">commits</div>
+                </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
