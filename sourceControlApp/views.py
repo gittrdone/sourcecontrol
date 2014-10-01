@@ -1,10 +1,11 @@
 from django.shortcuts import render, render_to_response
 from sourceControlApp.models import GitStore, SourceControlUser
-from sourceControlApp.repo_mgmt import GitRepo
+from sourceControlApp.repo_mgmt import get_repo_data_from_url
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 def index(request):
@@ -16,28 +17,20 @@ def index(request):
         #have it throw an error saying to log in
     return render(request, 'repoList.html', { 'repo_list': repos })
 
-def count_files(request):
+def add_repo(request):
     context_instance = RequestContext(request)
     repo_url = request.GET['repo']
 
-    #user = request.user
-    #sourceControlUser = user.sourcecontroluser
-    #sourceControlUser.ownedRepos.add(gitStore)
-    #context_instance["repo_list"] = sourceControlUser.ownedRepos.all()
+    repo = get_repo_data_from_url(repo_url)
+    error = (repo == -1) # Check for error flag
 
-    # Count files
-    repo = GitRepo(repo_url)
-    num_files = repo.count_files()
-    
     if request.user.is_authenticated():
         user = request.user
         sourceControlUser = user.sourcecontroluser
-        if num_files < 0:
+        if error:
             context_instance["git_error"] = True
         else:
-            gitStore = GitStore.objects.get_or_create(gitRepositoryURL = repo_url, numFiles = num_files)[0] #PROBLEMATIC LINE
-            sourceControlUser.ownedRepos.add(gitStore)
-            context_instance["count"] = num_files
+            sourceControlUser.ownedRepos.add(repo)
 
         # Store object and render page
         context_instance["repo_url"] = repo_url
@@ -84,3 +77,6 @@ def do_signup(request):
 def do_logout(request):
     logout(request)
     return redirect('index')
+
+def load_repo_page(request):
+    repo_url = request.repo_url

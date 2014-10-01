@@ -9,9 +9,6 @@
         {% if git_error %}
             <div class="errortext">{{ repo_url }} is not a valid repository!</div>
         {% endif %}
-        {% if count %}
-            <div class="greentext">The repository at {{ repo_url }} has {{ count }} files.</div>
-        {% endif %}
     </div>
 
     {% if repo_list %}
