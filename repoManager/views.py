@@ -14,7 +14,7 @@ def index(request):
     else:
         repos = []
         #have it throw an error saying to log in
-    return render(request, 'gitRepoDemo.html', { 'repo_list': repos })
+    return render(request, 'repoList.html', { 'repo_list': repos })
 
 def count_files(request):
     context_instance = RequestContext(request)
@@ -34,9 +34,9 @@ def count_files(request):
 	    sourceControlUser = user.sourcecontroluser
 	    sourceControlUser.ownedRepos.add(gitStore) 
 	    context_instance["repo_list"] = sourceControlUser.ownedRepos.all() 
-	    return render_to_response("gitRepoDemo.html", context_instance)
+	    return render_to_response("repoList.html", context_instance)
     else:
-    	return render_to_response("gitRepoDemo.html", {}) 
+    	return render_to_response("repoList.html", {})
 
 def logon(request):
     return render(request, 'login.html', { "failed": False })
