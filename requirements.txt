@@ -1,5 +1,8 @@
 Django==1.7
+cffi==0.8.6
 dj-database-url==0.3.0
 django-crispy-forms==1.4.0
 psycopg2==2.5.4
+pycparser==2.10
+pygit2==0.21.3
 wsgiref==0.1.2
