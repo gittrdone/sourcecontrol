@@ -7,8 +7,12 @@
 
         <div class="slidy" {% if not git_error %}style="display:none;"{% endif %}>
             <form action="/count_files" method="GET">
-                <input name="name" type="text" placeholder="Name">
-                <input name="repo" type="text" placeholder="Repository">
+                <div id="nameValidate" style="display:none; margin-bottom: 10px;"></div>
+                <input name="name" id="nameField" type="text" placeholder="Name">
+
+                <div id="urlValidate" style="display:none; margin-bottom: 10px;"></div>
+                <input name="repo" type="text" id="urlField" placeholder="Repository">
+
                 <textarea name="desc" rows="3" style="resize:none;" placeholder="Description (optional)"></textarea>
 
                 <input id="submitRepo" type="submit" value="Store" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;"></input>
@@ -23,11 +27,16 @@
         {% for repo in repo_list %}
             <div class="large-12 columns card">
                 <div class="large-10 columns">
-                    <h5><b><a href="/repo_detail?repo={{ repo.gitRepositoryURL }}">{{ repo.gitRepositoryURL }}</a></b></h5>
+                    <h4><b><a href="/repo_detail?repo={{ repo.gitRepositoryURL }}">{{ repo.repoName }}</a></b></h4>
+                    <h5><b>{{ repo.gitRepositoryURL }}</b></h5>
                 </div>
-                <div class="large-2 columns" style="font-size:20px;color:darkblue;">
+                <div class="large-1 columns" style="font-size:22px;color:darkblue;margin-top: 20px;">
                     {{ repo.numFiles }}
-                    <br/><div style="font-size:14px;color:black;">files</div>
+                    <br/><div style="font-size:15px;color:black;">files</div>
+                </div>
+                <div class="large-1 columns" style="font-size:22px;color:darkblue;margin-top: 20px;">
+                    {{ repo.numCommits }}
+                    <br/><div style="font-size:15px;color:black;">commits</div>
                 </div>
             </div>
         {% endfor %}
@@ -42,5 +51,46 @@
                 $(".slidy").slideToggle(300);
             });
         });
+
+        var theButton = document.querySelector("#submitRepo");
+        theButton.addEventListener("click", register);
+
+        function register(e) {
+            var nameField = document.getElementById("nameField");
+            var urlField = document.getElementById("urlField");
+
+            var nameValidateDiv = document.getElementById("nameValidate");
+            var urlValidateDiv = document.getElementById("urlValidate");
+
+            var didWork = true;
+
+            if (nameField.value == "") {
+                nameValidateDiv.style.display = "block";
+                nameValidateDiv.style.color = "red";
+                nameValidateDiv.innerHTML = "Cannot leave name blank.";
+                didWork = false;
+            }
+            else {
+                nameValidateDiv.innerHTML = "";
+                nameValidateDiv.style.display = "none";
+            }
+
+            if (urlField.value == "") {
+                urlValidateDiv.style.display = "block";
+                urlValidateDiv.style.color = "red";
+                urlValidateDiv.innerHTML = "Cannot leave repository address blank.";
+                didWork = false;
+            }
+            else {
+                urlValidateDiv.style.display = "none";
+                urlValidateDiv.style.innerHTML = "";
+            }
+
+            if (didWork == false) {
+                e.preventDefault();
+            }
+
+            return didWork;
+        }
     </script>
 {% endblock %}
