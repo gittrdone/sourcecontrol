@@ -4,7 +4,6 @@ python:
 services:
   - postgresql
 install:
-  - sudo apt-get install libffi libffi-dev
   - sudo apt-get install libgit2 libgit2-dev
   - pip install -r requirements.txt
 script:
