@@ -10,6 +10,7 @@ before_install:
   - cmake .
   - make
   - sudo make install
+  - sudo ldconfig
   - cd ..
 install:
   - pip install -r requirements.txt
