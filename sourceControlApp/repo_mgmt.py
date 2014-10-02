@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 repo_path = 'repo'
 
-def get_repo_data_from_url(url):
+def get_repo_data_from_url(url, name, description):
     os.system("rm -rf " + repo_path)
 
     try:
@@ -20,8 +20,8 @@ def get_repo_data_from_url(url):
     except GitError:
         return -1 # Error flag
 
-    repo_object.repoDescription = ""
-    repo_object.repoName = ""
+    repo_object.repoDescription = description
+    repo_object.repoName = name
     repo_object.gitRepositoryURL = url
     repo_object.numCommits = count_commits(repo)
     repo_object.numFiles = count_files()

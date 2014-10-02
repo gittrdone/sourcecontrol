@@ -8,7 +8,7 @@ class GitStore(models.Model):
     numCommits = models.IntegerField(default=0)
 
     repoName = models.CharField(max_length=30)
-    repoDescription = models.CharField(max_length=1000, default="")
+    repoDescription = models.CharField(max_length=1000, default="", null=True, blank=True)
 
     def __unicode__ (self):
         return self.gitRepositoryURL

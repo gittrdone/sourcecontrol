@@ -3,6 +3,7 @@
 <head>
     <!-- Foundation CSS CDN -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/5.3.1/css/foundation.css">
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static "css/style.css" %}">
     <!-- Modernizr CDN -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.4.1/js/vendor/modernizr.js"></script>
@@ -15,7 +16,7 @@
 
             <li class="name">
                 <h1>
-                    <a href="#">
+                    <a href="/">
                         {% load staticfiles %}
                         <img src="{% static "images/topbanner.png" %}" alt="Banner and logo" style="height:45px;"/>
                     </a>
@@ -29,7 +30,7 @@
             	<li class="divider"></li>
             	{% if user.is_authenticated %}
             	 <li class="divider"></li>
-                 <li><a> Hello {{ user.username }}</a></li>
+                 <li><a> Hello, {{ user.username }}</a></li>
                  <li class="divider"></li>
                  <li><a href="/logout">Logout</a></li>
             	{% else %}
@@ -39,33 +40,6 @@
             	 <li><a href="/signup">Sign Up</a></li>
             	{% endif %}
                 <li class="divider"></li>
-                <li class="has-dropdown">
-                    <a href="#">Main Item 1</a>
-                    <ul class="dropdown">
-                        <li><label>Section Name</label></li>
-                        <li class="has-dropdown">
-                            <a href="#" class="">Has Dropdown, Level 1</a>
-                            <ul class="dropdown">
-                                <li><a href="#">Dropdown Options</a></li>
-                                <li><a href="#">Dropdown Options</a></li>
-                                <li><a href="#">Level 2</a></li>
-                                <li><a href="#">Subdropdown Option</a></li>
-                                <li><a href="#">Subdropdown Option</a></li>
-                                <li><a href="#">Subdropdown Option</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#">Dropdown Option</a></li>
-                        <li><a href="#">Dropdown Option</a></li>
-                        <li class="divider"></li>
-                        <li><label>Section Name</label></li>
-                        <li><a href="#">Dropdown Option</a></li>
-                        <li><a href="#">Dropdown Option</a></li>
-                        <li><a href="#">Dropdown Option</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">See all &rarr;</a></li>
-                    </ul>
-                </li>
-
             </ul>
         </section>
     </nav>
@@ -87,5 +61,9 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.4.1/js/foundation.min.js"></script>
 <!-- Initialize Foundation -->
 <script>$(document).foundation();</script>
+
+{% block extra_js %}
+
+{% endblock %}
 </body>
 </html>

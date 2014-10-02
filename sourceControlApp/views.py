@@ -24,8 +24,10 @@ def index(request):
 def add_repo(request):
     context_instance = RequestContext(request)
     repo_url = request.GET['repo']
+    repo_name = request.GET['name']
+    repo_description = request.GET['desc']
 
-    repo = get_repo_data_from_url(repo_url)
+    repo = get_repo_data_from_url(repo_url, repo_name, repo_description)
     error = (repo == -1) # Check for error flag
 
     if request.user.is_authenticated():

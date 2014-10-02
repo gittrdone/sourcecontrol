@@ -2,13 +2,21 @@
 
 {% block content %}
     <div class="large-12 columns card">
-        <form action="/count_files" method="GET">
-            <input name="repo" type="text" placeholder="Repository">
-            <input id="submitRepo" type="submit" value="Store" class="button"></input>
-        </form>
-        {% if git_error %}
-            <div class="errortext">{{ repo_url }} is not a valid repository!</div>
-        {% endif %}
+
+        <h3 class="toggler clickable_heading">Add New Repository</h3>
+
+        <div class="slidy" {% if not git_error %}style="display:none;"{% endif %}>
+            <form action="/count_files" method="GET">
+                <input name="name" type="text" placeholder="Name">
+                <input name="repo" type="text" placeholder="Repository">
+                <textarea name="desc" rows="3" style="resize:none;" placeholder="Description (optional)"></textarea>
+
+                <input id="submitRepo" type="submit" value="Store" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;"></input>
+            </form>
+            {% if git_error %}
+                <div class="errortext">{{ repo_url }} is not a valid repository!</div>
+            {% endif %}
+        </div>
     </div>
 
     {% if repo_list %}
@@ -25,4 +33,14 @@
         {% endfor %}
     {% endif %}
 
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+        $( document ).ready(function() {
+            $(".toggler").click(function(){
+                $(".slidy").slideToggle(300);
+            });
+        });
+    </script>
 {% endblock %}

@@ -6,11 +6,17 @@ body {
     background: white;
     box-shadow: 0px 2px 5px #AAAAAA;
     margin-top: 25px;
-    padding: 20px;
+    padding: 30px;
 }
 
 .columnswithbottompadding {
     padding-bottom: 20px;
+}
+
+.clickable_heading {
+    cursor: pointer;
+    font-weight:bold;
+    padding: 5px;
 }
 
 .greentext {
