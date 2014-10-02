@@ -3,8 +3,14 @@ python:
   - 2.7
 services:
   - postgresql
+before_install:
+  - wget https://github.com/libgit2/libgit2/archive/v0.21.1.tar.gz
+  - tar xzf v0.21.1.tar.gz
+  - cd libgit2-0.21.1/
+  - cmake .
+  - make
+  - sudo make install
 install:
-  - sudo apt-get install libgit2 libgit2-dev
   - pip install -r requirements.txt
 script:
   - python manage.py test
