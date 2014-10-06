@@ -8,7 +8,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.core import serializers
-from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 def index(request):
