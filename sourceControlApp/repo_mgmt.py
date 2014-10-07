@@ -7,15 +7,21 @@ from datetime import datetime
 
 repo_path = 'repo'
 
-# Updates all of the repos in the database with
-# updated information.
 def update_repos():
+    """
+    Updates all of the repos in the database with
+    updated information.
+    """
     for repo in GitStore.objects.all():
         update_repo(repo)
 
-# Updates a single repo by recloning the repo
-# and updating the information in the database
 def update_repo(repo_object):
+    """
+    Updates a single repo by recloning the repo
+    and updating the information in the database
+    :param repo_object: Existing object to update
+    :return: -1 if there is an error
+    """
     os.system("rm -rf " + repo_path)
 
     try:
@@ -29,9 +35,15 @@ def update_repo(repo_object):
 
     process_repo(repo, repo_object)
 
-# Return a repo object database from the given parameters
-# If a relevant object already exists, we return the existing object
 def get_repo_data_from_url(url, name, description):
+    """
+    Updates a single repo by recloning the repo
+    and updating the information in the database
+    :param url: URL of the repository
+    :param name: Name to reference the repository by
+    :param description: Description of the repo
+    :return: A reference the the repo in the database
+    """
     os.system("rm -rf " + repo_path)
 
     try:
@@ -53,9 +65,14 @@ def get_repo_data_from_url(url, name, description):
 
     return repo_object
 
-# Processes the information in the repo
-# and updates the repo_object
 def process_repo(repo, repo_object):
+    """
+    Updates a single repo by recloning the repo
+    and updating the information in the database
+    :param repo: The pygit2 repo to pull information from
+    :param repo_object: The model to store information in
+    :return:
+    """
     repo_object.numCommits = count_commits(repo)
     repo_object.numFiles = count_files()
 
@@ -64,20 +81,29 @@ def process_repo(repo, repo_object):
     # Count commits per author
     count_commits_per_author(repo, repo_object)
 
-# Returns a count of the commits in the given repo
 def count_commits(repo):
+    """
+    :param repo: A pygit2 repo to process
+    :return: The number of commits in the given repo
+    """
     return len(list(repo.walk(repo.head.target)))
 
-# Returns a count of the files in the repo
 def count_files():
+    """
+    :return: a count of the files in the repo
+    """
     try:
         num_files = subprocess.check_output('cd ' + repo_path + ' && git ls-files | wc -l', shell = True)
         return num_files
     except GitError:
         return -1
 
-# Stores a count of all commits associated with author
 def count_commits_per_author(repo, repo_db_object):
+    """
+    Stores a count of all commits associated with author
+    :param repo: The pygit2 repo to process
+    :param repo_db_object: The model to update
+    """
     for commit in repo.walk(repo.head.target):
         code_author = CodeAuthor.objects.get_or_create(repository=repo_db_object, name=commit.author.name)[0]
         code_author.num_commits += 1
