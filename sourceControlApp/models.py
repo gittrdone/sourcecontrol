@@ -7,7 +7,7 @@ class GitStore(models.Model):
     numFiles = models.IntegerField(default=0)
     numCommits = models.IntegerField(default=0)
 
-    repoName = models.CharField(max_length=30)
+    repoName = models.CharField(max_length=100)
     repoDescription = models.CharField(max_length=1000, default="", null=True, blank=True)
 
     def __unicode__ (self):
