@@ -8,7 +8,7 @@ class CodeAuthorAdmin(admin.ModelAdmin):
     list_display = ["name", "repository", "num_commits"]
 
 class CommitAdmin(admin.ModelAdmin):
-    list_display = ["repository", "author"]
+    list_display = ["repository", "author", "num_patches"]
 
 # Register your models here.
 admin.site.register(GitStore, GitStoreAdmin)

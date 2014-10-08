@@ -1,6 +1,7 @@
 import os
 import subprocess
-from sourceControlApp.models import GitStore, CodeAuthor, Commit, Patch
+from sourceControlApp.models import GitStore, CodeAuthor
+from sourceControlApp.models import Commit, Patch
 from pygit2 import clone_repository, GitError
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
@@ -24,7 +25,7 @@ def get_repo_data_from_url(url, name, description):
     repo_object.repoDescription = description
     repo_object.repoName = name
     repo_object.gitRepositoryURL = url
-    #repo_object.numCommits = count_commits(repo)
+    repo_object.numCommits = count_commits(repo)
     repo_object.numFiles = count_files()
 
     repo_object.save()
@@ -44,12 +45,6 @@ def count_files():
     except GitError:
         return -1
 
-def count_commits_per_author_old(repo, repo_db_object):
-    for commit in repo.walk(repo.head.target):
-        code_author = CodeAuthor.objects.get_or_create(repository=repo_db_object, name=commit.author.name)[0]
-        code_author.num_commits += 1
-        code_author.save()
-
 def count_commits_per_author(repo, repo_db_object):
     for commit in repo.walk(repo.head.target):
         code_author = CodeAuthor.objects.get_or_create(repository=repo_db_object, name=commit.author.name)[0]
@@ -58,8 +53,10 @@ def count_commits_per_author(repo, repo_db_object):
         time=datetime.fromtimestamp(commit.author.time)
         commit_db_object = Commit.objects.get_or_create(repository=repo_db_object,author=code_author,commit_time=time)[0]
         commit_db_object.save()
-        for entry in commit.tree:
-            patch = Patch.objects.get_or_create(repository = repo_db_object, filename = entry.name)[0]
-            patch.save()
-            commit_db_object.patches.add(patch)
-        commit_db_object.save()
+        ##This part is taking too much time. But it's working.
+        # for entry in commit.tree:
+        #     patch = Patch.objects.get_or_create(repository = repo_db_object, filename = entry.name)[0]
+        #     patch.save()
+        #     commit_db_object.num_patches += 1
+        #     commit_db_object.patches.add(patch)
+        # commit_db_object.save()
