@@ -14,8 +14,8 @@ class GitStore(models.Model):
         return self.gitRepositoryURL
         
 class SourceControlUser(models.Model):
-	user = models.OneToOneField(User)
-	ownedRepos = models.ManyToManyField(GitStore)
+    user = models.OneToOneField(User)
+    ownedRepos = models.ManyToManyField(GitStore)
 
 class CodeAuthor(models.Model):
     name = models.CharField(max_length=100)
@@ -24,3 +24,21 @@ class CodeAuthor(models.Model):
 
     def __unicode__ (self):
         return unicode(self.repository) + self.name
+
+class Patch(models.Model):
+    repository = models.ForeignKey(GitStore)
+    filename = models.CharField(max_length=100)
+    addition = models.IntegerField(default=0)
+    deletion = models.IntegerField(default=0)
+    next = models.ForeignKey("Patch", null=True, blank=True)
+
+class Commit(models.Model):
+    #Try many authors later
+    #authors = models.ManyToManyField(CodeAuthor)
+    repository = models.ForeignKey(GitStore)
+    author = models.ForeignKey(CodeAuthor)
+    patches = models.ManyToManyField(Patch)
+    commit_time = models.DateTimeField()
+
+    def __unicode__ (self):
+        return unicode(self.repository) + unicode(self.author)
