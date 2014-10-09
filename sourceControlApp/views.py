@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from json import dumps
 from django.shortcuts import render, render_to_response
 from sourceControlApp.models import GitStore, SourceControlUser
@@ -57,11 +57,11 @@ def repo_detail(request):
     context_instance['authors'] = repo.codeauthor_set.all()
     context_instance['json_authors'] = serializers.serialize("json", repo.codeauthor_set.all())
 
-    last_week = date.today() - timedelta(days=7)
-    today = date.today()
+    last_week = datetime.today() - timedelta(days=6) # Beginning of this week
+    today = datetime.now()
 
     daily_commit_counts = {}
-    for i in range(last_week.day, today.day):
+    for i in range(last_week.day, today.day+1):
         daily_commit_counts[i] = 0
 
     weekly_commits = repo.commit_set.filter(commit_time__range=(last_week, today))

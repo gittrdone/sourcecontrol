@@ -75,7 +75,7 @@ for (i = 0; i < keys.length; i ++) {
     var day = keys[i];
     var num_commits = week_commit_json[day];
     var dayData = {
-        day:day-1,
+        day:parseInt(day),
         commits:num_commits
     };
     data.push(dayData);
