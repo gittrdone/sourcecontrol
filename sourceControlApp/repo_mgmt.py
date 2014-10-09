@@ -1,12 +1,29 @@
 import os
 import subprocess
-from sourceControlApp.models import GitStore, CodeAuthor
-from sourceControlApp.models import Commit, Patch
+from sourceControlApp.models import GitStore, CodeAuthor, Commit, Patch
 from pygit2 import clone_repository, GitError
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 
 repo_path = 'repo'
+
+def update_repos():
+    for repo in GitStore.objects.all():
+        update_repo(repo)
+
+def update_repo(repo_object):
+    os.system("rm -rf " + repo_path)
+
+    try:
+        repo = clone_repository(url=repo_object.gitRepositoryURL, path=repo_path)
+    except GitError:
+        return -1 # Error flag
+
+    # Remove old data
+    Commit.objects.filter(repository=repo_object).delete()
+    CodeAuthor.objects.filter(repository=repo_object).delete()
+
+    process_repo(repo, repo_object)
 
 def get_repo_data_from_url(url, name, description):
     os.system("rm -rf " + repo_path)
@@ -25,6 +42,12 @@ def get_repo_data_from_url(url, name, description):
     repo_object.repoDescription = description
     repo_object.repoName = name
     repo_object.gitRepositoryURL = url
+
+    process_repo(repo, repo_object)
+
+    return repo_object
+
+def process_repo(repo, repo_object):
     repo_object.numCommits = count_commits(repo)
     repo_object.numFiles = count_files()
 
@@ -32,8 +55,6 @@ def get_repo_data_from_url(url, name, description):
 
     # Count commits per author
     count_commits_per_author(repo, repo_object)
-
-    return repo_object
 
 def count_commits(repo):
     return len(list(repo.walk(repo.head.target)))

@@ -52,6 +52,14 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+from datetime import timedelta
+CELERYBEAT_SCHEDULE = {
+    'add-every-30-seconds': {
+        'task': 'sourceControlApp.tasks.reprocess_repos',
+        'schedule': timedelta(seconds=60),
+    },
+}
+
 ROOT_URLCONF = 'sourcecontrol.urls'
 
 WSGI_APPLICATION = 'sourcecontrol.wsgi.application'
