@@ -66,6 +66,14 @@ arcs.append("svg:text")
     })
     .text(function(d, i) { return d.data.name; });
 
+arcs.append("svg:text")
+    .attr("x", 0)
+    .attr("y", -238)
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+    .style("text-decoration", "underline")
+    .text("Commits per Author");
+
 data = [];
 var week_commit_list = document.getElementById("week_commits").innerHTML;
 var week_commit_json = JSON.parse(week_commit_list);
@@ -134,6 +142,14 @@ var svg = d3.select("#bar_chart").append("svg")
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text("# Commits");
+
+  svg.append("text")
+      .attr("x", (width / 2))
+      .attr("y", 5 - (margin.top / 2))
+      .attr("text-anchor", "middle")
+      .style("font-size", "16px")
+      .style("text-decoration", "underline")
+      .text("Commits over Week");
 
   svg.selectAll("bar")
       .data(data)
