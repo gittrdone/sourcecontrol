@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+from json import dumps
 from django.shortcuts import render, render_to_response
 from sourceControlApp.models import GitStore, SourceControlUser
 from sourceControlApp.repo_mgmt import get_repo_data_from_url
@@ -55,6 +57,20 @@ def repo_detail(request):
     context_instance['repo'] = repo
     context_instance['authors'] = repo.codeauthor_set.all()
     context_instance['json_authors'] = serializers.serialize("json", repo.codeauthor_set.all())
+
+    last_week = date.today() - timedelta(days=7)
+    today = date.today()
+
+    daily_commit_counts = {}
+    for i in range(last_week.day, today.day):
+        daily_commit_counts[i] = 0
+
+    weekly_commits = repo.commit_set.filter(commit_time__range=(last_week, today))
+    for commit in weekly_commits:
+        day = commit.commit_time.day
+        daily_commit_counts[day] = daily_commit_counts[day] + 1
+
+    context_instance['week_commits'] = dumps(daily_commit_counts)
     return render_to_response("repoDetail.html", context_instance)
 
 
