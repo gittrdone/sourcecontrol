@@ -1,38 +1,43 @@
 {% extends "base.html" %}
-
 {% block content %}
-
-    <div class="large-12 columns card">
-        <div class="large-6 columns">
-            <h3><b>{{ repo.repoName }}</b></h3>
-            <b>{{ repo.gitRepositoryURL }}</b>
-        </div>
-        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ repo.numFiles }}
-            <br/><div style="font-size:14px;color:black;">files</div>
-        </div>
-
-        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ repo.numCommits }}
-            <br/><div style="font-size:14px;color:black;">commits</div>
-        </div>
-
-        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ authors|length }}
-            <br/><div style="font-size:14px;color:black;">committers</div>
-        </div>
+<div class="large-12 columns card">
+    <div class="large-6 columns">
+        <h3><b>{{ repo.repoName }}</b></h3>
+        <b>{{ repo.gitRepositoryURL }}</b>
+    </div>
+    <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+        {{ repo.numFiles }}
+        <br/><div style="font-size:14px;color:black;">files</div>
     </div>
 
-    <div class="large-12 columns card">
-        {% for author in authors %}
-            <div class="large-4 columns" style="margin-bottom: 10px;">
-                <h5><b>{{ author.name }}</b></h5>
-            </div>
-            <div class="large-2 columns" style="font-size:19px;color:darkblue;">
-                {{ author.num_commits }}
-                &nbsp;<div style="font-size:12px;color:black;">commits</div>
-            </div>
-        {% endfor %}
+    <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+        {{ repo.numCommits }}
+        <br/><div style="font-size:14px;color:black;">commits</div>
     </div>
 
+    <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+        {{ authors|length }}
+        <br/><div style="font-size:14px;color:black;">committers</div>
+    </div>
+</div>
+
+<div class="large-12 columns card">
+    {% for author in authors %}
+        <div class="large-4 columns" style="margin-bottom: 10px;">
+            <h5><b>{{ author.name }}</b></h5>
+        </div>
+        <div class="large-2 columns" style="font-size:19px;color:darkblue;">
+            {{ author.num_commits }}
+            &nbsp;<div style="font-size:12px;color:black;">commits</div>
+        </div>
+    {% endfor %}
+</div>
+
+<div id="pie_chart" class="large-12 columns card" style="text-align:center">
+<div id="bar_chart" class="large-12 columns card" style="text-align:center">
+</div>
+<div id="jsonAuthors" class="large-12 columns card" style="display:none">{{ json_authors }}</div>
 {% endblock %}
+{% block extra_js %}
+{% endblock %}
+

@@ -5,6 +5,7 @@ from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
+from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
@@ -53,7 +54,7 @@ def repo_detail(request):
     context_instance = RequestContext(request)
     context_instance['repo'] = repo
     context_instance['authors'] = repo.codeauthor_set.all()
-
+    context_instance['json_authors'] = serializers.serialize("json", repo.codeauthor_set.all())
     return render_to_response("repoDetail.html", context_instance)
 
 
