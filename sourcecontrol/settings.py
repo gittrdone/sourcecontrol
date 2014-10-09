@@ -56,7 +56,7 @@ from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
     'add-every-30-seconds': {
         'task': 'sourceControlApp.tasks.reprocess_repos',
-        'schedule': timedelta(seconds=60),
+        'schedule': timedelta(seconds=600),
     },
 }
 
