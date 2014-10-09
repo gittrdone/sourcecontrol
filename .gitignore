@@ -55,3 +55,6 @@ docs/_build/
 
 # PyCharm project files
 .idea/
+
+# Celery scheduler database
+celerybeat-schedule.db
