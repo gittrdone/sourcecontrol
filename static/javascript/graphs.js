@@ -68,25 +68,18 @@ arcs.append("svg:text")
 
 data = [];
 var week_commit_list = document.getElementById("week_commits").innerHTML;
-console.log(week_commit_list);
 var week_commit_json = JSON.parse(week_commit_list);
-console.log(week_commit_json);
 var keys = Object.keys(week_commit_json);
-console.log(keys.length);
-console.log(keys);
 
 for (i = 0; i < keys.length; i ++) {
     var day = keys[i];
-    console.log("Day = " + day);
     var num_commits = week_commit_json[day];
-    console.log("Num commits = " + num_commits);
     var dayData = {
         day:day-1,
         commits:num_commits
     };
     data.push(dayData);
 }
-console.log(data);
 
 var margin = {top: 20, right: 20, bottom: 70, left: 40},
     width = 600 - margin.left - margin.right,
@@ -123,7 +116,7 @@ var svg = d3.select("#bar_chart").append("svg")
       .style("text-anchor", "end")
       .attr("dx", "-.8em")
       .attr("dy", "-.55em")
-      .attr("transform", "rotate(-90)" );
+      .attr("transform", "rotate(-90)" )
 
   svg.append("g")
       .attr("class", "y axis")
@@ -139,10 +132,7 @@ var svg = d3.select("#bar_chart").append("svg")
       .data(data)
     .enter().append("rect")
       .style("fill", "steelblue")
-      .attr("x", function(d) {
-          console.log(parseInt(x(d.day)));
-          console.log(typeof x(d.day));
-          return x(d.day); })
+      .attr("x", function(d) {return x(d.day); })
       .attr("width", x.rangeBand())
       .attr("y", function(d) { return y(d.commits); })
       .attr("height", function(d) { return height - y(d.commits); });
