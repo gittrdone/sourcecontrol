@@ -1,6 +1,6 @@
 var data = [];
 
-var author_list = document.getElementById("jsonAuthors").innerHTML;
+var author_list = document.getElementById("json_authors").innerHTML;
 var parsed_list = JSON.parse(author_list, "fields");
 for (i = 0; i < parsed_list.length; i ++) {
     var author_name = parsed_list[i].fields.name;
@@ -56,16 +56,93 @@ arcs.append("svg:text")
     })
 
     .attr("display", function(d) {
-        console.log(d.endAngle - d.startAngle);
-        console.log("anus");
         if((d.endAngle - d.startAngle) > 0.1) {
-            console.log("including");
             return "normal"
         }
 
         else {
-            console.log("not including");
             return "none"
         }
     })
     .text(function(d, i) { return d.data.name; });
+
+data = [];
+var week_commit_list = document.getElementById("week_commits").innerHTML;
+console.log(week_commit_list);
+var week_commit_json = JSON.parse(week_commit_list);
+console.log(week_commit_json);
+var keys = Object.keys(week_commit_json);
+console.log(keys.length);
+console.log(keys);
+
+for (i = 0; i < keys.length; i ++) {
+    var day = keys[i];
+    console.log("Day = " + day);
+    var num_commits = week_commit_json[day];
+    console.log("Num commits = " + num_commits);
+    var dayData = {
+        day:day-1,
+        commits:num_commits
+    };
+    data.push(dayData);
+}
+console.log(data);
+
+var margin = {top: 20, right: 20, bottom: 70, left: 40},
+    width = 600 - margin.left - margin.right,
+    height = 300 - margin.top - margin.bottom;
+
+var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+
+var y = d3.scale.linear().range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(10);
+
+var svg = d3.select("#bar_chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+  x.domain(data.map(function(d) { return d.day; }));
+  y.domain([0, d3.max(data, function(d) { return d.commits; })]);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", "-.55em")
+      .attr("transform", "rotate(-90)" );
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("# Commits");
+
+  svg.selectAll("bar")
+      .data(data)
+    .enter().append("rect")
+      .style("fill", "steelblue")
+      .attr("x", function(d) {
+          console.log(parseInt(x(d.day)));
+          console.log(typeof x(d.day));
+          return x(d.day); })
+      .attr("width", x.rangeBand())
+      .attr("y", function(d) { return y(d.commits); })
+      .attr("height", function(d) { return height - y(d.commits); });
