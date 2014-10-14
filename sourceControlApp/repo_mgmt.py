@@ -75,6 +75,7 @@ def process_repo(repo, repo_object):
     """
     repo_object.numCommits = count_commits(repo)
     repo_object.numFiles = count_files()
+    repo_object.branch_name = repo.listall_branches()[0]
 
     repo_object.save()
 

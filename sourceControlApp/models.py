@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 class GitStore(models.Model):
     gitRepositoryURL = models.CharField(max_length=200)
+    branch_name = models.CharField(max_length=50)
     numFiles = models.IntegerField(default=0)
     numCommits = models.IntegerField(default=0)
 
