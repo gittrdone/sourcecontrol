@@ -2,17 +2,17 @@
 {% block content %}
 <div class="large-12 columns card">
     <div class="large-6 columns">
-        <h3><b>{{ repo.repoName }}</b></h3>
-        <b>{{ repo.gitRepositoryURL }}</b>
-        <br>{{ repo.branch_name }}
+        <h3><b>{{ repo.name }}</b></h3>
+        <b>{{ repo.git_store.gitRepositoryURL }}</b>
+        <br>{{ repo.git_store.branch_name }}
     </div>
     <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-        {{ repo.numFiles }}
+        {{ repo.git_store.numFiles }}
         <br/><div style="font-size:14px;color:black;">files</div>
     </div>
 
     <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-        {{ repo.numCommits }}
+        {{ repo.git_store.numCommits }}
         <br/><div style="font-size:14px;color:black;">commits</div>
     </div>
 

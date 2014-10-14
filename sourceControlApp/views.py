@@ -60,12 +60,12 @@ def add_repo(request):
 def repo_detail(request):
     repo_id = request.GET['repo']
 
-    repo = UserGitStore.objects.get(pk=repo_id).git_store
+    repo = UserGitStore.objects.get(pk=repo_id)\
 
     context_instance = RequestContext(request)
     context_instance['repo'] = repo
-    context_instance['authors'] = repo.codeauthor_set.all()
-    context_instance['json_authors'] = serializers.serialize("json", repo.codeauthor_set.all())
+    context_instance['authors'] = repo.git_store.codeauthor_set.all()
+    context_instance['json_authors'] = serializers.serialize("json", repo.git_store.codeauthor_set.all())
 
     hour_offset_from_utc = 5 #The library defaults to UTC
     last_week = datetime.today() - timedelta(days=6) - timedelta(hours=hour_offset_from_utc) # Beginning of this week
@@ -75,7 +75,7 @@ def repo_detail(request):
     for i in range(last_week.day, today.day+1):
         daily_commit_counts[i] = 0
 
-    weekly_commits = repo.commit_set.filter(commit_time__range=(last_week, today))
+    weekly_commits = repo.git_store.commit_set.filter(commit_time__range=(last_week, today))
     for commit in weekly_commits:
         day_commit = commit.commit_time - timedelta(hours=hour_offset_from_utc)
         day = day_commit.day
