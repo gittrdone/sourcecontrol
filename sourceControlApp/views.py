@@ -1,8 +1,8 @@
 from datetime import date, datetime, timedelta
 from json import dumps
 from django.shortcuts import render, render_to_response
-from sourceControlApp.models import GitStore, SourceControlUser
-from sourceControlApp.repo_mgmt import get_repo_data_from_url
+from sourceControlApp.models import GitStore, SourceControlUser, UserGitStore
+from sourceControlApp.repo_mgmt import get_repo_data_from_url, canonicalize_repo_url
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
@@ -29,12 +29,21 @@ def add_repo(request):
     repo_name = request.GET['name']
     repo_description = request.GET['desc']
 
-    repo = get_repo_data_from_url(repo_url, repo_name, repo_description)
-    error = (repo == -1) # Check for error flag
-
     if request.user.is_authenticated():
         user = request.user
         sourceControlUser = user.sourcecontroluser
+
+        try:
+            existing_store = GitStore.objects.get(gitRepositoryURL=canonicalize_repo_url(repo_url))
+        except:
+            existing_store = None
+
+        if existing_store != None and len(sourceControlUser.ownedRepos.filter(git_store=existing_store)) > 0:
+            error = True
+        else:
+            repo = get_repo_data_from_url(repo_url, repo_name, repo_description)
+            error = (repo == -1) # Check for error flag
+
         if error:
             context_instance["git_error"] = True
         else:
@@ -45,12 +54,13 @@ def add_repo(request):
         context_instance["repo_list"] = sourceControlUser.ownedRepos.all()
         return render_to_response("repoList.html", context_instance)
     else:
+        # XXX Throw error
         return render_to_response("repoList.html", {})
 
 def repo_detail(request):
-    repo_url = request.GET['repo']
+    repo_id = request.GET['repo']
 
-    repo = GitStore.objects.get(gitRepositoryURL=repo_url)
+    repo = UserGitStore.objects.get(pk=repo_id).git_store
 
     context_instance = RequestContext(request)
     context_instance['repo'] = repo

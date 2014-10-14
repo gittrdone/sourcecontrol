@@ -31,15 +31,16 @@
         {% for repo in repo_list %}
             <div class="large-12 columns card">
                 <div class="large-10 columns">
-                    <h4><b><a href="/repo_detail?repo={{ repo.gitRepositoryURL }}">{{ repo.repoName }}</a></b></h4>
-                    <h5><b>{{ repo.gitRepositoryURL }}</b></h5>
+                    <h4><b><a href="/repo_detail?repo={{ repo.pk }}">{{ repo.name }}</a></b></h4>
+                    <h5><b>{{ repo.git_store.gitRepositoryURL }}</b></h5>
+                    <h6>{{ repo.git_store.status }}</h6><!--Fix me!!!!-->
                 </div>
                 <div class="large-1 columns" style="font-size:22px;color:darkblue;margin-top: 20px;">
-                    {{ repo.numFiles }}
+                    {{ repo.git_store.numFiles }}
                     <br/><div style="font-size:15px;color:black;">files</div>
                 </div>
                 <div class="large-1 columns" style="font-size:22px;color:darkblue;margin-top: 20px;">
-                    {{ repo.numCommits }}
+                    {{ repo.git_store.numCommits }}
                     <br/><div style="font-size:15px;color:black;">commits</div>
                 </div>
             </div>

@@ -1,9 +1,14 @@
 import os
+import re
 import subprocess
-from sourceControlApp.models import GitStore, CodeAuthor, Commit, Patch
+from datetime import datetime
+
+import requests
+from celery import task
 from pygit2 import clone_repository, GitError
 from django.core.exceptions import ObjectDoesNotExist
-from datetime import datetime
+
+from sourceControlApp.models import UserGitStore, GitStore, CodeAuthor, Commit, Patch
 
 repo_path = 'repo'
 
@@ -34,6 +39,7 @@ def update_repo(repo_object):
     CodeAuthor.objects.filter(repository=repo_object).delete()
 
     process_repo(repo, repo_object)
+    repo_object.save()
 
 def get_repo_data_from_url(url, name, description):
     """
@@ -46,24 +52,52 @@ def get_repo_data_from_url(url, name, description):
     """
     os.system("rm -rf " + repo_path)
 
+    if url[:4] != "http":
+        print "Only HTTP git URLs supported!"
+        return -1
+
+    url = canonicalize_repo_url(url)
+
     try:
         repo_object = GitStore.objects.get(gitRepositoryURL = url)
-        return repo_object
+        repo_entry = UserGitStore(git_store=repo_object, name=name, repo_description=description)
+        repo_entry.save()
+        return repo_entry
     except ObjectDoesNotExist:
-        repo_object = GitStore()
+        repo_object = GitStore(gitRepositoryURL = url)
+        repo_object.save()
+        repo_entry = UserGitStore(git_store=repo_object, name=name, repo_description=description)
+        repo_entry.save()
+
+    if not is_valid_repo(url):
+        return -1
+
+    download_and_process_repo.apply_async((url,))
+
+    return repo_entry
+
+@task
+def download_and_process_repo(url):
+    repo_object = GitStore.objects.get(gitRepositoryURL = url)
+    repo_object.status = 1 # Cloning
+    repo_object.save()
 
     try:
         repo = clone_repository(url=url, path=repo_path)
     except GitError:
-        return -1 # Error flag
+        repo_object.status = -1
+        repo_object.save()
+        return
 
-    repo_object.repoDescription = description
-    repo_object.repoName = name
-    repo_object.gitRepositoryURL = url
+    repo_object.status = 2 # Processing
+    repo_object.save()
 
     process_repo(repo, repo_object)
 
-    return repo_object
+    repo_object.status = 3 # Done!
+    repo_object.save()
+
+    return
 
 def process_repo(repo, repo_object):
     """
@@ -119,3 +153,25 @@ def count_commits_per_author(repo, repo_db_object):
         #     commit_db_object.num_patches += 1
         #     commit_db_object.patches.add(patch)
         # commit_db_object.save()
+
+def is_valid_repo(url):
+    git_data_url = url + ".git/info/refs?service=git-upload-pack"
+    resp = requests.get(git_data_url, headers={"User-Agent": "git/1.9.3"})
+
+    # Follow redirects
+    while resp.status_code == 301:
+        resp = requests.get(resp.headers['location'], headers={"User-Agent": "git/1.9.3"})
+
+    return resp.status_code == 200
+
+def canonicalize_repo_url(url):
+    # Remove trailing slash
+    if url[-1:] == '/':
+        url = url[:-1]
+
+    # Remove trailing .git
+    if url[-4:] == '.git':
+        url = url[:-4]
+
+    # Use HTTP URL as canonical for now
+    return "http" + re.match("https?(.*)", url).group(1)

@@ -1,5 +1,5 @@
 from celery import task
-from repo_mgmt import update_repos
+from sourceControlApp.repo_mgmt import update_repos
 
 @task
 def reprocess_repos():

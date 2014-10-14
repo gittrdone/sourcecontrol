@@ -54,9 +54,9 @@ MIDDLEWARE_CLASSES = (
 
 from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
-    'add-every-30-seconds': {
+    'update_repos': {
         'task': 'sourceControlApp.tasks.reprocess_repos',
-        'schedule': timedelta(seconds=600),
+        'schedule': timedelta(seconds=1800),
     },
 }
 
