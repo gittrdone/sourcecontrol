@@ -3,19 +3,25 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class GitStore(models.Model):
-    gitRepositoryURL = models.CharField(max_length=200)
+    gitRepositoryURL = models.CharField(max_length=300)
     numFiles = models.IntegerField(default=0)
     numCommits = models.IntegerField(default=0)
-
-    repoName = models.CharField(max_length=100)
-    repoDescription = models.CharField(max_length=1000, default="", null=True, blank=True)
+    status = models.IntegerField(default=0)
 
     def __unicode__ (self):
         return self.gitRepositoryURL
-        
+
+class UserGitStore(models.Model):
+    git_store = models.ForeignKey(GitStore)
+    name = models.CharField(max_length=100)
+    repo_description = models.CharField(max_length=1000)
+
+    def __unicode__ (self):
+        return unicode(self.git_store) + self.name
+
 class SourceControlUser(models.Model):
     user = models.OneToOneField(User)
-    ownedRepos = models.ManyToManyField(GitStore)
+    ownedRepos = models.ManyToManyField(UserGitStore)
 
 class CodeAuthor(models.Model):
     name = models.CharField(max_length=100)

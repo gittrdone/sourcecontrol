@@ -2,7 +2,7 @@ from django.contrib import admin
 from sourceControlApp.models import GitStore, CodeAuthor, Commit
 
 class GitStoreAdmin(admin.ModelAdmin):
-    list_display = ["gitRepositoryURL", "numFiles", "repoName"]
+    list_display = ["gitRepositoryURL", "numFiles"]
 
 class CodeAuthorAdmin(admin.ModelAdmin):
     list_display = ["name", "repository", "num_commits"]

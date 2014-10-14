@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 from json import dumps
 from django.shortcuts import render, render_to_response
-from sourceControlApp.models import GitStore, SourceControlUser
+from sourceControlApp.models import SourceControlUser, UserGitStore
 from sourceControlApp.repo_mgmt import get_repo_data_from_url
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
@@ -35,6 +35,8 @@ def add_repo(request):
     if request.user.is_authenticated():
         user = request.user
         sourceControlUser = user.sourcecontroluser
+        print repo
+        print type(repo)
         if error:
             context_instance["git_error"] = True
         else:
@@ -48,9 +50,9 @@ def add_repo(request):
         return render_to_response("repoList.html", {})
 
 def repo_detail(request):
-    repo_url = request.GET['repo']
+    repo_id = request.GET['repo']
 
-    repo = GitStore.objects.get(gitRepositoryURL=repo_url)
+    repo = UserGitStore.objects.get(pk=repo_id).git_store
 
     context_instance = RequestContext(request)
     context_instance['repo'] = repo
