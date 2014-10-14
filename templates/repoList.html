@@ -3,14 +3,18 @@
 {% block content %}
     <div class="large-12 columns card">
 
-        <h3 class="toggler clickable_heading">Add New Repository</h3>
+        {% load staticfiles %}
+        <div class="toggler clickable_heading">
+            <img src="{% static "images/up_arrow.png" %}" class="hider arrow_image" style="display:none;"/>
+            <img src="{% static "images/down_arrow.png" %}" class="hider arrow_image"/>
+            &nbsp;Add New Repository</div>
 
         <div class="slidy" {% if not git_error %}style="display:none;"{% endif %}>
-            <form action="/count_files" method="GET">
-                <div id="nameValidate" style="display:none; margin-bottom: 10px;"></div>
+            <form action="/count_files" method="GET" style="margin-top:10px;">
+                <div id="nameValidate" class="repo_list_validate_label"></div>
                 <input name="name" id="nameField" type="text" placeholder="Name">
 
-                <div id="urlValidate" style="display:none; margin-bottom: 10px;"></div>
+                <div id="urlValidate" class="repo_list_validate_label"></div>
                 <input name="repo" type="text" id="urlField" placeholder="Repository">
 
                 <textarea name="desc" rows="3" style="resize:none;" placeholder="Description (optional)"></textarea>
@@ -48,7 +52,8 @@
     <script type="text/javascript">
         $( document ).ready(function() {
             $(".toggler").click(function(){
-                $(".slidy").slideToggle(300);
+                $(".slidy").slideToggle(500);
+                $(".hider").toggle();
             });
         });
 
