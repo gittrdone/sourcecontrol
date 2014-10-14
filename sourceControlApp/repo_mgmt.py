@@ -155,7 +155,17 @@ def count_commits_per_author(repo, repo_db_object):
         # commit_db_object.save()
 
 def is_valid_repo(url):
+    """
+    Checks if the given URL refers to a git repository
+    :param url: XXX For now, we assume this is an HTTP(S) url ending WITHOUT .git or /
+    :return: a boolean stating whether the URL is a git repository
+    """
+
+    # This is the resource git uses to initiate a clone from a repo
+    # If it exists, we have a git repo!
     git_data_url = url + ".git/info/refs?service=git-upload-pack"
+
+    # Use git's user agent to fool servers
     resp = requests.get(git_data_url, headers={"User-Agent": "git/1.9.3"})
 
     # Follow redirects

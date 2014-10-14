@@ -25,3 +25,9 @@ class RepoMgmtTest(TestCase):
         self.assertEqual(canonicalized_url, repo_mgmt.canonicalize_repo_url(url2))
         self.assertEqual(canonicalized_url, repo_mgmt.canonicalize_repo_url(url3))
         self.assertEqual(canonicalized_url, repo_mgmt.canonicalize_repo_url(url4))
+
+    def test_isvalidurl(self):
+        # Fix this test
+        url = "https://google.com/code"
+
+        self.assertFalse(repo_mgmt.is_valid_repo(url))
