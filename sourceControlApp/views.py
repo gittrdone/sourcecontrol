@@ -57,7 +57,7 @@ def repo_detail(request):
     context_instance['authors'] = repo.codeauthor_set.all()
     context_instance['json_authors'] = serializers.serialize("json", repo.codeauthor_set.all())
 
-    hour_offset_from_utc = 5
+    hour_offset_from_utc = 5 #The library defaults to UTC
     last_week = datetime.today() - timedelta(days=6) - timedelta(hours=hour_offset_from_utc) # Beginning of this week
     today = datetime.now() - timedelta(hours=hour_offset_from_utc)
 
@@ -68,7 +68,7 @@ def repo_detail(request):
     weekly_commits = repo.commit_set.filter(commit_time__range=(last_week, today))
     for commit in weekly_commits:
         day_commit = commit.commit_time - timedelta(hours=hour_offset_from_utc)
-        day = day_commit.day 
+        day = day_commit.day
         daily_commit_counts[day] = daily_commit_counts[day] + 1
 
     context_instance['week_commits'] = dumps(daily_commit_counts)
