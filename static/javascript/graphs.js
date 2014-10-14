@@ -12,34 +12,39 @@ for (i = 0; i < parsed_list.length; i ++) {
     data.push(author);
 }
 
-var width = 400,
+var width = 400, //Specify height and width of div chart is placed in (not the pie itself)
     height = 400,
-    radius = Math.min(width, height) / 2,
+    radius = Math.min(width, height) / 2, //set the radius of the pie
     labelr = radius + 30, // radius for label anchor
-    color = d3.scale.category20(),
-    donut = d3.layout.pie(),
-    arc = d3.svg.arc().innerRadius(0).outerRadius(radius);
+    color = d3.scale.category20(), //set the color scheme APPARENTLY THIS SHIT IS BLACK MAGIC
+    donut = d3.layout.pie(), //Specify type of d3 chart
+    arc = d3.svg.arc().innerRadius(0).outerRadius(radius); //Specifies radii (if you set a non-zero value for innerRadius
+//, it makes it a donut. Idk why you'd want a donut chart as opposed to the clearly superior pie format.
 
+//Appends a new svg (the pie) to the div that I made ahead of time
 var vis = d3.select("#pie_chart")
   .append("svg:svg")
-    .data([data])
+    .data([data]) //Says what data it should be processing
     .attr("width", width + 300)
     .attr("height", height + 150)
-    .style("margin", "auto");
+    .style("margin", "auto"); //Center
 
-var arcs = vis.selectAll("g.arc")
-    .data(donut.value(function(d) { return d.commits }))
-  .enter().append("svg:g")
+var arcs = vis.selectAll("g.arc") //Uses the data to draw the slices (called arcs)
+    .data(donut.value(function(d) { return d.commits })) //Black magic
+  .enter().append("svg:g") //Append arcs to the chart
     .attr("class", "arc")
-    .attr("transform", "translate(" + (radius + 150) + "," + (radius + 50) + ")");
+    .attr("transform", "translate(" + (radius + 150) + "," + (radius + 50) + ")"); //Moves shit to the left
+    // and right before appending it
 
+//Changes the color of the arc
 arcs.append("svg:path")
     .attr("fill", function(d, i) { return color(i); })
     .attr("d", arc);
 
+//Adds text labels on the outside of the donut
 arcs.append("svg:text")
     .attr("transform", function(d) {
-        var c = arc.centroid(d),
+        var c = arc.centroid(d), //Get center of donut
             x = c[0],
             y = c[1],
             // pythagorean theorem for hypotenuse
@@ -55,7 +60,7 @@ arcs.append("svg:text")
             "end" : "start";
     })
 
-    .attr("display", function(d) {
+    .attr("display", function(d) { //Don't display label if the slice is REALLY SMALL
         if((d.endAngle - d.startAngle) > 0.1) {
             return "normal"
         }
@@ -66,6 +71,7 @@ arcs.append("svg:text")
     })
     .text(function(d, i) { return d.data.name; });
 
+//Append title
 arcs.append("svg:text")
     .attr("x", 0)
     .attr("y", -238)
@@ -74,6 +80,9 @@ arcs.append("svg:text")
     .style("text-decoration", "underline")
     .text("Commits per Author");
 
+
+//ITS BAR CHART TIME
+//Parse data into JSON
 data = [];
 var week_commit_list = document.getElementById("week_commits").innerHTML;
 var week_commit_json = JSON.parse(week_commit_list);
