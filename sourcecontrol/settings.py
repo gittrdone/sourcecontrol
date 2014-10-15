@@ -61,7 +61,7 @@ CELERYBEAT_SCHEDULE = {
 }
 
 # Disable redis connection pool
-BROKER_POOL_LIMIT=None
+BROKER_POOL_LIMIT=0
 
 ROOT_URLCONF = 'sourcecontrol.urls'
 
