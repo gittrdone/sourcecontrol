@@ -60,6 +60,9 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 
+# Disable redis connection pool
+BROKER_POOL_LIMIT=None
+
 ROOT_URLCONF = 'sourcecontrol.urls'
 
 WSGI_APPLICATION = 'sourcecontrol.wsgi.application'
