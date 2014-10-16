@@ -2,6 +2,7 @@ import os
 import re
 import subprocess
 from datetime import datetime
+from datetime import tzinfo, timedelta, datetime
 
 import requests
 from celery import task
@@ -77,13 +78,19 @@ def get_repo_data_from_url(url, name, description):
     return repo_entry
 
 @task
-def download_and_process_repo(url):
-    repo_object = GitStore.objects.get(gitRepositoryURL = url)
+def download_and_process_repo(url, branch_name=''):
+    if branch_name=='':
+        repo_object = GitStore.objects.get(gitRepositoryURL = url)
+    else:
+        repo_object = GitStore.objects.create(gitRepositoryURL = url, branch_name = branch_name)
     repo_object.status = 1 # Cloning
     repo_object.save()
 
     try:
-        repo = clone_repository(url=url, path=repo_path)
+        if branch_name != '':
+            repo = clone_repository(url=url, path=repo_path+branch_name, checkout_branch=branch_name)
+        else:
+            repo = clone_repository(url=url, path=repo_path)
     except GitError:
         repo_object.status = -1
         repo_object.save()
@@ -92,12 +99,25 @@ def download_and_process_repo(url):
     repo_object.status = 2 # Processing
     repo_object.save()
 
+    default_branch = repo.listall_branches()
+    if branch_name == '':
+        refs = repo.listall_references()
+        for ref in refs:
+            print(branch_name)
+            print(ref[13:])
+            if ref[0:20] == 'refs/remotes/origin/':
+                if ref[13:]!=default_branch:
+                    new_branch = ref[20:]
+                    os.system("rm -rf " + repo_path + new_branch)
+                    download_and_process_repo(url, new_branch)
+                    os.system("rm -rf " + repo_path + new_branch)
+
     process_repo(repo, repo_object)
 
     repo_object.status = 3 # Done!
     repo_object.save()
 
-    return
+    return repo_object
 
 def process_repo(repo, repo_object):
     """
