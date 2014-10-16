@@ -13,6 +13,19 @@ from sourceControlApp.models import UserGitStore, GitStore, CodeAuthor, Commit, 
 
 repo_path = 'repo'
 
+class VariableNonDstTZ(tzinfo):
+
+    minute_offset = 0
+
+    def __init__(self, offset):
+        self.minute_offset = offset
+
+    def utcoffset(self, date_time):
+        return timedelta(minutes = self.minute_offset)
+
+    def dst(self, date_time):
+        return timedelta(0)
+
 def update_repos():
     """
     Updates all of the repos in the database with
@@ -163,7 +176,8 @@ def count_commits_per_author(repo, repo_db_object):
         code_author = CodeAuthor.objects.get_or_create(repository=repo_db_object, name=commit.author.name)[0]
         code_author.num_commits += 1
         code_author.save()
-        time=datetime.fromtimestamp(commit.author.time)
+        tz = VariableNonDstTZ(commit.author.offset)
+        time=datetime.fromtimestamp(commit.author.time, tz=tz)
         commit_db_object = Commit.objects.get_or_create(repository=repo_db_object,author=code_author,commit_time=time)[0]
         commit_db_object.save()
         ##This part is taking too much time. But it's working.
