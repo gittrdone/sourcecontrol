@@ -27,13 +27,13 @@ var vis = d3.select("#pie_chart")
     .data([data]) //Says what data it should be processing
     .attr("width", width + 300)
     .attr("height", height + 150)
-    .style("margin", "auto"); //Center
+    .style("margin", "auto"); //center
 
 var arcs = vis.selectAll("g.arc") //Uses the data to draw the slices (called arcs)
     .data(donut.value(function(d) { return d.commits })) //Black magic
   .enter().append("svg:g") //Append arcs to the chart
     .attr("class", "arc")
-    .attr("transform", "translate(" + (radius + 150) + "," + (radius + 50) + ")"); //Moves shit to the left
+    .attr("transform", "translate(" + (radius + 150) + "," + (radius + 90) + ")"); //Moves shit to the left
     // and right before appending it
 
 //Changes the color of the arc
@@ -52,7 +52,7 @@ arcs.append("svg:text")
         return "translate(" + (x/h * labelr) +  ',' +
            (y/h * labelr) +  ")";
     })
-    .attr("dy", ".35em")
+    .attr("dy", "0.5em")
     .attr("text-anchor", function(d) {
         // are we past the center?
 
@@ -75,7 +75,7 @@ arcs.append("svg:text")
 //Append title
 arcs.append("svg:text")
     .attr("x", 0)
-    .attr("y", -110)
+    .attr("y", -150)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
     .text("Commits per Author");
@@ -98,7 +98,7 @@ for (i = 0; i < keys.length; i ++) {
     data.push(dayData);
 }
 
-var margin = {top: 80, right: 20, bottom: 70, left: 40},
+var margin = {top: 70, right: 20, bottom: 70, left: 40},
     width = 400 - margin.left - margin.right,
     height = 350 - margin.top - margin.bottom;
 
