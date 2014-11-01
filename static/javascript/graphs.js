@@ -12,11 +12,11 @@ for (i = 0; i < parsed_list.length; i ++) {
     data.push(author);
 }
 
-var width = 400, //Specify height and width of div chart is placed in (not the pie itself)
-    height = 400,
+var width = 200, //Specify height and width of div chart is placed in (not the pie itself)
+    height = 200,
     radius = Math.min(width, height) / 2, //set the radius of the pie
     labelr = radius + 30, // radius for label anchor
-    color = d3.scale.category20(), //set the color scheme APPARENTLY THIS SHIT IS BLACK MAGIC
+    color = d3.scale.category20b(), //set the color scheme APPARENTLY THIS SHIT IS BLACK MAGIC
     donut = d3.layout.pie(), //Specify type of d3 chart
     arc = d3.svg.arc().innerRadius(0).outerRadius(radius); //Specifies radii (if you set a non-zero value for innerRadius
 //, it makes it a donut. Idk why you'd want a donut chart as opposed to the clearly superior pie format.
@@ -69,15 +69,15 @@ arcs.append("svg:text")
             return "none"
         }
     })
+    .style("font-size", "12px")
     .text(function(d, i) { return d.data.name; });
 
 //Append title
 arcs.append("svg:text")
     .attr("x", 0)
-    .attr("y", -238)
+    .attr("y", -110)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
-    .style("text-decoration", "underline")
     .text("Commits per Author");
 
 
@@ -98,11 +98,11 @@ for (i = 0; i < keys.length; i ++) {
     data.push(dayData);
 }
 
-var margin = {top: 20, right: 20, bottom: 70, left: 40},
-    width = 600 - margin.left - margin.right,
-    height = 300 - margin.top - margin.bottom;
+var margin = {top: 80, right: 20, bottom: 70, left: 40},
+    width = 400 - margin.left - margin.right,
+    height = 350 - margin.top - margin.bottom;
 
-var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+var x = d3.scale.ordinal().rangeRoundBands([0, width], .09);
 
 var y = d3.scale.linear().range([height, 0]);
 
@@ -113,11 +113,12 @@ var xAxis = d3.svg.axis()
 var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left")
-    .ticks(10);
+    .ticks(5);
 
 var svg = d3.select("#bar_chart").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
+    .style("font-size", "12px")
   .append("g")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
@@ -131,10 +132,11 @@ var svg = d3.select("#bar_chart").append("svg")
       .call(xAxis)
       .append("text")
       .attr("transform", "rotate(0)")
-      .attr("y", 40)
+      .attr("y", 35)
       .attr("x", 300)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
+      .style("font-size", "14px")
       .text("Day of month")
     .selectAll("text")
       .style("text-anchor", "end")
@@ -150,15 +152,8 @@ var svg = d3.select("#bar_chart").append("svg")
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
+      .style("font-size", "14px")
       .text("# Commits");
-
-  svg.append("text")
-      .attr("x", (width / 2))
-      .attr("y", 5 - (margin.top / 2))
-      .attr("text-anchor", "middle")
-      .style("font-size", "16px")
-      .style("text-decoration", "underline")
-      .text("Commits over Week");
 
   svg.selectAll("bar")
       .data(data)
@@ -168,3 +163,11 @@ var svg = d3.select("#bar_chart").append("svg")
       .attr("width", x.rangeBand())
       .attr("y", function(d) { return y(d.commits); })
       .attr("height", function(d) { return height - y(d.commits); });
+
+  svg.append("svg:text")
+      .attr("x", (width / 2))
+      .attr("y", 5 - (margin.top / 2))
+      .attr("text-anchor", "middle")
+      .style("font-size", "16px")
+      .style("font-weight", "bold")
+      .text("Commits over Week");
