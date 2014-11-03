@@ -80,7 +80,8 @@ def repo_detail(request):
     for commit in weekly_commits:
         day_commit = commit.commit_time - timedelta(hours=hour_offset_from_utc)
         day = day_commit.day
-        daily_commit_counts[day] = daily_commit_counts[day] + 1
+        if day in daily_commit_counts:
+            daily_commit_counts[day] = daily_commit_counts[day] + 1
 
     context_instance['week_commits'] = dumps(daily_commit_counts)
     return render_to_response("repoDetail.html", context_instance)

@@ -27,7 +27,7 @@ def update_repo(repo_object):
     :param repo_object: Existing object to update
     :return: -1 if there is an error
     """
-    os.system("rm -rf " + repo_path)
+    os.system("rm -rf " + repo_path + "*")
 
     try:
         repo = clone_repository(url=repo_object.gitRepositoryURL, path=repo_path)
@@ -38,7 +38,7 @@ def update_repo(repo_object):
     Commit.objects.filter(repository=repo_object).delete()
     CodeAuthor.objects.filter(repository=repo_object).delete()
 
-    process_repo(repo, repo_object)
+    process_repo(repo, repo_object, repo_path)
     repo_object.save()
 
 def get_repo_data_from_url(url, name, description):
@@ -50,7 +50,7 @@ def get_repo_data_from_url(url, name, description):
     :param description: Description of the repo
     :return: A reference the the repo in the database
     """
-    os.system("rm -rf " + repo_path)
+    os.system("rm -rf " + repo_path + "*")
 
     if url[:4] != "http":
         print "Only HTTP git URLs supported!"
@@ -82,8 +82,10 @@ def download_and_process_repo(url):
     repo_object.status = 1 # Cloning
     repo_object.save()
 
+    path = repo_path + url[-5:] # XXX FIX ME
+
     try:
-        repo = clone_repository(url=url, path=repo_path)
+        repo = clone_repository(url=url, path=path)
     except GitError:
         repo_object.status = -1
         repo_object.save()
@@ -92,14 +94,14 @@ def download_and_process_repo(url):
     repo_object.status = 2 # Processing
     repo_object.save()
 
-    process_repo(repo, repo_object)
+    process_repo(repo, repo_object, path)
 
     repo_object.status = 3 # Done!
     repo_object.save()
 
     return
 
-def process_repo(repo, repo_object):
+def process_repo(repo, repo_object, path):
     """
     Updates a single repo by recloning the repo
     and updating the information in the database
@@ -108,7 +110,7 @@ def process_repo(repo, repo_object):
     :return:
     """
     repo_object.numCommits = count_commits(repo)
-    repo_object.numFiles = count_files()
+    repo_object.numFiles = count_files(path)
     repo_object.branch_name = repo.listall_branches()[0]
 
     repo_object.save()
@@ -123,12 +125,12 @@ def count_commits(repo):
     """
     return len(list(repo.walk(repo.head.target)))
 
-def count_files():
+def count_files(path):
     """
     :return: a count of the files in the repo
     """
     try:
-        num_files = subprocess.check_output('cd ' + repo_path + ' && git ls-files | wc -l', shell = True)
+        num_files = subprocess.check_output('cd ' + path + ' && git ls-files | wc -l', shell = True)
         return num_files
     except GitError:
         return -1
