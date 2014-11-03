@@ -67,7 +67,7 @@ def repo_detail(request):
     context_instance['authors'] = repo.git_store.codeauthor_set.all()
     context_instance['json_authors'] = serializers.serialize("json", repo.git_store.codeauthor_set.all())
 
-    hour_offset_from_utc = 5 #The library defaults to UTC
+    hour_offset_from_utc = 4 #The library defaults to UTC
     last_week = datetime.today() - timedelta(days=6) - timedelta(hours=hour_offset_from_utc) # Beginning of this week
     today = datetime.now() - timedelta(hours=hour_offset_from_utc)
 
