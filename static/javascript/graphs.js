@@ -77,6 +77,7 @@ arcs.append("svg:text")
     .attr("y", -150)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
+    .style("font-weight", "bold")
     .text("Commits per Author");
 
 
