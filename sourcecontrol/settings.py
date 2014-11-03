@@ -59,9 +59,7 @@ CELERYBEAT_SCHEDULE = {
         'schedule': timedelta(seconds=1800),
     },
 }
-
-# Disable redis connection pool
-BROKER_POOL_LIMIT=0
+CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 
 ROOT_URLCONF = 'sourcecontrol.urls'
 

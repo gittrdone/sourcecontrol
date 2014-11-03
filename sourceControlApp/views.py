@@ -7,8 +7,8 @@ from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.core import serializers
-
 
 # Create your views here.
 def index(request):
@@ -61,7 +61,7 @@ def add_repo(request):
 def repo_detail(request):
     repo_id = request.GET['repo']
 
-    repo = UserGitStore.objects.get(pk=repo_id)\
+    repo = UserGitStore.objects.get(pk=repo_id)
 
     context_instance = RequestContext(request)
     context_instance['repo'] = repo
@@ -84,6 +84,18 @@ def repo_detail(request):
 
     context_instance['week_commits'] = dumps(daily_commit_counts)
     return render_to_response("repoDetail.html", context_instance)
+
+def repo_status(request, repo_id):
+    user_repo = UserGitStore.objects.get(pk=repo_id)
+    repo = user_repo.git_store
+
+    ret = {}
+    ret['status'] = repo.status
+    if repo.status == 3:
+        ret['numFiles'] = repo.numFiles
+        ret['numCommits'] = repo.numCommits
+
+    return HttpResponse(dumps(ret), content_type="application/json")
 
 
 def logon(request):

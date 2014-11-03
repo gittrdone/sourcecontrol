@@ -30,11 +30,15 @@
     {% if repo_list %}
         {% for repo in repo_list %}
             <div class="large-12 columns card">
-                <div class="large-10 columns">
-                    <h4><b><a href="/repo_detail?repo={{ repo.pk }}">{{ repo.name }}</a></b></h4>
-                    <h5><b>{{ repo.git_store.gitRepositoryURL }}</b></h5>
-                    <h6>{{ repo.git_store.status }}</h6><!--Fix me!!!!-->
+                <div id="repo-{{ repo.pk }}" class="large-10 columns">
+                    <h4>{% if repo.git_store.status == 3 %}<a href="/repo_detail?repo={{ repo.pk }}"><b>{{ repo.name }}</b></a>
+                           {% else %}<b id="name-{{ repo.pk }}">{{ repo.name }}</b>
+                           {% endif %}
+                    </h4>
+                    <h5><b id="url-{{ repo.pk }}">{{ repo.git_store.gitRepositoryURL }}</b></h5>
+                    {% if repo.git_store.status != 3 %}<h6 id="status-{{ repo.pk }}"><img src="{% static "images/spinner.gif" %}">Repo currently being processed.</h6>{% endif %}<!--Include all cases-->
                 </div>
+                {% if repo.git_store.status == 3 %}
                 <div class="large-1 columns" style="font-size:22px;color:darkblue;margin-top: 20px;">
                     {{ repo.git_store.numFiles }}
                     <br/><div style="font-size:15px;color:black;">files</div>
@@ -43,6 +47,7 @@
                     {{ repo.git_store.numCommits }}
                     <br/><div style="font-size:15px;color:black;">commits</div>
                 </div>
+                {% endif %}
             </div>
         {% endfor %}
     {% endif %}
@@ -50,6 +55,7 @@
 {% endblock %}
 
 {% block extra_js %}
+    <script src="{% static "javascript/progress.js" %}"></script>
     <script type="text/javascript">
         $( document ).ready(function() {
             $(".toggler").click(function(){
