@@ -73,15 +73,14 @@ def repo_detail(request):
     today = datetime.now() - timedelta(hours=hour_offset_from_utc)
 
     daily_commit_counts = {}
-    for i in range(last_week.day, today.day+1):
-        daily_commit_counts[i] = 0
-
     weekly_commits = repo.git_store.commit_set.filter(commit_time__range=(last_week, today))
     for commit in weekly_commits:
         day_commit = commit.commit_time - timedelta(hours=hour_offset_from_utc)
         day = day_commit.day
         if day in daily_commit_counts:
             daily_commit_counts[day] = daily_commit_counts[day] + 1
+        else:
+            daily_commit_counts[day] = 0
 
     context_instance['week_commits'] = dumps(daily_commit_counts)
     return render_to_response("repoDetail.html", context_instance)

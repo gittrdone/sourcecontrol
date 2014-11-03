@@ -1,13 +1,9 @@
 {% extends "base.html" %}
-{% block head %}<head>
+{% block head %}
     <script type="text/javascript">
-        var JSONAuthorData = '{{ json_authors|safe }}';
-        var parsedAuthorData = JSON.parse(JSONAuthorData, "fields");
-
-        var JSONWeekData = '{{ week_commits|safe }}';
-        var parsedWeekData = JSON.parse(JSONWeekData, "fields");
+        var parsedAuthorData = {{ json_authors|safe }};
+        var parsedWeekData = {{ week_commits|safe }};
     </script>
-</head>
 {% endblock %}
 {% block content %}
     <div class="large-12 columns card">
