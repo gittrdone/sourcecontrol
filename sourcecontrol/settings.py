@@ -72,7 +72,7 @@ WSGI_APPLICATION = 'sourcecontrol.wsgi.application'
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.parse("postgres://hafakpnbntxptw:eIQ-5IT99M_hJU6J9kzuHXeuj-@ec2-54-225-101-124.compute-1.amazonaws.com:5432/ddmpsjrctf6gde")
+    'default': dj_database_url.parse("postgres://gitterdone:time4login@cloud.phinugamma.org/gitterdone")
 }
 if 'TRAVIS' in os.environ:
     DATABASES = {
