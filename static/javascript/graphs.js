@@ -1,7 +1,6 @@
 var data = [];
 
-var author_list = document.getElementById("json_authors").innerHTML;
-var parsed_list = JSON.parse(author_list, "fields");
+var parsed_list = parsedAuthorData; //Get data from script tag on repoDetail.html
 for (i = 0; i < parsed_list.length; i ++) {
     var author_name = parsed_list[i].fields.name;
     var num_commits = parsed_list[i].fields.num_commits;
@@ -84,8 +83,7 @@ arcs.append("svg:text")
 //ITS BAR CHART TIME
 //Parse data into JSON
 data = [];
-var week_commit_list = document.getElementById("week_commits").innerHTML;
-var week_commit_json = JSON.parse(week_commit_list);
+var week_commit_json = parsedWeekData; //Get data from script tag on repoDetail.html
 var keys = Object.keys(week_commit_json);
 
 for (i = 0; i < keys.length; i ++) {

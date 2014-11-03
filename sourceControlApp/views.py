@@ -9,6 +9,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.core import serializers
 
+
 # Create your views here.
 def index(request):
     if request.user.is_authenticated():

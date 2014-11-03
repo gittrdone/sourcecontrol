@@ -1,4 +1,14 @@
 {% extends "base.html" %}
+{% block head %}<head>
+    <script type="text/javascript">
+        var JSONAuthorData = '{{ json_authors|safe }}';
+        var parsedAuthorData = JSON.parse(JSONAuthorData, "fields");
+
+        var JSONWeekData = '{{ week_commits|safe }}';
+        var parsedWeekData = JSON.parse(JSONWeekData, "fields");
+    </script>
+</head>
+{% endblock %}
 {% block content %}
     <div class="large-12 columns card">
         <div class="large-6 columns">
@@ -40,8 +50,6 @@
     <div class="large-12 columns card">
         <div id="pie_chart" class="large-6 columns" style="text-align:center"></div>
         <div id="bar_chart" class="large-6 columns" style="text-align:center"></div>
-        <div id="json_authors" style="display:none">{{ json_authors }}</div>
-        <div id="week_commits" style="display:none">{{ week_commits }}</div>
     </div>
 
 {% endblock %}
