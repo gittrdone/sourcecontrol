@@ -8,6 +8,7 @@ import requests
 from celery import task
 from pygit2 import clone_repository, GitError
 from django.core.exceptions import ObjectDoesNotExist
+import random
 
 from sourceControlApp.models import UserGitStore, GitStore, CodeAuthor, Commit, Patch
 
@@ -41,7 +42,7 @@ def update_repo(repo_object):
     :param repo_object: Existing object to update
     :return: -1 if there is an error
     """
-    os.system("rm -rf " + repo_path)
+    os.system("rm -rf " + repo_path + "*")
 
     try:
         repo = clone_repository(url=repo_object.gitRepositoryURL, path=repo_path)
@@ -52,10 +53,10 @@ def update_repo(repo_object):
     Commit.objects.filter(repository=repo_object).delete()
     CodeAuthor.objects.filter(repository=repo_object).delete()
 
-    process_repo(repo, repo_object)
+    process_repo(repo, repo_object, repo_path)
     repo_object.save()
 
-def get_repo_data_from_url(url, name, description):
+def get_repo_data_from_url(url, name, description, user):
     """
     Updates a single repo by recloning the repo
     and updating the information in the database
@@ -86,24 +87,21 @@ def get_repo_data_from_url(url, name, description):
     if not is_valid_repo(url):
         return -1
 
-    download_and_process_repo.apply_async((url,))
+    download_and_process_repo_all_branches.apply_async(args = (url,user,))
+    #download_and_process_repo.apply_async(args = (url,user,))
 
     return repo_entry
 
 @task
-def download_and_process_repo(url, branch_name=''):
-    if branch_name=='':
-        repo_object = GitStore.objects.get(gitRepositoryURL = url)
-    else:
-        repo_object = GitStore.objects.create(gitRepositoryURL = url, branch_name = branch_name)
+def download_and_process_repo(url, user):
+    repo_object = GitStore.objects.get(gitRepositoryURL = url)
     repo_object.status = 1 # Cloning
     repo_object.save()
 
+    path = repo_path + url[-5:] # XXX FIX ME
+
     try:
-        if branch_name != '':
-            repo = clone_repository(url=url, path=repo_path+branch_name, checkout_branch=branch_name)
-        else:
-            repo = clone_repository(url=url, path=repo_path)
+        repo = clone_repository(url=url, path=path)
     except GitError:
         repo_object.status = -1
         repo_object.save()
@@ -112,27 +110,69 @@ def download_and_process_repo(url, branch_name=''):
     repo_object.status = 2 # Processing
     repo_object.save()
 
-    default_branch = repo.listall_branches()
-    if branch_name == '':
-        refs = repo.listall_references()
-        for ref in refs:
-            print(branch_name)
-            print(ref[13:])
-            if ref[0:20] == 'refs/remotes/origin/':
-                if ref[13:]!=default_branch:
-                    new_branch = ref[20:]
-                    os.system("rm -rf " + repo_path + new_branch)
-                    download_and_process_repo(url, new_branch)
-                    os.system("rm -rf " + repo_path + new_branch)
-
-    process_repo(repo, repo_object)
+    process_repo(repo, repo_object, path)
 
     repo_object.status = 3 # Done!
     repo_object.save()
 
     return repo_object
 
-def process_repo(repo, repo_object):
+@task
+def download_and_process_repo_all_branches(url, user, branch_name=''):
+    if branch_name=='':
+        repo_object = GitStore.objects.all().filter(gitRepositoryURL = url)[0]
+    else:
+        repo_object_default = GitStore.objects.all().filter(gitRepositoryURL = url)[0]
+        print(repo_object_default)
+        repo_entry_default = UserGitStore.objects.all().filter(git_store = repo_object_default)[0]
+        repo_object = GitStore(gitRepositoryURL = url, branch_name = branch_name)
+        repo_object.save()
+        repo_name = repo_entry_default.name + "(branch: "+branch_name+")"
+        repo_desc = repo_entry_default.repo_description
+        print("name---------"+repo_name)
+        print("desc---------"+repo_desc)
+        repo_entry = UserGitStore(git_store = repo_object, name = repo_name, repo_description = repo_desc)
+        #repo_entry = UserGitStore(git_store = repo_object, name = 'repo_name', repo_description = 'repo_desc')
+        repo_entry.save()
+        user.ownedRepos.add(repo_entry)
+    repo_object.status = 1 # Cloning
+    repo_object.save()
+
+    this_path = repo_path + branch_name + str(random.randrange(0,10000))
+    os.system("rm -rf " + this_path)
+    try:
+        if branch_name != '':
+            repo = clone_repository(url=url, path=this_path, checkout_branch=branch_name)
+        else:
+            repo = clone_repository(url=url, path=this_path)
+    except GitError:
+        repo_object.status = -1
+        repo_object.save()
+        print("GitError:" + GitError)
+        os.system("rm -rf " + this_path)
+        return
+
+    repo_object.status = 2 # Processing
+    repo_object.save()
+
+    default_branch = repo.listall_branches()[0]
+    if branch_name == '':
+        branches = repo.listall_branches(2)
+        for branch in branches:
+            if branch[0:7] == 'origin/':
+                if branch[7:]!=default_branch:
+                    new_branch = branch[7:]
+                    download_and_process_repo_all_branches.apply_async(args = (url, user, new_branch,))
+
+    process_repo(repo, repo_object, this_path)
+
+    repo_object.status = 3 # Done!
+    repo_object.save()
+
+    os.system("rm -rf " + this_path)
+    return repo_object
+
+def process_repo(repo, repo_object, path):
     """
     Updates a single repo by recloning the repo
     and updating the information in the database
@@ -141,7 +181,7 @@ def process_repo(repo, repo_object):
     :return:
     """
     repo_object.numCommits = count_commits(repo)
-    repo_object.numFiles = count_files()
+    repo_object.numFiles = count_files(path)
     repo_object.branch_name = repo.listall_branches()[0]
 
     repo_object.save()
@@ -156,12 +196,12 @@ def count_commits(repo):
     """
     return len(list(repo.walk(repo.head.target)))
 
-def count_files():
+def count_files(path):
     """
     :return: a count of the files in the repo
     """
     try:
-        num_files = subprocess.check_output('cd ' + repo_path + ' && git ls-files | wc -l', shell = True)
+        num_files = subprocess.check_output('cd ' + path + ' && git ls-files | wc -l', shell = True)
         return num_files
     except GitError:
         return -1
