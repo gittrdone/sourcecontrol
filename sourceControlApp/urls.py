@@ -7,6 +7,7 @@ urlpatterns = patterns('',
     url(r'^count_files',views.add_repo, name='count_files'),
 
     url(r'^repo_detail', views.repo_detail, name='repo_detail'),
+    url(r'^status/([0-9]+)', views.repo_status, name='repo_status'),
 
     url(r'^signup', views.signup, name='signup'),
     url(r'^do_signup', views.do_signup, name='do_signup'),

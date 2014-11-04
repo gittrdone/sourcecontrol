@@ -7,6 +7,7 @@ from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.core import serializers
 
 # Create your views here.
@@ -41,7 +42,7 @@ def add_repo(request):
         if existing_store != None and len(sourceControlUser.ownedRepos.filter(git_store=existing_store)) > 0:
             error = True
         else:
-            repo = get_repo_data_from_url(repo_url, repo_name, repo_description)
+            repo = get_repo_data_from_url(repo_url, repo_name, repo_description, sourceControlUser)
             error = (repo == -1) # Check for error flag
 
         if error:
@@ -60,29 +61,41 @@ def add_repo(request):
 def repo_detail(request):
     repo_id = request.GET['repo']
 
-    repo = UserGitStore.objects.get(pk=repo_id)\
+    repo = UserGitStore.objects.get(pk=repo_id)
 
     context_instance = RequestContext(request)
     context_instance['repo'] = repo
     context_instance['authors'] = repo.git_store.codeauthor_set.all()
     context_instance['json_authors'] = serializers.serialize("json", repo.git_store.codeauthor_set.all())
 
-    hour_offset_from_utc = 5 #The library defaults to UTC
+    hour_offset_from_utc = 4 #The library defaults to UTC
     last_week = datetime.today() - timedelta(days=6) - timedelta(hours=hour_offset_from_utc) # Beginning of this week
     today = datetime.now() - timedelta(hours=hour_offset_from_utc)
 
     daily_commit_counts = {}
-    for i in range(last_week.day, today.day+1):
-        daily_commit_counts[i] = 0
-
     weekly_commits = repo.git_store.commit_set.filter(commit_time__range=(last_week, today))
     for commit in weekly_commits:
         day_commit = commit.commit_time - timedelta(hours=hour_offset_from_utc)
         day = day_commit.day
-        daily_commit_counts[day] = daily_commit_counts[day] + 1
+        if day in daily_commit_counts:
+            daily_commit_counts[day] = daily_commit_counts[day] + 1
+        else:
+            daily_commit_counts[day] = 0
 
     context_instance['week_commits'] = dumps(daily_commit_counts)
     return render_to_response("repoDetail.html", context_instance)
+
+def repo_status(request, repo_id):
+    user_repo = UserGitStore.objects.get(pk=repo_id)
+    repo = user_repo.git_store
+
+    ret = {}
+    ret['status'] = repo.status
+    if repo.status == 3:
+        ret['numFiles'] = repo.numFiles
+        ret['numCommits'] = repo.numCommits
+
+    return HttpResponse(dumps(ret), content_type="application/json")
 
 
 def logon(request):

@@ -2,13 +2,20 @@
 <!doctype html>
 <html>
 <head>
+    {% load staticfiles %}
+    <link rel="shortcut icon" href="{% static "images/favicon.ico" %}" type="image/x-icon">
+    <link rel="icon" href="{% static "images/favicon.ico" %}" type="image/x-icon">
     <!-- Foundation CSS CDN -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/5.3.1/css/foundation.css">
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static "css/style.css" %}">
     <!-- Modernizr CDN -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.4.1/js/vendor/modernizr.js"></script>
+    {% block head %}
+    {% endblock %}
 </head>
+
+
 <body>
 
 {% block navbar %}
