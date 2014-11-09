@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="{% static "css/style.css" %}">
     <!-- Modernizr CDN -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.4.1/js/vendor/modernizr.js"></script>
+
+
     {% block head %}
     {% endblock %}
 </head>
@@ -74,6 +76,11 @@
 <!-- andy.js -->
 <script src="static/javascript/graphs.js"></script>
 
+<!-- Charting CDN -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/excanvas.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.pie.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.categories.min.js"></script>
 {% block extra_js %}
 
 {% endblock %}

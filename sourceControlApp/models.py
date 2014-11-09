@@ -47,7 +47,7 @@ class Commit(models.Model):
     #authors = models.ManyToManyField(CodeAuthor)
     repository = models.ForeignKey(GitStore)
     author = models.ForeignKey(CodeAuthor)
-    patches = models.ManyToManyField(Patch)
+    patches = models.ManyToManyField(Patch, null=True, blank=True)
     commit_time = models.DateTimeField()
     num_patches = models.IntegerField(default = 0)
 
