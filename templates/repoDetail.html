@@ -71,11 +71,15 @@
                         radius: 1,
                         label: {
                             show: true,
-                            radius: 2/3,
+                            radius: 1,
                             formatter: function(label, series) {
-                                return '<div style="font-size:11px ;text-align:center; padding:2px; color:white; font-weight:bold;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
+                                return '<div style="font-size:11px; text-align:center; padding:2px; color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
                             },
-                            threshold: 0.1
+                            threshold: 0.09,
+                            background: {
+                                opacity: 0.8,
+                                color: '#444'
+                            }
                         }
                     }
                 },
