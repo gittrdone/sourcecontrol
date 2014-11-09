@@ -58,4 +58,4 @@ docs/_build/
 
 # Celery scheduler database
 celerybeat-schedule.db
-repo/
+repo*/
