@@ -45,7 +45,7 @@ def update_repo(repo_object):
     os.system("rm -rf " + repo_path + "*")
 
     try:
-        repo = clone_repository(url=repo_object.gitRepositoryURL, path=repo_path)
+        repo = clone_repository(url=repo_object.gitRepositoryURL, path=repo_path, checkout_branch=repo_object.branch_name)
     except GitError:
         return -1 # Error flag
 
@@ -87,8 +87,10 @@ def get_repo_data_from_url(url, name, description, user):
     if not is_valid_repo(url):
         return -1
 
-    download_and_process_repo_all_branches.apply_async(args = (url,user,))
-    #download_and_process_repo.apply_async(args = (url,user,))
+    print("TODO")
+    os.system("rm -rf " + repo_path + "*")
+    download_and_process_repo_all_branches.apply_async(args=(url, user))
+    #download_and_process_repo.apply_async(args = (url,user))
 
     return repo_entry
 
@@ -120,8 +122,10 @@ def download_and_process_repo(url, user):
 @task
 def download_and_process_repo_all_branches(url, user, branch_name=''):
     if branch_name=='':
+        print('---default---')
         repo_object = GitStore.objects.all().filter(gitRepositoryURL = url)[0]
     else:
+        print('---branch---')
         repo_object_default = GitStore.objects.all().filter(gitRepositoryURL = url)[0]
         print(repo_object_default)
         repo_entry_default = UserGitStore.objects.all().filter(git_store = repo_object_default)[0]
@@ -155,6 +159,11 @@ def download_and_process_repo_all_branches(url, user, branch_name=''):
     repo_object.status = 2 # Processing
     repo_object.save()
 
+    process_repo(repo, repo_object, this_path)
+
+    repo_object.status = 3 # fetching other branches
+    repo_object.save()
+
     default_branch = repo.listall_branches()[0]
     if branch_name == '':
         branches = repo.listall_branches(2)
@@ -162,9 +171,8 @@ def download_and_process_repo_all_branches(url, user, branch_name=''):
             if branch[0:7] == 'origin/':
                 if branch[7:]!=default_branch:
                     new_branch = branch[7:]
-                    download_and_process_repo_all_branches.apply_async(args = (url, user, new_branch,))
+                    download_and_process_repo_all_branches.apply_async(args = (url, user, new_branch))
 
-    process_repo(repo, repo_object, this_path)
 
     repo_object.status = 3 # Done!
     repo_object.save()
