@@ -47,13 +47,63 @@
             </div>
         {% endfor %}
     </div>
-
     <div class="large-12 columns card">
-        <div id="pie_chart" class="large-6 columns" style="text-align:center"></div>
-        <div id="bar_chart" class="large-6 columns" style="text-align:center"></div>
+        <div class="large-6 columns" style="height:250px;text-align:center">
+            <h6><b>Commits per Author</b></h6>
+            <div id="piecontainer" style="height:200px;"></div>
+        </div>
+        <div class="large-6 columns" style="height:250px;text-align:center">
+            <h6><b>Commits Over Time</b></h6>
+            <div id="barcontainer" style="height:200px;"></div>
+        </div>
     </div>
 
 {% endblock %}
 {% block extra_js %}
+    <script>
+        //data = [{ label: "Series1",  data: 10},{ label: "Series2",  data: 30}];
+        $.getJSON( "{% url "repo_detail_pie" repo_pk %}", function( data ) {
+            console.log(data)
+            $.plot('#piecontainer', data, {
+                series: {
+                    pie: {
+                        show: true,
+                        radius: 1,
+                        label: {
+                            show: true,
+                            radius: 1,
+                            formatter: function(label, series) {
+                                return '<div style="font-size:11px; text-align:center; padding:2px; color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
+                            },
+                            threshold: 0.09,
+                            background: {
+                                opacity: 0.8,
+                                color: '#444'
+                            }
+                        }
+                    }
+                },
+                legend: {
+                    show: false
+                }
+            });
+        });
+        $.getJSON( "{% url "repo_detail_bar_day" repo_pk %}", function( data ) {
+            console.log(data)
+            $.plot('#barcontainer', [data], {
+                series: {
+                    bars: {
+                        show: true,
+                        barWidth: 0.6,
+                        align: "center"
+                    }
+                },
+                xaxis: {
+                    mode: "categories",
+                    tickLength: 0
+                }
+            });
+        });
+    </script>
 {% endblock %}
 
