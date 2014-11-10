@@ -90,12 +90,12 @@ def get_repo_data_from_url(url, name, description, user):
     print("TODO")
     os.system("rm -rf " + repo_path + "*")
     download_and_process_repo_all_branches.apply_async(args=(url, user))
-    #download_and_process_repo.apply_async(args = (url,user))
+    #download_and_process_repo.apply_async(args = (url))
 
     return repo_entry
 
 @task
-def download_and_process_repo(url, user):
+def download_and_process_repo(url):
     repo_object = GitStore.objects.get(gitRepositoryURL = url)
     repo_object.status = 1 # Cloning
     repo_object.save()
