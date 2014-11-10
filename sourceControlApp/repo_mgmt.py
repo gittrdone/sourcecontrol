@@ -87,8 +87,6 @@ def get_repo_data_from_url(url, name, description, user):
     if not is_valid_repo(url):
         return -1
 
-    print("TODO")
-    os.system("rm -rf " + repo_path + "*")
     download_and_process_repo_all_branches.apply_async(args=(url, user))
     #download_and_process_repo.apply_async(args = (url))
 
@@ -120,39 +118,19 @@ def download_and_process_repo(url):
     return repo_object
 
 @task
-def download_and_process_repo_all_branches(url, user, branch_name=''):
-    if branch_name=='':
-        print('---default---')
-        repo_object = GitStore.objects.all().filter(gitRepositoryURL = url)[0]
-    else:
-        print('---branch---')
-        repo_object_default = GitStore.objects.all().filter(gitRepositoryURL = url)[0]
-        print(repo_object_default)
-        repo_entry_default = UserGitStore.objects.all().filter(git_store = repo_object_default)[0]
-        repo_object = GitStore(gitRepositoryURL = url, branch_name = branch_name)
-        repo_object.save()
-        repo_name = repo_entry_default.name + "(branch: "+branch_name+")"
-        repo_desc = repo_entry_default.repo_description
-        print("name---------"+repo_name)
-        print("desc---------"+repo_desc)
-        repo_entry = UserGitStore(git_store = repo_object, name = repo_name, repo_description = repo_desc)
-        #repo_entry = UserGitStore(git_store = repo_object, name = 'repo_name', repo_description = 'repo_desc')
-        repo_entry.save()
-        user.ownedRepos.add(repo_entry)
+def download_and_process_repo_all_branches(url, user):
+    repo_object = GitStore.objects.all().filter(gitRepositoryURL = url)[0]
     repo_object.status = 1 # Cloning
     repo_object.save()
 
-    this_path = repo_path + branch_name + str(random.randrange(0,10000))
-    os.system("rm -rf " + this_path)
+    this_path = repo_path + str(random.randrange(0,10000))
     try:
-        if branch_name != '':
-            repo = clone_repository(url=url, path=this_path, checkout_branch=branch_name)
-        else:
-            repo = clone_repository(url=url, path=this_path)
+        os.system("rm -rf " + this_path)
+        repo = clone_repository(url=url, path=this_path)
     except GitError:
         repo_object.status = -1
         repo_object.save()
-        print("GitError:" + GitError)
+        #print("GitError:" + GitError)
         os.system("rm -rf " + this_path)
         return
 
@@ -165,14 +143,52 @@ def download_and_process_repo_all_branches(url, user, branch_name=''):
     repo_object.save()
 
     default_branch = repo.listall_branches()[0]
-    if branch_name == '':
-        branches = repo.listall_branches(2)
-        for branch in branches:
-            if branch[0:7] == 'origin/':
-                if branch[7:]!=default_branch:
-                    new_branch = branch[7:]
-                    download_and_process_repo_all_branches.apply_async(args = (url, user, new_branch))
+    branches = repo.listall_branches(2)
+    for branch in branches:
+        if branch[0:7] == 'origin/':
+            if branch[7:]!=default_branch:
+                new_branch = branch[7:]
+                download_and_process_repo_branches.apply_async(args = (url, user, new_branch))
 
+
+    repo_object.status = 3 # Done!
+    repo_object.save()
+
+    os.system("rm -rf " + this_path)
+    return repo_object
+
+
+@task
+def download_and_process_repo_branches(url, user, branch_name):
+    repo_object_default = GitStore.objects.all().filter(gitRepositoryURL = url)[0]
+    print(repo_object_default)
+    repo_entry_default = UserGitStore.objects.all().filter(git_store = repo_object_default)[0]
+    repo_object = GitStore(gitRepositoryURL = url, branch_name = branch_name)
+    repo_object.save()
+    repo_name = repo_entry_default.name + "(branch: "+branch_name+")"
+    repo_desc = repo_entry_default.repo_description
+    repo_entry = UserGitStore(git_store = repo_object, name = repo_name, repo_description = repo_desc)
+    #repo_entry = UserGitStore(git_store = repo_object, name = 'repo_name', repo_description = 'repo_desc')
+    repo_entry.save()
+    user.ownedRepos.add(repo_entry)
+    repo_object.status = 1 # Cloning
+    repo_object.save()
+
+    this_path = repo_path + branch_name + str(random.randrange(0,10000))
+    os.system("rm -rf " + this_path)
+    try:
+        repo = clone_repository(url=url, path=this_path, checkout_branch=branch_name)
+    except GitError:
+        repo_object.status = -1
+        repo_object.save()
+        #print("GitError:" + GitError)
+        os.system("rm -rf " + this_path)
+        return
+
+    repo_object.status = 2 # Processing
+    repo_object.save()
+
+    process_repo(repo, repo_object, this_path)
 
     repo_object.status = 3 # Done!
     repo_object.save()
@@ -191,7 +207,7 @@ def process_repo(repo, repo_object, path):
     repo_object.numCommits = count_commits(repo)
     repo_object.numFiles = count_files(path)
     repo_object.branch_name = repo.listall_branches()[0]
-    repo_object.set_branch_list(repo.listall_branches()[2])
+    repo_object.set_branch_list(repo.listall_branches())[2]
 
     repo_object.save()
 
