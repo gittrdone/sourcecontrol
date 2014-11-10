@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import json
 
 # Create your models here.
 class GitStore(models.Model):
@@ -8,6 +9,14 @@ class GitStore(models.Model):
     numFiles = models.IntegerField(default=0)
     numCommits = models.IntegerField(default=0)
     status = models.IntegerField(default=0)
+    branch_list = models.CharField(max_length=300) #please use getter and setter
+
+    def set_branch_list(self,input_branch_list):
+        self.branch_list = json.dump(input_branch_list)
+
+    def get_branch_list(self):
+        jsonDec = json.decoder.JSONDecoder()
+        return jsonDec.decode(self.branch_list)
 
     def __unicode__ (self):
         return self.gitRepositoryURL
