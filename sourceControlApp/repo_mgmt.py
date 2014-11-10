@@ -56,7 +56,7 @@ def update_repo(repo_object):
     process_repo(repo, repo_object, repo_path)
     repo_object.save()
 
-def get_repo_data_from_url(url, name, description, user):
+def get_repo_data_from_url(url, name, description, user, check_all_branches=False):
     """
     Updates a single repo by recloning the repo
     and updating the information in the database
@@ -87,8 +87,10 @@ def get_repo_data_from_url(url, name, description, user):
     if not is_valid_repo(url):
         return -1
 
-    download_and_process_repo_all_branches.apply_async(args=(url, user))
-    #download_and_process_repo.apply_async(args = (url))
+    if(check_all_branches):
+        download_and_process_repo_all_branches.apply_async(args=(url, user,))
+    else:
+        download_and_process_repo.apply_async(args = (url,))
 
     return repo_entry
 
@@ -148,7 +150,7 @@ def download_and_process_repo_all_branches(url, user):
         if branch[0:7] == 'origin/':
             if branch[7:]!=default_branch:
                 new_branch = branch[7:]
-                download_and_process_repo_branches.apply_async(args = (url, user, new_branch))
+                download_and_process_repo_branches.apply_async(args = (url, user, new_branch,))
 
 
     repo_object.status = 3 # Done!
