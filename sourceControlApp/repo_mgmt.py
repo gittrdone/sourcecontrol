@@ -1,7 +1,6 @@
 import os
 import re
 import subprocess
-from datetime import datetime
 from datetime import tzinfo, timedelta, datetime
 
 import requests
@@ -241,9 +240,19 @@ def count_commits_per_author(repo, repo_db_object):
     :param repo_db_object: The model to update
     """
     for commit in repo.walk(repo.head.target):
-        code_author = CodeAuthor.objects.get_or_create(repository=repo_db_object, name=commit.author.name)[0]
-        code_author.num_commits += 1
-        code_author.save()
+
+        author_names = re.findall("^Author: .*", commit.message, re.MULTILINE)
+        if author_names:
+            for name in author_names:
+                code_author = CodeAuthor.objects.get_or_create(repository=repo_db_object, name=name)[0]
+                print "Adding", name
+                code_author.num_commits += 1
+                code_author.save()
+        else:
+            code_author = CodeAuthor.objects.get_or_create(repository=repo_db_object, name=commit.author.name)[0]
+            code_author.num_commits += 1
+            code_author.save()
+
         tz = VariableNonDstTZ(commit.author.offset)
         time=datetime.fromtimestamp(commit.author.time, tz=tz)
         commit_db_object = Commit.objects.get_or_create(repository=repo_db_object,author=code_author,commit_time=time)[0]
