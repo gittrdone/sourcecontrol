@@ -241,25 +241,10 @@ def count_commits_per_author(repo, repo_db_object):
     """
     for commit in repo.walk(repo.head.target):
 
-        author_names = re.findall("^Author: .*", commit.message, re.MULTILINE)
-        if author_names:
-            for name in author_names:
-                code_author = CodeAuthor.objects.get_or_create(repository=repo_db_object, name=name)[0]
-                print "Adding", name
-                code_author.num_commits += 1
-                code_author.save()
-        else:
-            code_author = CodeAuthor.objects.get_or_create(repository=repo_db_object, name=commit.author.name)[0]
-            code_author.num_commits += 1
-            code_author.save()
-
-        tz = VariableNonDstTZ(commit.author.offset)
-        time=datetime.fromtimestamp(commit.author.time, tz=tz)
-        commit_db_object = Commit.objects.get_or_create(repository=repo_db_object,author=code_author,commit_time=time)[0]
-        commit_db_object.save()
-
         #count additions and deletions
         p = commit.parents
+        additions = 0
+        deletions = 0
         if len(p) > 0:
             diff = commit.tree.diff_to_tree(p[0].tree)
         else:
@@ -267,9 +252,30 @@ def count_commits_per_author(repo, repo_db_object):
         for patch in diff:
             #Note that the comparison is backward,
             #So addition should become deletions and vice versa
-            code_author.additions += patch.deletions
-            code_author.deletions += patch.additions
+            additions += patch.deletions
+            deletions += patch.additions
+
+        author_names = re.findall("^Author: .*", commit.message, re.MULTILINE)
+        if author_names:
+            for name in author_names:
+                code_author = CodeAuthor.objects.get_or_create(repository=repo_db_object, name=name)[0]
+                print "Adding", name
+                code_author.num_commits += 1
+                code_author.additions += additions
+                code_author.deletions += deletions
+                code_author.save()
+        else:
+            code_author = CodeAuthor.objects.get_or_create(repository=repo_db_object, name=commit.author.name)[0]
+            code_author.num_commits += 1
+            code_author.additions += additions
+            code_author.deletions += deletions
             code_author.save()
+
+        tz = VariableNonDstTZ(commit.author.offset)
+        time=datetime.fromtimestamp(commit.author.time, tz=tz)
+        commit_db_object = Commit.objects.get_or_create(repository=repo_db_object,author=code_author,commit_time=time)[0]
+        commit_db_object.save()
+
 
 def is_valid_repo(url):
     """
