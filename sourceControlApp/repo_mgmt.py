@@ -83,14 +83,13 @@ def get_repo_data_from_url(url, name, description, user, check_all_branches=Fals
         repo_object.save()
         repo_entry = UserGitStore(git_store=repo_object, name=name, repo_description=description)
         repo_entry.save()
-
     if not is_valid_repo(url):
         return -1
 
-    if(check_all_branches):
-        download_and_process_repo_all_branches.apply_async(args=(url, user,))
+    if check_all_branches:
+        download_and_process_repo_all_branches.apply_async((url, user,))
     else:
-        download_and_process_repo.apply_async(args = (url,))
+        download_and_process_repo.apply_async((url,))
 
     return repo_entry
 
@@ -103,10 +102,12 @@ def download_and_process_repo(url):
     path = repo_path + url[-5:] # XXX FIX ME
 
     try:
+        os.system("rm -rf " + path)
         repo = clone_repository(url=url, path=path)
     except GitError:
         repo_object.status = -1
         repo_object.save()
+        os.system("rm -rf " + path)
         return
 
     repo_object.status = 2 # Processing
@@ -117,6 +118,7 @@ def download_and_process_repo(url):
     repo_object.status = 3 # Done!
     repo_object.save()
 
+    os.system("rm -rf " + path)
     return repo_object
 
 @task
@@ -150,8 +152,7 @@ def download_and_process_repo_all_branches(url, user):
         if branch[0:7] == 'origin/':
             if branch[7:]!=default_branch:
                 new_branch = branch[7:]
-                download_and_process_repo_branches.apply_async(args = (url, user, new_branch,))
-
+                download_and_process_repo_branches(url, user, new_branch)
 
     repo_object.status = 3 # Done!
     repo_object.save()
@@ -209,7 +210,7 @@ def process_repo(repo, repo_object, path):
     repo_object.numCommits = count_commits(repo)
     repo_object.numFiles = count_files(path)
     repo_object.branch_name = repo.listall_branches()[0]
-    repo_object.set_branch_list(repo.listall_branches())[2]
+    repo_object.set_branch_list(repo.listall_branches(2))
 
     repo_object.save()
 
@@ -247,13 +248,19 @@ def count_commits_per_author(repo, repo_db_object):
         time=datetime.fromtimestamp(commit.author.time, tz=tz)
         commit_db_object = Commit.objects.get_or_create(repository=repo_db_object,author=code_author,commit_time=time)[0]
         commit_db_object.save()
-        ##This part is taking too much time. But it's working.
-        # for entry in commit.tree:
-        #     patch = Patch.objects.get_or_create(repository = repo_db_object, filename = entry.name)[0]
-        #     patch.save()
-        #     commit_db_object.num_patches += 1
-        #     commit_db_object.patches.add(patch)
-        # commit_db_object.save()
+
+        #count additions and deletions
+        p = commit.parents
+        if len(p) > 0:
+            diff = commit.tree.diff_to_tree(p[0].tree)
+        else:
+            diff = commit.tree.diff_to_tree()
+        for patch in diff:
+            #Note that the comparison is backward,
+            #So addition should become deletions and vice versa
+            code_author.additions += patch.deletions
+            code_author.deletions += patch.additions
+            code_author.save()
 
 def is_valid_repo(url):
     """
