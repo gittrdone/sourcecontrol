@@ -12,7 +12,7 @@ class GitStore(models.Model):
     branch_list = models.CharField(max_length=300) #please use getter and setter
 
     def set_branch_list(self,input_branch_list):
-        self.branch_list = json.dump(input_branch_list)
+        self.branch_list = json.dumps(input_branch_list)
 
     def get_branch_list(self):
         jsonDec = json.decoder.JSONDecoder()
@@ -37,6 +37,8 @@ class CodeAuthor(models.Model):
     name = models.CharField(max_length=100)
     num_commits = models.IntegerField(default=0)
     repository = models.ForeignKey(GitStore)
+    additions = models.IntegerField(default=0)
+    deletions = models.IntegerField(default=0)
 
     def __unicode__ (self):
         return unicode(self.repository) + self.name
