@@ -47,6 +47,8 @@ def add_repo(request):
 
         if error:
             context_instance["git_error"] = True
+            context_instance["git_error_name"] = repo_name
+            context_instance["git_error_description"] = repo_description
         else:
             sourceControlUser.ownedRepos.add(repo)
 
