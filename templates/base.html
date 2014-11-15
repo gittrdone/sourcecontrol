@@ -39,18 +39,27 @@
         <section class="top-bar-section">
 
             <ul class="right">
-            	<li class="divider"></li>
-            	{% if user.is_authenticated %}
-            	 <li class="divider"></li>
-                 <li><a> Hello, {{ user.username }}</a></li>
-                 <li class="divider"></li>
-                 <li><a href="/logout">Logout</a></li>
-            	{% else %}
-            	 <li class="divider"></li>
-            	 <li><a href="/login">Log In</a></li>
-            	 <li class="divider"></li>
-            	 <li><a href="/signup">Sign Up</a></li>
-            	{% endif %}
+                <li class="divider"></li>
+                {% if user.is_authenticated %}
+                    <li class="divider"></li>
+                     <li>
+                        <a href="/">My Repositories</a></li>
+
+                    <li class="divider"></li>
+                    <li class="has-dropdown">
+                        <a> Hello, {{ user.username }}</a>
+                        <ul class="dropdown">
+                            <li><a href="/logout">Logout</a></li>
+                        </ul>
+                    </li>
+                    <li class="divider"></li>
+
+                {% else %}
+                    <li class="divider"></li>
+                    <li><a href="/login">Log In</a></li>
+                    <li class="divider"></li>
+                    <li><a href="/signup">Sign Up</a></li>
+                {% endif %}
                 <li class="divider"></li>
             </ul>
         </section>
