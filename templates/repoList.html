@@ -77,6 +77,10 @@
                 {% endif %}
             </div>
         {% endfor %}
+    {% else %}
+         <div class="large-12 columns card no-repos-card">
+            You have no repositories added. Hit the '+' above to add one now!
+        </div>
     {% endif %}
 
 {% endblock %}
