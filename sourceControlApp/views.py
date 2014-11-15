@@ -9,18 +9,20 @@ from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.core import serializers
+from .forms import UpdateUserGitStoreForm
 
 # Create your views here.
 def index(request):
     if request.user.is_authenticated():
         user = request.user
-        repos = user.sourcecontroluser.ownedRepos.all() 
+        repos = user.sourcecontroluser.ownedRepos.all()
+        form = UpdateUserGitStoreForm()
     else:
         repos = []
         #have it throw an error saying to log in
 
     if request.user.is_authenticated():
-        return render(request, 'repoList.html', { 'repo_list': repos })
+        return render(request, 'repoList.html', { 'repo_list': repos }, form)
     else:
         return render(request, 'index.html', {})
 
