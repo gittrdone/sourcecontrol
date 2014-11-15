@@ -8,18 +8,18 @@
     <div id="modalEditForm" class="reveal-modal" data-reveal>
         <form action="/edit_repo" method="POST" style="margin-top:10px;">
 
-            <small id="repo_error" class="error" style="display:none;"></small>
+            <small id="repo_error_edit" class="error" style="display:none;"></small>
             <br>
 
-            <div id="nameValidate" class="repo_list_validate_label"></div>
+            <div id="nameValidate_edit" class="repo_list_validate_label"></div>
             <input name="editName" id="editNameField" type="text" placeholder="Name"
                    {% if git_error %}value="{{ git_error_name }}"{% endif %}>
 
             <textarea name="editDesc" rows="3" style="resize:none;" placeholder="Description (optional)"
                       {% if git_error and git_error_description %}value="{{ git_error_description }}"{% endif %}></textarea>
 
-            <input id="editRepo" type="submit" value="Edit" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;"></input>
-            <input id="deleteRepo" type="submit" value="Delete" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;"></input>
+            <input id="editRepo_edit" type="submit" value="Edit" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;"></input>
+            <input id="deleteRepo_edit" type="submit" value="Delete" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;"></input>
         </form>
         <a class="close-reveal-modal">&#215;</a>
     </div>
@@ -78,7 +78,7 @@
             </div>
         {% endfor %}
     {% else %}
-         <div class="large-12 columns card no-repos-card">
+        <div class="large-12 columns card no-repos-card">
             You have no repositories added. Hit the '+' above to add one now!
         </div>
     {% endif %}
