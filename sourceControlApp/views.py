@@ -16,13 +16,13 @@ def index(request):
     if request.user.is_authenticated():
         user = request.user
         repos = user.sourcecontroluser.ownedRepos.all()
-        form = UpdateUserGitStoreForm()
+        #form = UpdateUserGitStoreForm()
     else:
         repos = []
         #have it throw an error saying to log in
 
     if request.user.is_authenticated():
-        return render(request, 'repoList.html', { 'repo_list': repos }, form)
+        return render(request, 'repoList.html', { 'repo_list': repos })
     else:
         return render(request, 'index.html', {})
 
