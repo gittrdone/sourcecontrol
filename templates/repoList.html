@@ -22,6 +22,7 @@
 
             <input id="editRepo_edit" type="submit" value="Edit" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;"></input>
             <input id="deleteRepo_edit" type="submit" value="Delete" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;"></input>
+            {% csrf_token %}
         </form>
         <a class="close-reveal-modal">&#215;</a>
     </div>
@@ -150,7 +151,7 @@
         deleteRepoButton.addEventListener("click", changeToDelete);
         function changeToDelete(e) {
             var editForm = document.querySelector('#editRepoForm');
-            editForm.action('/delete_repo');
+            editForm.action = '/delete_repo';
         }
 
         var editButtonList = document.querySelectorAll('#editRepoButton');
