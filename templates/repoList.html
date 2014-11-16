@@ -6,7 +6,7 @@
     <a href="#" data-reveal-id="modalForm"><img src="{% static "images/add.png" %}" class="add-repo-button"/></a>
 
     <div id="modalEditForm" class="reveal-modal" data-reveal>
-        <form action="/edit_repo" method="POST" style="margin-top:10px;">
+        <form id="editRepoForm" action="/edit_repo" method="POST" style="margin-top:10px;">
 
             <small id="repo_error_edit" class="error" style="display:none;"></small>
             <br>
@@ -15,8 +15,10 @@
             <input name="editName" id="editNameField" type="text" placeholder="Name"
                    {% if git_error %}value="{{ git_error_name }}"{% endif %}>
 
-            <textarea name="editDesc" rows="3" style="resize:none;" placeholder="Description (optional)"
+            <textarea name="editDesc" id="editDescField" rows="3" style="resize:none;" placeholder="Description (optional)"
                       {% if git_error and git_error_description %}value="{{ git_error_description }}"{% endif %}></textarea>
+
+            <input type="hidden" id="editRepoField" name="editRepo" value="">
 
             <input id="editRepo_edit" type="submit" value="Edit" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;"></input>
             <input id="deleteRepo_edit" type="submit" value="Delete" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;"></input>
@@ -50,9 +52,9 @@
 
     {% if repo_list %}
         {% for repo in repo_list %}
-            <div class="large-12 columns card">
-                <div id="repo-{{ repo.pk }}" class="large-10 columns">
-                    <h4>{% if repo.git_store.status == 3 %}<a href="/repo_detail?repo={{ repo.pk }}"><b>{{ repo.name }}</b></a>
+            <div id="repo-{{ repo.pk }}" class="large-12 columns card">
+                <div class="large-10 columns">
+                    <h4>{% if repo.git_store.status == 3 %}<a href="/repo_detail?repo={{ repo.pk }}"><b id="name-{{ repo.pk }}">{{ repo.name }}</b></a>
                         {% else %}<b id="name-{{ repo.pk }}">{{ repo.name }}</b>
                     {% endif %}
                     </h4>
@@ -61,7 +63,7 @@
 
                     {% if repo.git_store.status == 3 %}
                         {% if repo.repo_description %}
-                            <div style="color:grey;font-style:italic;">{{ repo.repo_description }}</div>
+                            <div class="desc-{{ repo.pk }}" style="color:grey;font-style:italic;">{{ repo.repo_description }}</div>
                         {% endif %}
                     {%  endif %}
                 </div>
@@ -69,6 +71,7 @@
                     <div class="large-1 columns" style="font-size:22px;color:darkblue;margin-top: 20px;">
                         {{ repo.git_store.numFiles }}
                         <br/><div style="font-size:15px;color:black;">files</div>
+                        <input id="editRepoButton" data-reveal-id="modalEditForm" type="submit" value="Edit" class="button" style="margin-top:10px; margin-bottom:0px; padding-top:10px; padding-bottom:10px;"></input>
                     </div>
                     <div class="large-1 columns" style="font-size:22px;color:darkblue;margin-top: 20px;">
                         {{ repo.git_store.numCommits }}
@@ -90,7 +93,7 @@
     <script type="text/javascript">
         {% if git_error %}
             $(document).ready(function(){
-                $('#modalForm').foundation('reveal', 'open')
+                $('#modalForm').foundation('reveal', 'open');
                 document.getElementById('repo_error').style.display = "block";
                 $('#repo_error').text("Invalid Repository!");
             });
@@ -139,6 +142,71 @@
             }
 
             return didWork;
+        }
+
+        //Register a function handler for when the delete button is clicked that changes the
+        //Form action to delete_repo instead of edit_repo
+        var deleteRepoButton = document.querySelector('#deleteRepo_edit');
+        deleteRepoButton.addEventListener("click", changeToDelete);
+        function changeToDelete(e) {
+            var editForm = document.querySelector('#editRepoForm');
+            editForm.action('/delete_repo');
+        }
+
+        var editButtonList = document.querySelectorAll('#editRepoButton');
+        var len = editButtonList.length;
+        //loop through list and add event listener
+        for (var i =0;  i < len; i++) {
+            editButtonList[i].addEventListener("click", edit);
+        }
+
+        function edit(e) {
+            var editForm = document.querySelector('#editRepoForm');
+            editForm.action = '/edit_repo';
+            console.log("Editing");
+            var card = $(this).parents('.large-12.columns.card');
+            console.log(card);
+
+            //Get the repo number
+            var cardID = card.attr('id');
+
+            //Parse out the 'repo-'
+            cardID = cardID.replace('repo-','');
+            console.log(cardID);
+
+            var nameIDString = '#name-' + cardID;
+            var descIDString = '.desc-' + cardID;
+            var repoString = '#url-' + cardID;
+            var name = $(nameIDString).html();
+            var desc = $(descIDString).html();
+            var repo = $(repoString).html();
+            console.log(name);
+            console.log(desc);
+            console.log(repo);
+
+            var nameEditField = $('#editNameField');
+            var descEditField = $('#editDescField');
+            var repoEditField = $('#editRepoField');
+
+            console.log(nameEditField);
+            console.log(descEditField);
+
+            console.log("Name Edit Field Val:");
+            console.log(nameEditField.val());
+
+            console.log("Desc Edit Field Val:");
+            console.log(descEditField.val());
+
+            nameEditField.val(name);
+            descEditField.val(desc);
+            repoEditField.val(repo);
+
+            console.log("Name Edit Field Val:");
+            console.log(nameEditField.val());
+
+            console.log("Desc Edit Field Val:");
+            console.log(descEditField.val());
+            return 1;
         }
     </script>
 {% endblock %}
