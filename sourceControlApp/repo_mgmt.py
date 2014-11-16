@@ -239,7 +239,7 @@ def count_commits_per_author(repo, repo_db_object):
     """
 
     try:
-        latest_commit = Commit.objects.latest('commit_time')
+        latest_commit = Commit.objects.filter(repository=repo_db_object).latest('commit_time')
     except ObjectDoesNotExist:
         latest_commit = None
 
