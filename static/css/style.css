@@ -70,3 +70,9 @@ body {
     font-size: 20px;
     color: gray;
 }
+
+.blue-clicky-text {
+    cursor: pointer;
+    font-weight:bold;
+    color: #008cba;
+}

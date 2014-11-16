@@ -48,10 +48,6 @@ def update_repo(repo_object):
     except GitError:
         return -1 # Error flag
 
-    # Remove old data
-    Commit.objects.filter(repository=repo_object).delete()
-    CodeAuthor.objects.filter(repository=repo_object).delete()
-
     process_repo(repo, repo_object, repo_path)
     repo_object.save()
 
@@ -126,7 +122,9 @@ def download_and_process_repo_all_branches(url, user):
     repo_object.status = 1 # Cloning
     repo_object.save()
 
+    # XXX this should generate unique path
     this_path = repo_path + str(random.randrange(0,10000))
+
     try:
         os.system("rm -rf " + this_path)
         repo = clone_repository(url=url, path=this_path)
@@ -239,7 +237,18 @@ def count_commits_per_author(repo, repo_db_object):
     :param repo: The pygit2 repo to process
     :param repo_db_object: The model to update
     """
+
+    try:
+        latest_commit = Commit.objects.latest('commit_time')
+    except ObjectDoesNotExist:
+        latest_commit = None
+
     for commit in repo.walk(repo.head.target):
+        tz = VariableNonDstTZ(commit.author.offset)
+        time=datetime.fromtimestamp(commit.author.time, tz=tz)
+
+        if (latest_commit is not None and time <= latest_commit.commit_time):
+            continue
 
         #count additions and deletions
         p = commit.parents
@@ -271,8 +280,7 @@ def count_commits_per_author(repo, repo_db_object):
             code_author.deletions += deletions
             code_author.save()
 
-        tz = VariableNonDstTZ(commit.author.offset)
-        time=datetime.fromtimestamp(commit.author.time, tz=tz)
+
         commit_db_object = Commit.objects.get_or_create(repository=repo_db_object,author=code_author,commit_time=time)[0]
         commit_db_object.save()
 

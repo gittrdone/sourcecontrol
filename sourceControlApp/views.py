@@ -70,7 +70,7 @@ def repo_detail(request):
     context_instance = RequestContext(request)
     context_instance['repo'] = repo
     context_instance['repo_pk'] = repo.pk
-    context_instance['authors'] = repo.git_store.codeauthor_set.all()
+    context_instance['authors'] = repo.git_store.codeauthor_set.all().order_by('-num_commits')
     context_instance['json_authors'] = serializers.serialize("json", repo.git_store.codeauthor_set.all())
 
     hour_offset_from_utc = 4 #The library defaults to UTC

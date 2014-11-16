@@ -9,7 +9,10 @@ from django.conf import settings
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sourcecontrol.settings')
 
-app = Celery('sourcecontrol', broker='redis://cloud.phinugamma.org:6379/')
+if 'HEROKU' in os.environ:
+  app = Celery('sourcecontrol', broker='redis://cloud.phinugamma.org:6379/')
+else:
+  app = Celery('sourcecontrol', broker='redis://localhost/')
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.
