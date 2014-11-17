@@ -20,7 +20,7 @@ function getData(repoNum) {
                 .replace("{1}", data.numCommits))
                 .insertAfter(repo);
 
-            var url = "repo_detail?repo=" + repoNum;
+            var url = "repo/detail/" + repoNum;
             $("#name-" + repoNum).wrap('<a href="' + url + '"></a>');
         }
     });

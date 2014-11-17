@@ -62,9 +62,7 @@ def add_repo(request):
         # XXX Throw error
         return render_to_response("repoList.html", {})
 
-def repo_detail(request):
-    repo_id = request.GET['repo']
-
+def repo_detail(request, repo_id):
     repo = UserGitStore.objects.get(pk=repo_id)
 
     context_instance = RequestContext(request)

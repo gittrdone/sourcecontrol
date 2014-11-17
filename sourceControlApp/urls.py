@@ -9,7 +9,7 @@ urlpatterns = patterns('',
     url(r'^edit_repo',views.edit_repo, name='edit_repo'),
     url(r'^delete_repo',views.delete_repo, name='delete_repo'),
 
-    url(r'^repo_detail', views.repo_detail, name='repo_detail'),
+    url(r'^repo/detail/([0-9]+)', views.repo_detail, name='repo_detail'),
     url(r'^status/([0-9]+)', views.repo_status, name='repo_status'),
 
     url(r'^signup', views.signup, name='signup'),
