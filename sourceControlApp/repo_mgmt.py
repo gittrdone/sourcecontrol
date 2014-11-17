@@ -270,11 +270,10 @@ def count_commits_per_author(repo, repo_db_object):
             additions += patch.deletions
             deletions += patch.additions
 
-        author_names = re.findall("^Author: .*", commit.message, re.MULTILINE)
+        author_names = re.findall("^Author: ([^<>]*) <(.*)>", commit.message, re.MULTILINE)
         if author_names:
             for name in author_names:
-                code_author = CodeAuthor.objects.get_or_create(repository=repo_db_object, name=name)[0]
-                print "Adding", name
+                code_author = CodeAuthor.objects.get_or_create(repository=repo_db_object, name=name[0])[0]
                 code_author.num_commits += 1
                 code_author.additions += additions
                 code_author.deletions += deletions

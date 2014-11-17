@@ -60,13 +60,14 @@
                     {% endif %}
                     </h4>
                     <h5><b id="url-{{ repo.pk }}">{{ repo.git_store.gitRepositoryURL }}</b></h5>
-                    {% if repo.git_store.status != 3 %}<h6 id="status-{{ repo.pk }}"><img src="{% static "images/spinner.gif" %}">Repo currently being processed.</h6>{% endif %}<!--Include all cases-->
+                    {% if repo.git_store.status != 3 %}
+                        <!-- TODO: Messages for each possible state -->
+                        <h6 id="status-{{ repo.pk }}"><img src="{% static "images/spinner.gif" %}">Repo currently being processed.</h6>
+                    {% endif %}
 
-                    {% if repo.git_store.status == 3 %}
-                        {% if repo.repo_description %}
-                            <div class="desc-{{ repo.pk }}" style="color:grey;font-style:italic;">{{ repo.repo_description }}</div>
-                        {% endif %}
-                    {%  endif %}
+                    {% if repo.repo_description %}
+                        <div class="desc-{{ repo.pk }}" style="color:grey;font-style:italic;display:{% if repo.git_store.status == 3 %}block{% else %}none{% endif %}";>{{ repo.repo_description }}</div>
+                    {% endif %}
                 </div>
                 {% if repo.git_store.status == 3 %}
                     <div class="large-1 columns" style="font-size:22px;color:darkblue;margin-top: 20px;">

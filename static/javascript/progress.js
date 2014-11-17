@@ -18,10 +18,13 @@ function getData(repoNum) {
 </div>'
                 .replace("{0}", data.numFiles)
                 .replace("{1}", data.numCommits))
-                .insertAfter(repo);
+                .insertAfter(repo.children()[0]);
+
+            $("#editRepoButton-" + repoNum).click(edit);
 
             var url = "repo/detail/" + repoNum;
             $("#name-" + repoNum).wrap('<a href="' + url + '"></a>');
+            $(".desc-" + repoNum).css('display', 'block');
         }
     });
 }
@@ -36,7 +39,9 @@ function updateProgress() {
 
         getData(repoNum);
     }
+
+    setTimeout(updateProgress, 5000);
 }
 
 // Call every 5 seconds
-setInterval(updateProgress, 5000);
+setTimeout(updateProgress, 5000);
