@@ -13,6 +13,12 @@ body {
     padding-bottom: 20px;
 }
 
+.big_heading {
+    font-weight:bold;
+    padding: 5px;
+    font-size: 200%;
+}
+
 .clickable_heading {
     cursor: pointer;
     font-weight:bold;
@@ -75,4 +81,17 @@ body {
     cursor: pointer;
     font-weight:bold;
     color: #008cba;
+}
+
+.responsive-icon {
+    cursor: pointer;
+    color: lightgray;
+}
+
+.responsive-icon:hover {
+    color:dodgerblue;
+}
+
+.responsive-icon:active {
+    color:black;
 }

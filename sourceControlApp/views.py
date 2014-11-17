@@ -1,6 +1,6 @@
 from datetime import date, datetime, timedelta
 from json import dumps
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render, render_to_response, get_object_or_404
 from sourceControlApp.models import GitStore, SourceControlUser, UserGitStore
 from sourceControlApp.repo_mgmt import get_repo_data_from_url, canonicalize_repo_url
 from django.template import RequestContext
@@ -37,7 +37,7 @@ def add_repo(request):
         sourceControlUser = user.sourcecontroluser
 
         try:
-            existing_store = GitStore.objects.get(gitRepositoryURL=canonicalize_repo_url(repo_url))
+            existing_store = GitStore.objects.filter(gitRepositoryURL=canonicalize_repo_url(repo_url))[0]
         except:
             existing_store = None
 
@@ -165,33 +165,35 @@ def edit_repo(request):
         existing_store.save()
 
         # Re-serve the page
-        context_instance["repo_list"] = sourceControlUser.ownedRepos.all()
-        return render_to_response("repoList.html", context_instance)
+        return redirect("index")
     else:
         # XXX Throw error
-        return render_to_response("repoList.html", {})
+        return redirect("index")
 
-def delete_repo(request):
+def delete_repo(request, id):
     context_instance = RequestContext(request)
-    repo_url = request.POST['editRepo']
 
     if request.user.is_authenticated():
         user = request.user
         sourceControlUser = user.sourcecontroluser
 
-        try:
-            existing_storee = GitStore.objects.get(gitRepositoryURL=canonicalize_repo_url(repo_url))
-            existing_store = sourceControlUser.ownedRepos.get(git_store = existing_storee)
-        except:
-            existing_store = None
-
-        #otherwise we are good to go on deleting
-        UserGitStore.delete(existing_store)
+        # try:
+        #     existing_storee = GitStore.objects.get(usergitstore_set__id=id)
+        #     existing_store = sourceControlUser.ownedRepos.get(git_store = existing_storee)
+        # except:
+        #     raise
+        #
+        #     existing_store = None
+        #
+        # #otherwise we are good to go on deleting
+        # UserGitStore.delete(existing_store)
+        o = get_object_or_404(UserGitStore, pk=id)
+        o.delete()
 
         # Store object and render page
-        context_instance["repo_url"] = repo_url
-        context_instance["repo_list"] = sourceControlUser.ownedRepos.all()
-        return render_to_response("repoList.html", context_instance)
+        # context_instance["repo_url"] = repo_url
+        # context_instance["repo_list"] = sourceControlUser.ownedRepos.all()
+        return redirect("index")
     else:
         # XXX Throw error
-        return render_to_response("repoList.html", {})
+        return render_to_response("index")

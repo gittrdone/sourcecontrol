@@ -6,29 +6,29 @@
     <a href="#" data-reveal-id="modalForm"><img src="{% static "images/add.png" %}" class="add-repo-button"/></a>
 
     <div id="modalEditForm" class="reveal-modal" data-reveal>
+        <div class="big_heading" id="editModalHeading">Edit</div>
         <form id="editRepoForm" action="/edit_repo" method="POST" style="margin-top:10px;">
 
-            <small id="repo_error_edit" class="error" style="display:none;"></small>
-            <br>
-
             <div id="nameValidate_edit" class="repo_list_validate_label"></div>
-            <input name="editName" id="editNameField" type="text" placeholder="Name"
-                   {% if git_error %}value="{{ git_error_name }}"{% endif %}>
+            <label>Name
+                <input name="editName" id="editNameField" type="text" placeholder="Name">
+            </label>
 
-            <textarea name="editDesc" id="editDescField" rows="3" style="resize:none;" placeholder="Description (optional)"
-                      {% if git_error and git_error_description %}value="{{ git_error_description }}"{% endif %}></textarea>
+            <label>Description
+                <textarea name="editDesc" id="editDescField" rows="3" style="resize:none;" placeholder="Description (optional)"
+                          {% if git_error and git_error_description %}value="{{ git_error_description }}"{% endif %}></textarea>
+            </label>
 
             <input type="hidden" id="editRepoField" name="editRepo" value="">
 
-            <input id="editRepo_edit" type="submit" value="Edit" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;"></input>
-            <input id="deleteRepo_edit" type="submit" value="Delete" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;"></input>
+            <input id="editRepo_edit" type="submit" value="Save" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
             {% csrf_token %}
         </form>
         <a class="close-reveal-modal">&#215;</a>
     </div>
 
     <div id="modalForm" class="reveal-modal" data-reveal>
-        <div class="clickable_heading">Add New Repository</div>
+        <div class="big_heading">Add New Repository</div>
         <form action="/count_files" method="GET" style="margin-top:10px;">
 
             <div id="urlValidate" class="repo_list_validate_label"></div>
@@ -46,7 +46,7 @@
             <textarea name="desc" rows="3" style="resize:none;" placeholder="Description (optional)"
                       {% if git_error and git_error_description %}value="{{ git_error_description }}"{% endif %}></textarea>
 
-            <input id="submitRepo" type="submit" value="Store" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;"></input>
+            <input id="submitRepo" type="submit" value="Store" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
         </form>
         <a class="close-reveal-modal">&#215;</a>
     </div>
@@ -72,13 +72,22 @@
                     <div class="large-1 columns" style="font-size:22px;color:darkblue;margin-top: 20px;">
                         {{ repo.git_store.numFiles }}
                         <br/><div style="font-size:15px;color:black;">files</div>
-                        <input id="editRepoButton" data-reveal-id="modalEditForm" type="submit" value="Edit" class="button" style="margin-top:10px; margin-bottom:0px; padding-top:10px; padding-bottom:10px;"></input>
                     </div>
                     <div class="large-1 columns" style="font-size:22px;color:darkblue;margin-top: 20px;">
                         {{ repo.git_store.numCommits }}
                         <br/><div style="font-size:15px;color:black;">commits</div>
                     </div>
                 {% endif %}
+
+                <div class="large-12 columns">
+                    <i class="fa fa-cogs responsive-icon" style="float:right;" data-options="align:left" data-dropdown="editDropdown{{ repo.pk }}"></i>
+                </div>
+                <!--Dropdown-->
+                <ul id="editDropdown{{ repo.pk }}" class="tiny f-dropdown" data-dropdown-content>
+                    <li id="editRepoButton" data-reveal-id="modalEditForm"><a href="#">Edit Repository</a></li>
+                    <li id="deleteRepo_edit"><a href="{% url "delete_repo" repo.pk %}">Delete Repository</a></li>
+                </ul>
+
             </div>
         {% endfor %}
     {% else %}
@@ -188,6 +197,7 @@
             var nameEditField = $('#editNameField');
             var descEditField = $('#editDescField');
             var repoEditField = $('#editRepoField');
+            var editModalHeading = $('#editModalHeading');
 
             console.log(nameEditField);
             console.log(descEditField);
@@ -198,6 +208,7 @@
             console.log("Desc Edit Field Val:");
             console.log(descEditField.val());
 
+            editModalHeading.text("Edit - "+repo);
             nameEditField.val(name);
             descEditField.val(desc);
             repoEditField.val(repo);

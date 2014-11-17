@@ -81,7 +81,7 @@ def get_repo_data_from_url(url, name, description, user, check_all_branches=Fals
     if not is_valid_repo(url):
         return -1
 
-    if check_all_branches:
+    if ~check_all_branches:
         download_and_process_repo_all_branches.apply_async((url, user,))
     else:
         download_and_process_repo.apply_async((url,))
@@ -149,7 +149,7 @@ def download_and_process_repo_all_branches(url, user):
         if branch[0:7] == 'origin/':
             if branch[7:]!=default_branch:
                 new_branch = branch[7:]
-                download_and_process_repo_branches(url, user, new_branch)
+                download_and_process_repo_all_branches.apply_async((url, user, new_branch,))
 
     repo_object.status = 3 # Done!
     repo_object.save()
@@ -207,8 +207,14 @@ def process_repo(repo, repo_object, path):
     repo_object.numCommits = count_commits(repo)
     repo_object.numFiles = count_files(path)
     repo_object.branch_name = repo.listall_branches()[0]
-    repo_object.set_branch_list(repo.listall_branches(2))
 
+    #canonicalize branch names
+    branch_list = repo.listall_branches(2)
+    for branch in branch_list:
+        if branch[0:7] == 'origin/':
+            branch = branch[7:]
+
+    repo_object.set_branch_list(branch_list)
     repo_object.save()
 
     # Count commits per author
