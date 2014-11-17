@@ -37,7 +37,7 @@ def add_repo(request):
         sourceControlUser = user.sourcecontroluser
 
         try:
-            existing_store = GitStore.objects.get(gitRepositoryURL=canonicalize_repo_url(repo_url))
+            existing_store = GitStore.objects.filter(gitRepositoryURL=canonicalize_repo_url(repo_url))[0]
         except:
             existing_store = None
 
