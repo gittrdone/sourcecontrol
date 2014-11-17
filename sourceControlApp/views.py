@@ -70,7 +70,7 @@ def repo_detail(request):
     context_instance = RequestContext(request)
     context_instance['repo'] = repo
     context_instance['repo_pk'] = repo.pk
-    context_instance['authors'] = repo.git_store.codeauthor_set.all()
+    context_instance['authors'] = repo.git_store.codeauthor_set.all().order_by('-num_commits')
     context_instance['json_authors'] = serializers.serialize("json", repo.git_store.codeauthor_set.all())
 
     hour_offset_from_utc = 4 #The library defaults to UTC
@@ -144,3 +144,56 @@ def do_logout(request):
 
 def load_repo_page(request):
     repo_url = request.repo_url
+
+def edit_repo(request):
+    context_instance = RequestContext(request)
+    repo_url = request.POST['editRepo']
+    repo_name = request.POST['editName']
+    repo_description = request.POST['editDesc']
+
+    if request.user.is_authenticated():
+        user = request.user
+        sourceControlUser = user.sourcecontroluser
+
+        try:
+            existing_storee = GitStore.objects.get(gitRepositoryURL=canonicalize_repo_url(repo_url))
+            existing_store = sourceControlUser.ownedRepos.get(git_store = existing_storee)
+        except:
+            existing_store = None
+
+        #otherwise we are good to go on editing
+        existing_store.name = repo_name
+        existing_store.repo_description = repo_description
+        existing_store.save()
+
+        # Re-serve the page
+        context_instance["repo_list"] = sourceControlUser.ownedRepos.all()
+        return render_to_response("repoList.html", context_instance)
+    else:
+        # XXX Throw error
+        return render_to_response("repoList.html", {})
+
+def delete_repo(request):
+    context_instance = RequestContext(request)
+    repo_url = request.POST['editRepo']
+
+    if request.user.is_authenticated():
+        user = request.user
+        sourceControlUser = user.sourcecontroluser
+
+        try:
+            existing_storee = GitStore.objects.get(gitRepositoryURL=canonicalize_repo_url(repo_url))
+            existing_store = sourceControlUser.ownedRepos.get(git_store = existing_storee)
+        except:
+            existing_store = None
+
+        #otherwise we are good to go on deleting
+        UserGitStore.delete(existing_store)
+
+        # Store object and render page
+        context_instance["repo_url"] = repo_url
+        context_instance["repo_list"] = sourceControlUser.ownedRepos.all()
+        return render_to_response("repoList.html", context_instance)
+    else:
+        # XXX Throw error
+        return render_to_response("repoList.html", {})

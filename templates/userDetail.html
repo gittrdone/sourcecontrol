@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block head %}
+
+{% endblock %}
+{% block content %}
+    <div class="large-12 columns card">
+        <div class="large-6 columns">
+            <h3><b>{{ author.name }}</b></h3>
+            <b>{{ author.repository }}</b><br><br>
+
+            {% load staticfiles %}
+            <img src="{% static "images/git-branch.png" %}" class="branch-icon"/><div class="branch-text">{{ author.repository.branch_name }}</div>
+        </div>
+        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+            {{ author.num_commits }}
+            <br/><div style="font-size:14px;color:black;">commits</div>
+        </div>
+
+        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+            {{ author.additions }}
+            <br/><div style="font-size:14px;color:black;">insertions</div>
+        </div>
+
+        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+            {{ author.deletions }}
+            <br/><div style="font-size:14px;color:black;">deletions</div>
+        </div>
+    </div>
+
+    <div class="large-12 columns card">
+        <div class="large-12 columns" style="height:250px;text-align:center">
+            <h6><b>Insertions vs. Deletions</b></h6>
+            <div id="piecontainer" style="height:200px;"></div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block extra_js %}
+    <script>
+        var data = [
+            {label: "Insertions", data: {{ author.additions }}, color: "#397D02"},
+            {label: "Deletions", data: {{ author.deletions }}, color: "#B00000"}
+        ];
+
+        $(document).ready(function () {
+            $.plot('#piecontainer', data, {
+                series: {
+                    pie: {
+                        show: true,
+                        radius: 1,
+                        label: {
+                            show: true,
+                            radius: 1,
+                            formatter: function(label, series) {
+                                return '<div style="font-size:11px; text-align:center; padding:2px; color:white;">'+label+'<br/>'+Math.round(series.percent)+'%</div>';
+                            },
+                            threshold: 0.09,
+                            background: {
+                                opacity: 0.8,
+                                color: '#444'
+                            }
+                        }
+                    }
+                },
+                legend: {
+                    show: false
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
