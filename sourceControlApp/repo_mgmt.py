@@ -9,7 +9,7 @@ from pygit2 import clone_repository, GitError
 from django.core.exceptions import ObjectDoesNotExist
 import random
 
-from sourceControlApp.models import UserGitStore, GitStore, CodeAuthor, Commit, Patch
+from sourceControlApp.models import UserGitStore, GitStore, CodeAuthor, Commit, GitRepo, GitBranch
 
 repo_path = 'repo'
 
@@ -31,7 +31,7 @@ def update_repos():
     Updates all of the repos in the database with
     updated information.
     """
-    for repo in GitStore.objects.all():
+    for repo in GitBranch.objects.all():
         update_repo(repo)
 
 def update_repo(repo_object):
@@ -44,14 +44,14 @@ def update_repo(repo_object):
     os.system("rm -rf " + repo_path + "*")
 
     try:
-        repo = clone_repository(url=repo_object.gitRepositoryURL, path=repo_path, checkout_branch=repo_object.branch_name)
+        repo = clone_repository(url=repo_object.git_repository_url, path=repo_path, checkout_branch=repo_object.branch_name)
     except GitError:
         return -1 # Error flag
 
     process_repo(repo, repo_object, repo_path)
     repo_object.save()
 
-def get_repo_data_from_url(url, name, description, user, check_all_branches=False):
+def get_repo_data_from_url(url, name, description, user):
     """
     Updates a single repo by recloning the repo
     and updating the information in the database
@@ -68,114 +68,51 @@ def get_repo_data_from_url(url, name, description, user, check_all_branches=Fals
 
     url = canonicalize_repo_url(url)
 
+    # try:
+    #     repo_object = GitStore.objects.get(gitRepositoryURL = url)
+    #     repo_entry = UserGitStore(git_store=repo_object, name=name, repo_description=description)
+    #     repo_entry.save()
+    #     return repo_entry
+    # except ObjectDoesNotExist:
+    #     repo_object = GitStore(gitRepositoryURL = url)
+    #     repo_object.save()
+    #     repo_entry = UserGitStore(git_store=repo_object, name=name, repo_description=description)
+    #     repo_entry.save()
+    # if not is_valid_repo(url):
+    #     return -1
+
     try:
-        repo_object = GitStore.objects.get(gitRepositoryURL = url)
-        repo_entry = UserGitStore(git_store=repo_object, name=name, repo_description=description)
+        repo_object_old = GitStore.objects.get(gitRepositoryURL = url)
+        repo_object = GitRepo.objects.get(git_repository_url = url)
+        repo_entry = UserGitStore(git_repo=repo_object, name=name, repo_description=description)
         repo_entry.save()
         return repo_entry
-    except ObjectDoesNotExist:
-        repo_object = GitStore(gitRepositoryURL = url)
+    except:
+        repo_object = GitRepo(git_repository_url = url)
         repo_object.save()
-        repo_entry = UserGitStore(git_store=repo_object, name=name, repo_description=description)
+        repo_entry = UserGitStore(git_repo=repo_object, name=name, repo_description=description)
         repo_entry.save()
     if not is_valid_repo(url):
         return -1
 
-    if ~check_all_branches:
-        download_and_process_repo_all_branches.apply_async((url, user,))
-    else:
-        download_and_process_repo.apply_async((url,))
+    download_and_process_repo(repo_object)
 
     return repo_entry
 
 @task
-def download_and_process_repo(url):
-    repo_object = GitStore.objects.get(gitRepositoryURL = url)
-    repo_object.status = 1 # Cloning
-    repo_object.save()
-
-    path = repo_path + url[-5:] # XXX FIX ME
-
-    try:
-        os.system("rm -rf " + path)
-        repo = clone_repository(url=url, path=path)
-    except GitError:
-        repo_object.status = -1
-        repo_object.save()
-        os.system("rm -rf " + path)
-        return
-
-    repo_object.status = 2 # Processing
-    repo_object.save()
-
-    process_repo(repo, repo_object, path)
-
-    repo_object.status = 3 # Done!
-    repo_object.save()
-
-    os.system("rm -rf " + path)
-    return repo_object
-
-@task
-def download_and_process_repo_all_branches(url, user):
-    repo_object = GitStore.objects.all().filter(gitRepositoryURL = url)[0]
-    repo_object.status = 1 # Cloning
-    repo_object.save()
+def download_and_process_repo(repo_object, branch_name=None):
+    """
+    more robust way to process repo
+    :param repo_object: The pygit2 repo to pull information from
+    :return:
+    """
+    url = repo_object.git_repository_url
 
     # XXX this should generate unique path
     this_path = repo_path + str(random.randrange(0,10000))
 
     try:
         os.system("rm -rf " + this_path)
-        repo = clone_repository(url=url, path=this_path)
-    except GitError:
-        repo_object.status = -1
-        repo_object.save()
-        #print("GitError:" + GitError)
-        os.system("rm -rf " + this_path)
-        return
-
-    repo_object.status = 2 # Processing
-    repo_object.save()
-
-    process_repo(repo, repo_object, this_path)
-
-    repo_object.status = 3 # fetching other branches
-    repo_object.save()
-
-    default_branch = repo.listall_branches()[0]
-    branch_list = [branch.replace('origin/', '') for branch in repo.listall_branches(2)]
-    for branch in branch_list:
-        if branch!=default_branch:
-            new_branch = branch
-            download_and_process_repo_branches.apply_async((url, user, new_branch,))
-
-    repo_object.status = 3 # Done!
-    repo_object.save()
-
-    os.system("rm -rf " + this_path)
-    return repo_object
-
-
-@task
-def download_and_process_repo_branches(url, user, branch_name):
-    repo_object_default = GitStore.objects.all().filter(gitRepositoryURL = url)[0]
-    print(repo_object_default)
-    repo_entry_default = UserGitStore.objects.all().filter(git_store = repo_object_default)[0]
-    repo_object = GitStore(gitRepositoryURL = url, branch_name = branch_name)
-    repo_object.save()
-    repo_name = repo_entry_default.name + "(branch: "+branch_name+")"
-    repo_desc = repo_entry_default.repo_description
-    repo_entry = UserGitStore(git_store = repo_object, name = repo_name, repo_description = repo_desc)
-    #repo_entry = UserGitStore(git_store = repo_object, name = 'repo_name', repo_description = 'repo_desc')
-    repo_entry.save()
-    user.ownedRepos.add(repo_entry)
-    repo_object.status = 1 # Cloning
-    repo_object.save()
-
-    this_path = repo_path + branch_name + str(random.randrange(0,10000))
-    os.system("rm -rf " + this_path)
-    try:
         repo = clone_repository(url=url, path=this_path, checkout_branch=branch_name)
     except GitError:
         repo_object.status = -1
@@ -184,12 +121,25 @@ def download_and_process_repo_branches(url, user, branch_name):
         os.system("rm -rf " + this_path)
         return
 
+    branch_db_object = GitBranch(git_repository_url = url)
+    branch_db_object.status = 1 #initialized properly
+    branch_db_object.save()
+    repo_object.branches.add(branch_db_object)
     repo_object.status = 2 # Processing
     repo_object.save()
 
-    process_repo(repo, repo_object, this_path)
+    process_repo(repo, branch_db_object, this_path)
 
-    repo_object.status = 3 # Done!
+    repo_object.status = 3 # Checking other repos
+    repo_object.save()
+
+    if branch_name is None:
+        default_branch = repo.listall_branches()[0]
+        branch_list = [branch.replace('origin/', '') for branch in repo.listall_branches(2)]
+        for branch in branch_list:
+            if branch !=default_branch:
+                download_and_process_repo(repo_object, branch)
+    repo_object.status = 3 # Done
     repo_object.save()
 
     os.system("rm -rf " + this_path)
@@ -203,18 +153,14 @@ def process_repo(repo, repo_object, path):
     :param repo_object: The model to store information in
     :return:
     """
-    repo_object.numCommits = count_commits(repo)
-    repo_object.numFiles = count_files(path)
+    repo_object.num_commits = count_commits(repo)
+    repo_object.num_files = count_files(path)
     repo_object.branch_name = repo.listall_branches()[0]
 
-    #canonicalize branch names
-    branch_list = [branch.replace('origin/', '') for branch in repo.listall_branches(2)]
-
-    repo_object.set_branch_list(branch_list)
-    repo_object.save()
-
     # Count commits per author
-    count_commits_per_author(repo, repo_object)
+    count_commits_per_author_branch(repo, repo_object)
+    repo_object.status = 3 # Done
+    repo_object.save()
 
 def count_commits(repo):
     """
@@ -232,6 +178,58 @@ def count_files(path):
         return num_files
     except GitError:
         return -1
+
+def count_commits_per_author_branch(repo, branch_db_object):
+    """
+    Stores a count of all commits associated with author
+    :param repo: The pygit2 repo to process
+    :param repo_db_object: The model to update
+    """
+
+    try:
+        latest_commit = Commit.objects.filter(git_branch=branch_db_object).latest('commit_time')
+    except ObjectDoesNotExist:
+        latest_commit = None
+
+    for commit in repo.walk(repo.head.target):
+        tz = VariableNonDstTZ(commit.author.offset)
+        time=datetime.fromtimestamp(commit.author.time, tz=tz)
+
+        if (latest_commit is not None and time <= latest_commit.commit_time):
+            continue
+
+        #count additions and deletions
+        p = commit.parents
+        additions = 0
+        deletions = 0
+        if len(p) > 0:
+            diff = commit.tree.diff_to_tree(p[0].tree)
+        else:
+            diff = commit.tree.diff_to_tree()
+        for patch in diff:
+            #Note that the comparison is backward,
+            #So addition should become deletions and vice versa
+            additions += patch.deletions
+            deletions += patch.additions
+
+        author_names = re.findall("^Author: ([^<>]*) <(.*)>", commit.message, re.MULTILINE)
+        if author_names:
+            for name in author_names:
+                code_author = CodeAuthor.objects.get_or_create(git_branch=branch_db_object, name=name[0])[0]
+                code_author.num_commits += 1
+                code_author.additions += additions
+                code_author.deletions += deletions
+                code_author.save()
+        else:
+            code_author = CodeAuthor.objects.get_or_create(git_branch=branch_db_object, name=commit.author.name)[0]
+            code_author.num_commits += 1
+            code_author.additions += additions
+            code_author.deletions += deletions
+            code_author.save()
+
+
+        commit_db_object = Commit.objects.get_or_create(git_branch=branch_db_object,author=code_author,commit_time=time)[0]
+        commit_db_object.save()
 
 def count_commits_per_author(repo, repo_db_object):
     """
