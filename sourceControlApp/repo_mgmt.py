@@ -144,12 +144,11 @@ def download_and_process_repo_all_branches(url, user):
     repo_object.save()
 
     default_branch = repo.listall_branches()[0]
-    branches = repo.listall_branches(2)
-    for branch in branches:
-        if branch[0:7] == 'origin/':
-            if branch[7:]!=default_branch:
-                new_branch = branch[7:]
-                download_and_process_repo_all_branches.apply_async((url, user, new_branch,))
+    branch_list = [branch.replace('origin/', '') for branch in repo.listall_branches(2)]
+    for branch in branch_list:
+        if branch!=default_branch:
+            new_branch = branch
+            download_and_process_repo_branches.apply_async((url, user, new_branch,))
 
     repo_object.status = 3 # Done!
     repo_object.save()
@@ -209,10 +208,7 @@ def process_repo(repo, repo_object, path):
     repo_object.branch_name = repo.listall_branches()[0]
 
     #canonicalize branch names
-    branch_list = repo.listall_branches(2)
-    for branch in branch_list:
-        if branch[0:7] == 'origin/':
-            branch = branch[7:]
+    branch_list = [branch.replace('origin/', '') for branch in repo.listall_branches(2)]
 
     repo_object.set_branch_list(branch_list)
     repo_object.save()

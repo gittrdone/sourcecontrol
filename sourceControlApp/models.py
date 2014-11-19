@@ -43,6 +43,26 @@ class CodeAuthor(models.Model):
     def __unicode__ (self):
         return unicode(self.repository) + self.name
 
+#new model for git branch
+class GitBranch(models.Model):
+    git_repository_url = models.CharField(max_length=300)
+    branch_name = models.CharField(max_length=50)
+    num_files = models.IntegerField(default=0)
+    num_commits = models.IntegerField(default=0)
+    status = models.IntegerField(default=0)
+
+    def __unicode__ (self):
+           return unicode(self.git_repository_url) + ":" + unicode(self.branch_name)
+
+#new model for git repository
+class GitRepo(models.Model):
+    git_repository_url = models.CharField(max_length=300)
+    status = models.IntegerField(default=0)
+    branches = models.ManyToManyField(GitBranch)
+
+    def __unicode__ (self):
+        return unicode(self.git_repository_url)
+
 class Patch(models.Model):
     repository = models.ForeignKey(GitStore)
     filename = models.CharField(max_length=100)
