@@ -197,3 +197,13 @@ def delete_repo(request, id):
     else:
         # XXX Throw error
         return render_to_response("index")
+
+def reports(request, repo_id):
+    reportOne = {'pk':1, 'name': "test1", 'report_description': "test1desc1"}
+    reportTwo= {'pk':2, 'name': "test2", 'report_description': "test1desc2"}
+    reports = (reportOne, reportTwo)
+
+    context_instance = RequestContext(request)
+    context_instance['reports_list'] = reports
+
+    return render_to_response("reports.html", { 'reports_list': reports })

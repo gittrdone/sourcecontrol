@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block head %}
+    <script type="text/javascript">
+        var reportsList = {{ reports_list }};
+        console.log(reportsList)
+    </script>
+{% endblock %}
+{% block content %}
+    {% load staticfiles %}
+    <h2 class="my-repositories-heading" style="font-family: 'Francois One', sans-serif;">MY REPORTS</h2>
+    <a href="#" data-reveal-id="modalForm"><img src="{% static "images/add.png" %}" class="add-repo-button"/></a>
+
+    <div id="modalEditForm" class="reveal-modal" data-reveal>
+        <div class="big_heading" id="editModalHeading">Edit</div>
+        <form id="editReportForm" action="/edit_report" method="POST" style="margin-top:10px;">
+
+            <div id="nameValidate_edit" class="repo_list_validate_label"></div>
+            <label>Name
+                <input name="editName" id="editNameField" type="text" placeholder="Name">
+            </label>
+
+            <input type="hidden" id="editReportField" name="editReport" value="">
+
+            <input id="editReport_edit" type="submit" value="Save" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
+            {% csrf_token %}
+        </form>
+        <a class="close-reveal-modal">&#215;</a>
+    </div>
+
+    <div id="modalForm" class="reveal-modal" data-reveal>
+        <div class="big_heading">Add New Report</div>
+        <form action="/add_report" method="GET" style="margin-top:10px;">
+            <input name="report_name" id="reportName" placeholder="Report Name" type="text"></input>
+            <div id="reportNameCheck" style="display:none;"></div>
+
+            <input name="report_query"  id="reportQuery" placeholder="Report Query" type="text"></input>
+            <div id="reportQueryCheck" style="display:none;"></div>
+
+            <input name="report_desc" id="reportDesc" placeholder="Report Description" type="text"></input>
+            <div id="reportDescCheck" style="display:none;"></div>
+
+            <input id="submitReport" type="submit" value="Store" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
+            {% csrf_token %}
+        </form>
+        <a class="close-reveal-modal">&#215;</a>
+    </div>
+
+    {% if reports_list %}
+        {% for report in reports_list %}
+            <div id="report-{{ report.pk }}" class="large-12 columns card">
+                <h4><a href="/reports/detail/{{ report.pk }}"><b id="name-{{ report.pk }}">{{ report.name }}</b></a>
+                </h4>
+                <h5><b id="query-{{ repo.pk }}">{{ report.query }}</b></h5>
+
+                {% if report.report_description %}
+                    <div class="desc-{{ report.pk }}" style="color:grey;font-style:italic;>{{ report.report_description }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="large-12 columns card no-reports-card">
+            You have no reports added. Hit the '+' above to add one now!
+        </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock %}
