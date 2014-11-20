@@ -11,7 +11,7 @@ import random
 
 from sourceControlApp.models import UserGitStore, GitStore, CodeAuthor, Commit, Patch
 
-repo_path = 'repo'
+repo_path = '_repo'
 
 class VariableNonDstTZ(tzinfo):
 

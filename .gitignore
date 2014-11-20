@@ -58,7 +58,7 @@ docs/_build/
 
 # Celery scheduler database
 celerybeat-schedule.db
-repo*/
+_repo*/
 
 # Redis dump
 dump.rdb
