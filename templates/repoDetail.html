@@ -5,6 +5,12 @@
         var parsedWeekData = {{ week_commits|safe }};
     </script>
 {% endblock %}
+
+{% block optional_nav %}
+    <li class="divider"></li>
+    <li> <a href="{% url 'reports' repo.pk %}">My Reports</a></li>
+{% endblock %}
+
 {% block content %}
     <div class="large-12 columns card">
         <div class="large-6 columns">
@@ -31,9 +37,6 @@
         <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
             {{ authors|length }}
             <br/><div style="font-size:14px;color:black;">committers</div>
-            <div class="button">
-                <a href="/repo/{{ repo.pk }}/reports">Test</a>
-            </div>
         </div>
     </div>
 
