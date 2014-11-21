@@ -62,8 +62,13 @@ def json_bar_data_for_user_repo_commits(request, committer_id, start=None, end=N
     author=get_object_or_404(CodeAuthor, pk=committer_id)
 
     if not ( start and end ):
-        end = datetime.datetime.now(pytz.utc)
-        start = end - datetime.timedelta(days=days)
+        #utc_end = datetime.datetime.now(pytz.utc)
+        #end = utc_end - datetime.timedelta(hours=4)
+        #start = end - datetime.timedelta(days=days)
+        ## ow ow ow
+        hour_offset_from_utc = 4 #The library defaults to UTC
+        start = datetime.datetime.today() - datetime.timedelta(days=6) - datetime.timedelta(hours=hour_offset_from_utc) # Beginning of this week
+        end = datetime.datetime.now() - datetime.timedelta(hours=hour_offset_from_utc)
 
     if end and not start:
         start = end - datetime.timedelta(days=days)
