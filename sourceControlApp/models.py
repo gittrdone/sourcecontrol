@@ -38,6 +38,15 @@ class GitRepo(models.Model):
     status = models.IntegerField(default=0)
     branches = models.ManyToManyField(GitBranch)
 
+    def get_branch_list(self):
+        branch_list = [br.branch_name for br in self.branches]
+
+    def get_branch_by_branch_name(self, branch_name):
+        for branch in self.branches:
+            if branch.branch_name == branch_name:
+                return branch
+        return None
+
     def __unicode__ (self):
         return unicode(self.git_repository_url)
 
