@@ -95,7 +95,7 @@ def get_repo_data_from_url(url, name, description, user):
     if not is_valid_repo(url):
         return -1
 
-    download_and_process_repo(repo_object)
+    download_and_process_repo.apply_async((repo_object,))
 
     return repo_entry
 
@@ -138,7 +138,7 @@ def download_and_process_repo(repo_object, branch_name=None):
         branch_list = [branch.replace('origin/', '') for branch in repo.listall_branches(2)]
         for branch in branch_list:
             if branch !=default_branch:
-                download_and_process_repo(repo_object, branch)
+                download_and_process_repo.apply_async((repo_object, branch, ))
     repo_object.status = 3 # Done
     repo_object.save()
 
