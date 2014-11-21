@@ -15,6 +15,7 @@ def view_reports(request, repo_id):
 
     context_instance = RequestContext(request)
     context_instance['reports_list'] = Report.objects.filter(user=request.user, repo=repo)
+    context_instance['repo_name'] = repo.name
 
     return render_to_response("reports.html", context_instance)
 

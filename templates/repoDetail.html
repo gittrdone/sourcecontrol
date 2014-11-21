@@ -8,7 +8,7 @@
 
 {% block optional_nav %}
     <li class="divider"></li>
-    <li> <a href="{% url 'reports' repo.pk %}">My Reports</a></li>
+    <li> <a href="{% url 'reports' repo.pk %}">{{ repo.name }} Reports</a></li>
 {% endblock %}
 
 {% block content %}
