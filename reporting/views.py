@@ -9,41 +9,41 @@ from sourceControlApp.models import UserGitStore
 # View existing reports list
 def view_reports(request, repo_id):
     if not request.user.is_authenticated():
-        redirect("index")
+        return redirect("index")
 
     repo = UserGitStore.objects.get(pk=repo_id)
 
     context_instance = RequestContext(request)
     context_instance['reports_list'] = Report.objects.filter(user=request.user, repo=repo)
 
-    render_to_response("reports.html", context_instance)
+    return render_to_response("reports.html", context_instance)
 
 # View an individual report
 def view_report(request, repo_id, report_id):
     if not request.user.is_authenticated():
-        redirect("index")
+        return redirect("index")
 
     repo = UserGitStore.objects.get(pk=repo_id)
 
     context_instance = RequestContext(request)
     context_instance['report'] = Report.objects.get(user=request.user, repo=repo, pk=report_id)
 
-    render_to_response("report.html", context_instance)
+    return render_to_response("report.html", context_instance)
 
 # The interface for making a new report
 def new_report(request, repo_id):
     if not request.user.is_authenticated():
-        redirect("index")
+        return redirect("index")
 
     context_instance = RequestContext(request)
     context_instance['queries'] = Query.objects.filter(user=request.user)
 
-    render_to_response("newReport.html", context_instance)
+    return render_to_response("newReport.html", context_instance)
 
 # Endpoint for adding a new report to the DB
 def add_report(request):
     if not request.user.is_authenticated():
-        redirect("index")
+        return redirect("index")
 
     data = json.loads(request.body)
 
@@ -59,13 +59,13 @@ def add_report(request):
     report = Report(user=request.user, name=data['name'], description=['desc'], repo=repo, queries=queries)
     report.save()
 
-    redirect("reports")
+    return redirect("reports")
 
-def remove_repo(request, report_id):
+def remove_report(request, report_id):
     if not request.user.is_authenticated():
-        redirect("index")
+        return redirect("index")
 
     report = Report.objects.get(user=request.user, pk=report_id)
     report.delete()
 
-    redirect("reports")
+    return redirect("reports")
