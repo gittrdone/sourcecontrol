@@ -41,7 +41,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'sourceControlApp',
     'celery',
-    'debug_toolbar',
 )
 
 MIDDLEWARE_CLASSES = (
