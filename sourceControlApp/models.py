@@ -37,6 +37,7 @@ class GitRepo(models.Model):
     git_repository_url = models.CharField(max_length=300)
     status = models.IntegerField(default=0)
     branches = models.ManyToManyField(GitBranch)
+    num_commits = models.IntegerField(default=0)
 
     def get_branch_list(self):
         branch_list = [br.branch_name for br in self.branches]
@@ -87,8 +88,10 @@ class Patch(models.Model):
 class Commit(models.Model):
     #Try many authors later
     #authors = models.ManyToManyField(CodeAuthor)
+    commit_id = models.CharField(max_length=50)
     repository = models.ForeignKey(GitStore, null=True, blank=True)
-    git_branch = models.ForeignKey(GitBranch, null=True, blank=True)
+    git_repo = models.ForeignKey(GitRepo, null=True, blank=True)
+    branches = models.ManyToManyField(GitBranch)
     author = models.ForeignKey(CodeAuthor)
     patches = models.ManyToManyField(Patch, null=True, blank=True)
     commit_time = models.DateTimeField()
@@ -98,4 +101,4 @@ class Commit(models.Model):
         return self.num_patches
 
     def __unicode__ (self):
-        return unicode(self.git_branch) + unicode(self.author)
+        return unicode(self.git_repo) + unicode(self.author)

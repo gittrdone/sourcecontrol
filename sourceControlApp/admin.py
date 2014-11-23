@@ -11,10 +11,10 @@ class CodeAuthorAdmin(admin.ModelAdmin):
     list_display = ["name", "repository", "num_commits", "additions", "deletions"]
 
 class CommitAdmin(admin.ModelAdmin):
-    list_display = ["git_branch", "author"]
+    list_display = ["git_repo", "author", "commit_id"]
 
 class GitRepoAdmin(admin.ModelAdmin):
-    list_display = ["git_repository_url"]
+    list_display = ["git_repository_url", "num_commits"]
 
 class GitBranchAdmin(admin.ModelAdmin):
     list_display = ["git_repository_url","branch_name", "num_files", "num_commits", "status"]

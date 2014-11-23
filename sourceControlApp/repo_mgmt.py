@@ -2,6 +2,7 @@ import os
 import re
 import subprocess
 from datetime import tzinfo, timedelta, datetime
+import warnings
 
 import requests
 from celery import task
@@ -82,7 +83,6 @@ def get_repo_data_from_url(url, name, description, user):
     #     return -1
 
     try:
-        repo_object_old = GitStore.objects.get(gitRepositoryURL = url)
         repo_object = GitRepo.objects.get(git_repository_url = url)
         repo_entry = UserGitStore(git_repo=repo_object, name=name, repo_description=description)
         repo_entry.save()
@@ -95,7 +95,8 @@ def get_repo_data_from_url(url, name, description, user):
     if not is_valid_repo(url):
         return -1
 
-    download_and_process_repo.apply_async((repo_object,))
+    download_and_process_repo(repo_object)
+    #download_and_process_repo.apply_async((repo_object,))
 
     return repo_entry
 
@@ -124,12 +125,14 @@ def download_and_process_repo(repo_object, branch_name=None):
     branch_db_object = GitBranch(git_repository_url = url)
     branch_db_object.status = 1 #initialized properly
     branch_db_object.save()
+
     repo_object.branches.add(branch_db_object)
     repo_object.status = 2 # Processing
     repo_object.save()
 
     process_repo(repo, branch_db_object, this_path)
 
+    repo_object = GitRepo.objects.get(id = repo_object.id)
     repo_object.status = 3 # Checking other repos
     repo_object.save()
 
@@ -138,7 +141,11 @@ def download_and_process_repo(repo_object, branch_name=None):
         branch_list = [branch.replace('origin/', '') for branch in repo.listall_branches(2)]
         for branch in branch_list:
             if branch !=default_branch:
-                download_and_process_repo.apply_async((repo_object, branch, ))
+                repo_object = GitRepo.objects.get(id = repo_object.id)
+                download_and_process_repo(repo_object, branch)
+                #download_and_process_repo.apply_async((repo_object, branch, ))
+
+    repo_object = GitRepo.objects.get(id = repo_object.id)
     repo_object.status = 3 # Done
     repo_object.save()
 
@@ -185,9 +192,10 @@ def count_commits_per_author_branch(repo, branch_db_object):
     :param repo: The pygit2 repo to process
     :param repo_db_object: The model to update
     """
+    url = branch_db_object.git_repository_url
 
     try:
-        latest_commit = Commit.objects.filter(git_branch=branch_db_object).latest('commit_time')
+        latest_commit = Commit.objects.filter(branches=branch_db_object).latest('commit_time')
     except ObjectDoesNotExist:
         latest_commit = None
 
@@ -226,10 +234,18 @@ def count_commits_per_author_branch(repo, branch_db_object):
             code_author.additions += additions
             code_author.deletions += deletions
             code_author.save()
-
-
-        commit_db_object = Commit.objects.get_or_create(git_branch=branch_db_object,author=code_author,commit_time=time)[0]
-        commit_db_object.save()
+        try:
+            commit_db_object = Commit.objects.get(commit_id = commit.id)
+            commit_db_object.branches.add(branch_db_object)
+            commit_db_object.save()
+        except ObjectDoesNotExist:
+            git_repo = GitRepo.objects.get(git_repository_url = url)
+            commit_db_object = Commit.objects.create(commit_id = commit.id, commit_time=time, author=code_author)
+            commit_db_object.git_repo = git_repo
+            commit_db_object.branches.add(branch_db_object)
+            commit_db_object.save()
+            git_repo.num_commits += 1
+            git_repo.save()
 
 def count_commits_per_author(repo, repo_db_object):
     """
@@ -278,7 +294,6 @@ def count_commits_per_author(repo, repo_db_object):
             code_author.additions += additions
             code_author.deletions += deletions
             code_author.save()
-
 
         commit_db_object = Commit.objects.get_or_create(repository=repo_db_object,author=code_author,commit_time=time)[0]
         commit_db_object.save()
