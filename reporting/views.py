@@ -12,10 +12,12 @@ def view_reports(request, repo_id):
         return redirect("index")
 
     repo = UserGitStore.objects.get(pk=repo_id)
+    sourceControlUser = request.user.sourcecontroluser
 
     context_instance = RequestContext(request)
-    context_instance['reports_list'] = Report.objects.filter(user=request.user, repo=repo)
+    context_instance['reports_list'] = Report.objects.filter(user=sourceControlUser, repo=repo)
     context_instance['repo_name'] = repo.name
+    context_instance['repo_id'] = repo.pk
 
     return render_to_response("reports.html", context_instance)
 
@@ -59,24 +61,24 @@ def add_report(request, repo_id):
     #    new_q.save()
     #    queries.append(new_q)
 
-    repo = UserGitStore.objects.get(user=request.user, pk=repo_id)
+
     user = request.user
     sourceControlUser = user.sourcecontroluser
+    repo = UserGitStore.objects.get(sourcecontroluser=sourceControlUser, pk=repo_id)
 
-    query = Query.objects.create_query(name=report_query_name, query_command=report_query_query, user=sourceControlUser)
+    query = Query(name=report_query_name, query_command=report_query_query, user=sourceControlUser)
     query.save()
 
     #report = Report(user=request.user, name=data['name'], description=['desc'], repo=repo, queries=queries)
-    report = Report.objects.create_report(user=sourceControlUser, name=report_name, description=report_desc, repo=repo)
+    report = Report(user=sourceControlUser, name=report_name, description=report_desc, repo=repo)
     report.save()
     report.queries.add(query)
 
     #return redirect("reports")
     context_instance = RequestContext(request)
-    context_instance['reports_list'] = Report.objects.filter(user=request.user, repo=repo)
+    context_instance['reports_list'] = Report.objects.filter(user=sourceControlUser, repo=repo)
     context_instance['repo_name'] = repo.name
-
-    return render_to_response("reports.html", context_instance)
+    return redirect("reports", repo_id=repo_id)
 
 def remove_report(request, report_id):
     if not request.user.is_authenticated():

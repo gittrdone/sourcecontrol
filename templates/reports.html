@@ -29,7 +29,7 @@
 
     <div id="modalForm" class="reveal-modal" data-reveal>
         <div class="big_heading">Add New Report</div>
-        <form action="add_report" method="GET" style="margin-top:10px;">
+        <form action="{% url "add_report" repo_id %}" method="GET" style="margin-top:10px;">
             <input name="report_name" id="reportName" placeholder="Report Name" type="text">
             <div id="reportNameCheck" style="display:none;"></div>
 
@@ -88,7 +88,7 @@
 
        $.ajax({
            type: "GET",
-           url: "",
+           url: "{% url "add_report" repo_id %}",
            dataType: "json",
            data: sendInfoJSON
        })
