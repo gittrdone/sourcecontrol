@@ -42,7 +42,6 @@ INSTALLED_APPS = (
     'sourceControlApp',
     'reporting',
     'celery',
-    'django_extensions',
 )
 
 MIDDLEWARE_CLASSES = (
