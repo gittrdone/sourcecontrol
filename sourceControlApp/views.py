@@ -177,33 +177,9 @@ def delete_repo(request, id):
         user = request.user
         sourceControlUser = user.sourcecontroluser
 
-        # try:
-        #     existing_storee = GitStore.objects.get(usergitstore_set__id=id)
-        #     existing_store = sourceControlUser.ownedRepos.get(git_store = existing_storee)
-        # except:
-        #     raise
-        #
-        #     existing_store = None
-        #
-        # #otherwise we are good to go on deleting
-        # UserGitStore.delete(existing_store)
         o = get_object_or_404(UserGitStore, pk=id)
         o.delete()
-
-        # Store object and render page
-        # context_instance["repo_url"] = repo_url
-        # context_instance["repo_list"] = sourceControlUser.ownedRepos.all()
         return redirect("index")
     else:
         # XXX Throw error
         return render_to_response("index")
-
-def reports(request, repo_id):
-    reportOne = {'pk':1, 'name': "test1", 'report_description': "test1desc1"}
-    reportTwo= {'pk':2, 'name': "test2", 'report_description': "test1desc2"}
-    reports = (reportOne, reportTwo)
-
-    context_instance = RequestContext(request)
-    context_instance['reports_list'] = reports
-
-    return render_to_response("reports.html", { 'reports_list': reports })
