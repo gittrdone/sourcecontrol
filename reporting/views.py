@@ -42,7 +42,7 @@ def new_report(request, repo_id):
     return render_to_response("newReport.html", context_instance)
 
 # Endpoint for adding a new report to the DB
-def add_report(request):
+def add_report(request, repo_id):
     if not request.user.is_authenticated():
         return redirect("index")
 

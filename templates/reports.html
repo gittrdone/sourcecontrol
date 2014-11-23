@@ -87,15 +87,15 @@
        };
 
         console.log(sendInfo);
-
+        var sendInfoJSON = JSON.stringify(sendInfo);
         //$.post("", sendInfo);
 
 
        $.ajax({
-           type: "POST",
+           type: "GET",
            url: "",
            dataType: "json",
-           data: sendInfo
+           data: sendInfoJSON
        })
     }
     </script>
