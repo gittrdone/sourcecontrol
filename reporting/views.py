@@ -46,21 +46,37 @@ def add_report(request, repo_id):
     if not request.user.is_authenticated():
         return redirect("index")
 
-    data = json.loads(request.body)
+    report_name = request.GET['report_name']
+    report_query_name = request.GET['report_query_name']
+    report_query_query = request.GET['report_query_query']
+    report_desc = request.GET['report_desc']
+    #data = json.loads(request.body)
 
-    queries = data['queries']
+    #queries = data['queries']
 
-    for query in data['new_queries']:
-        new_q = Query(user=request.user, name=query['name'], query_command=query['command'])
-        new_q.save()
-        queries.append(new_q)
+    #for query in data['new_queries']:
+    #    new_q = Query(user=request.user, name=query['name'], query_command=query['command'])
+    #    new_q.save()
+    #    queries.append(new_q)
 
-    repo = UserGitStore.objects.get(user=request.user, pk=data['repo_id'])
+    repo = UserGitStore.objects.get(user=request.user, pk=repo_id)
+    user = request.user
+    sourceControlUser = user.sourcecontroluser
 
-    report = Report(user=request.user, name=data['name'], description=['desc'], repo=repo, queries=queries)
+    query = Query.objects.create_query(name=report_query_name, query_command=report_query_query, user=sourceControlUser)
+    query.save()
+
+    #report = Report(user=request.user, name=data['name'], description=['desc'], repo=repo, queries=queries)
+    report = Report.objects.create_report(user=sourceControlUser, name=report_name, description=report_desc, repo=repo)
     report.save()
+    report.queries.add(query)
 
-    return redirect("reports")
+    #return redirect("reports")
+    context_instance = RequestContext(request)
+    context_instance['reports_list'] = Report.objects.filter(user=request.user, repo=repo)
+    context_instance['repo_name'] = repo.name
+
+    return render_to_response("reports.html", context_instance)
 
 def remove_report(request, report_id):
     if not request.user.is_authenticated():

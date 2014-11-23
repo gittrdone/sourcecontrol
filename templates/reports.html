@@ -29,25 +29,20 @@
 
     <div id="modalForm" class="reveal-modal" data-reveal>
         <div class="big_heading">Add New Report</div>
-        <form action="/add_report" method="GET" style="margin-top:10px;">
+        <form action="add_report" method="GET" style="margin-top:10px;">
             <input name="report_name" id="reportName" placeholder="Report Name" type="text">
             <div id="reportNameCheck" style="display:none;"></div>
 
-            <input class="query" name="report_query"  id="reportQuery" placeholder="Report Query" type="text">
-            <div id="reportQueryCheck" style="display:none;"></div>
+            <input class="queryName" name="report_query_name"  id="reportQueryName" placeholder="Report Query Name" type="text">
+            <div id="reportQueryNameCheck" style="display:none;"></div>
 
-                        <input class="query" name="report_query"  id="reportQuery" placeholder="Report Query" type="text">
-            <div id="reportQueryCheck" style="display:none;"></div>
-
-                        <input class="query" name="report_query"  id="reportQuery" placeholder="Report Query" type="text">
-            <div id="reportQueryCheck" style="display:none;"></div>
-
+            <input class="queryQuery" name="report_query_query"  id="reportQueryQuery" placeholder="Report Query Query" type="text">
+            <div id="reportQueryQueryCheck" style="display:none;"></div>
 
             <input name="report_desc" id="reportDesc" placeholder="Report Description" type="text">
             <div id="reportDescCheck" style="display:none;"></div>
 
             <input id="submitReport" type="submit" value="Store" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
-            <input id="testButton" type="" value="Test" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
             {% csrf_token %}
         </form>
         <a class="close-reveal-modal">&#215;</a>
