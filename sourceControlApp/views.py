@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 from json import dumps
 from django.shortcuts import render, render_to_response, get_object_or_404
-from sourceControlApp.models import GitStore, SourceControlUser, UserGitStore
+from sourceControlApp.models import GitRepo, SourceControlUser, UserGitStore, GitBranch
 from sourceControlApp.repo_mgmt import get_repo_data_from_url, canonicalize_repo_url
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
@@ -16,13 +16,17 @@ def index(request):
     if request.user.is_authenticated():
         user = request.user
         repos = user.sourcecontroluser.ownedRepos.all()
+        default_branch_ids = []
+        for repo in repos:
+            default_branch_ids.append(repo.git_repo.branches.all()[0].pk)
+
         #form = UpdateUserGitStoreForm()
     else:
         repos = []
         #have it throw an error saying to log in
 
     if request.user.is_authenticated():
-        return render(request, 'repoList.html', { 'repo_list': repos })
+        return render(request, 'repoList.html', { 'repo_list': repos, 'default_branch_ids': default_branch_ids })
     else:
         return render(request, 'index.html', {})
 
@@ -37,11 +41,11 @@ def add_repo(request):
         sourceControlUser = user.sourcecontroluser
 
         try:
-            existing_store = GitStore.objects.filter(gitRepositoryURL=canonicalize_repo_url(repo_url))[0]
+            existing_store = GitRepo.objects.filter(gitRepositoryURL=canonicalize_repo_url(repo_url))[0]
         except:
             existing_store = None
 
-        if existing_store != None and len(sourceControlUser.ownedRepos.filter(git_store=existing_store)) > 0:
+        if existing_store != None and len(sourceControlUser.ownedRepos.filter(git_repo=existing_store)) > 0:
             error = True
         else:
             repo = get_repo_data_from_url(repo_url, repo_name, repo_description, sourceControlUser)
@@ -55,29 +59,36 @@ def add_repo(request):
             sourceControlUser.ownedRepos.add(repo)
 
         # Store object and render page
+        default_branch_files = []
+        repos = user.sourcecontroluser.ownedRepos.all()
+        for repo in repos:
+            branches_list = repo.git_repo.branches.all()
+            default_branch_files.append(branches_list[0].num_files)
+
         context_instance["repo_url"] = repo_url
-        context_instance["repo_list"] = sourceControlUser.ownedRepos.all()
+        context_instance["repo_list"] = zip(sourceControlUser.ownedRepos.all(), branches_list, default_branch_files)
         return render_to_response("repoList.html", context_instance)
     else:
         # XXX Throw error
         return render_to_response("repoList.html", {})
 
-def repo_detail(request, repo_id):
+def repo_detail(request, repo_id, branch_id):
     repo = UserGitStore.objects.get(pk=repo_id)
+    branch = GitBranch.objects.get(pk=branch_id)
 
     context_instance = RequestContext(request)
     context_instance['repo'] = repo
     context_instance['repo_pk'] = repo.pk
-    context_instance['authors'] = repo.git_store.codeauthor_set.all().order_by('-num_commits')
-    context_instance['json_authors'] = serializers.serialize("json", repo.git_store.codeauthor_set.all())
-    context_instance['branches'] = repo.git_store.branch_list
+    context_instance['authors'] = branch.codeauthor_set.all().order_by('-num_commits')
+    context_instance['json_authors'] = serializers.serialize("json", branch.codeauthor_set.all())
+    context_instance['branches'] = repo.git_repo.get_branch_list()
 
     hour_offset_from_utc = 4 #The library defaults to UTC
     last_week = datetime.today() - timedelta(days=6) - timedelta(hours=hour_offset_from_utc) # Beginning of this week
     today = datetime.now() - timedelta(hours=hour_offset_from_utc)
 
     daily_commit_counts = {}
-    weekly_commits = repo.git_store.commit_set.filter(commit_time__range=(last_week, today))
+    weekly_commits = branch.commit_set.filter(commit_time__range=(last_week, today))
     for commit in weekly_commits:
         day_commit = commit.commit_time - timedelta(hours=hour_offset_from_utc)
         day = day_commit.day
@@ -91,7 +102,7 @@ def repo_detail(request, repo_id):
 
 def repo_status(request, repo_id):
     user_repo = UserGitStore.objects.get(pk=repo_id)
-    repo = user_repo.git_store
+    repo = user_repo.git_repo
 
     ret = {}
     ret['status'] = repo.status
@@ -155,8 +166,8 @@ def edit_repo(request):
         sourceControlUser = user.sourcecontroluser
 
         try:
-            existing_storee = GitStore.objects.get(gitRepositoryURL=canonicalize_repo_url(repo_url))
-            existing_store = sourceControlUser.ownedRepos.get(git_store = existing_storee)
+            existing_storee = GitRepo.objects.get(gitRepositoryURL=canonicalize_repo_url(repo_url))
+            existing_store = sourceControlUser.ownedRepos.get(git_repo = existing_storee)
         except:
             existing_store = None
 
@@ -178,22 +189,9 @@ def delete_repo(request, id):
         user = request.user
         sourceControlUser = user.sourcecontroluser
 
-        # try:
-        #     existing_storee = GitStore.objects.get(usergitstore_set__id=id)
-        #     existing_store = sourceControlUser.ownedRepos.get(git_store = existing_storee)
-        # except:
-        #     raise
-        #
-        #     existing_store = None
-        #
-        # #otherwise we are good to go on deleting
-        # UserGitStore.delete(existing_store)
         o = get_object_or_404(UserGitStore, pk=id)
         o.delete()
 
-        # Store object and render page
-        # context_instance["repo_url"] = repo_url
-        # context_instance["repo_list"] = sourceControlUser.ownedRepos.all()
         return redirect("index")
     else:
         # XXX Throw error

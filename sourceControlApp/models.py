@@ -52,7 +52,6 @@ class GitRepo(models.Model):
         return unicode(self.git_repository_url)
 
 class UserGitStore(models.Model):
-    git_store = models.ForeignKey(GitStore, null=True, blank=True)
     git_repo = models.ForeignKey(GitRepo, null=True, blank=True)
     name = models.CharField(max_length=100)
     repo_description = models.CharField(max_length=1000)
