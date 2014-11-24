@@ -52,15 +52,6 @@ def add_report(request, repo_id):
     report_query_name = request.GET['report_query_name']
     report_query_query = request.GET['report_query_query']
     report_desc = request.GET['report_desc']
-    #data = json.loads(request.body)
-
-    #queries = data['queries']
-
-    #for query in data['new_queries']:
-    #    new_q = Query(user=request.user, name=query['name'], query_command=query['command'])
-    #    new_q.save()
-    #    queries.append(new_q)
-
 
     user = request.user
     sourceControlUser = user.sourcecontroluser
@@ -69,22 +60,22 @@ def add_report(request, repo_id):
     query = Query(name=report_query_name, query_command=report_query_query, user=sourceControlUser)
     query.save()
 
-    #report = Report(user=request.user, name=data['name'], description=['desc'], repo=repo, queries=queries)
     report = Report(user=sourceControlUser, name=report_name, description=report_desc, repo=repo)
     report.save()
     report.queries.add(query)
 
-    #return redirect("reports")
     context_instance = RequestContext(request)
     context_instance['reports_list'] = Report.objects.filter(user=sourceControlUser, repo=repo)
     context_instance['repo_name'] = repo.name
     return redirect("reports", repo_id=repo_id)
 
-def remove_report(request, report_id):
+def delete_report(request, report_id):
     if not request.user.is_authenticated():
         return redirect("index")
 
-    report = Report.objects.get(user=request.user, pk=report_id)
+    user = request.user
+    sourceControlUser = user.sourcecontroluser
+    report = Report.objects.get(user=sourceControlUser, pk=report_id)
     report.delete()
 
     return redirect("reports")

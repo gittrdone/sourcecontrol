@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% block head %}
     <script type="text/javascript">
-        var reportsList = {{ reports_list }};
-        console.log(reportsList)
     </script>
 {% endblock %}
 {% block content %}
@@ -14,9 +12,13 @@
         <div class="big_heading" id="editModalHeading">Edit</div>
         <form id="editReportForm" action="/edit_report" method="POST" style="margin-top:10px;">
 
-            <div id="nameValidate_edit" class="repo_list_validate_label"></div>
+            <div id="nameValidate_edit" class="report_list_validate_label"></div>
             <label>Name
                 <input name="editName" id="editNameField" type="text" placeholder="Name">
+            </label>
+
+            <label>Description
+                <textarea name="editDesc" id="editDescField" rows="3" style="resize:none;" placeholder="Description (optional)"></textarea>
             </label>
 
             <input type="hidden" id="editReportField" name="editReport" value="">
@@ -53,11 +55,19 @@
             <div id="report-{{ report.pk }}" class="large-12 columns card">
                 <h4><a href="/reports/detail/{{ report.pk }}"><b id="name-{{ report.pk }}">{{ report.name }}</b></a>
                 </h4>
-                <h5><b id="query-{{ repo.pk }}">{{ report.query }}</b></h5>
+                <h5><b id="query-{{ report.pk }}">{{ report.query }}</b></h5>
 
-                {% if report.report_description %}
-                    <div class="desc-{{ report.pk }}" style="color:grey;font-style:italic;>{{ report.report_description }}</div>
+                {% if report.description %}
+                    <div class="desc-{{ report.pk }}" style="color:grey;font-style:italic; display:block;">{{ report.description }}</div>
                 {% endif %}
+                <div class="large-12 columns">
+                    <i class="fa fa-cogs responsive-icon" style="float:right;" data-options="align:left" data-dropdown="editDropdown{{ report.pk }}"></i>
+                </div>
+                <!--Dropdown-->
+                <ul id="editDropdown{{ report.pk }}" class="tiny f-dropdown" data-dropdown-content>
+                    <li id="editReportButton" data-reveal-id="modalEditForm"><a href="#">Edit Report</a></li>
+                    <li id="deleteReport_edit"><a href="{% url "delete_report" report.pk %}">Delete Report</a></li>
+                </ul>
             </div>
         {% endfor %}
     {% else %}
@@ -69,6 +79,73 @@
     <script>
     var storeButton = document.querySelector("#submitReport");
     storeButton.addEventListener("click", storeReport);
+
+    //Register a function handler for when the delete button is clicked that changes the
+    //Form action to delete_repo instead of edit_repo
+    var deleteRepoButton = document.querySelector('#deleteReporg_edit');
+    deleteRepoButton.addEventListener("click", changeToDelete);
+    function changeToDelete(e) {
+        var editForm = document.querySelector('#editReportForm');
+        editForm.action = '/delete_report';
+    }
+
+    var editButtonList = document.querySelectorAll('#editReportButton');
+    var len = editButtonList.length;
+    //loop through list and add event listener
+    for (var i =0;  i < len; i++) {
+        editButtonList[i].addEventListener("click", edit);
+    }
+
+    function edit(e) {
+        var editForm = document.querySelector('#editReportForm');
+        editForm.action = '/edit_report';
+        console.log("Editing");
+        var card = $(this).parents('.large-12.columns.card');
+        console.log(card);
+
+        //Get the repo number
+        var cardID = card.attr('id');
+
+        //Parse out the 'repo-'
+        cardID = cardID.replace('repo-','');
+        console.log(cardID);
+
+        var nameIDString = '#name-' + cardID;
+        var descIDString = '.desc-' + cardID;
+        var repoString = '#url-' + cardID;
+        var name = $(nameIDString).html();
+        var desc = $(descIDString).html();
+        var repo = $(repoString).html();
+        console.log(name);
+        console.log(desc);
+        console.log(repo);
+
+        var nameEditField = $('#editNameField');
+        var descEditField = $('#editDescField');
+        var repoEditField = $('#editRepoField');
+        var editModalHeading = $('#editModalHeading');
+
+        console.log(nameEditField);
+        console.log(descEditField);
+
+        console.log("Name Edit Field Val:");
+        console.log(nameEditField.val());
+
+        console.log("Desc Edit Field Val:");
+        console.log(descEditField.val());
+
+        editModalHeading.text("Edit - "+repo);
+        nameEditField.val(name);
+        descEditField.val(desc);
+        repoEditField.val(repo);
+
+        console.log("Name Edit Field Val:");
+        console.log(nameEditField.val());
+
+        console.log("Desc Edit Field Val:");
+        console.log(descEditField.val());
+        return 1;
+    }
 
     function storeReport(e) {
         var reportName = $('#reportName').val();
@@ -88,7 +165,7 @@
 
        $.ajax({
            type: "GET",
-           url: "{% url "add_report" repo_id %}",
+           url: "{% url "add_report" report_id %}",
            dataType: "json",
            data: sendInfoJSON
        })
