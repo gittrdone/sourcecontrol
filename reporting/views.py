@@ -3,6 +3,7 @@ import json
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 
+from sourceControlApp.querying.query_runner import process_string
 from reporting.models import Report, Query
 from sourceControlApp.models import UserGitStore
 
@@ -27,9 +28,13 @@ def view_report(request, repo_id, report_id):
         return redirect("index")
 
     repo = UserGitStore.objects.get(pk=repo_id)
+    report = Report.objects.get(user=request.user.sourcecontroluser, repo=repo, pk=report_id)
 
     context_instance = RequestContext(request)
-    context_instance['report'] = Report.objects.get(user=request.user, repo=repo, pk=report_id)
+    context_instance['report'] = report
+
+    # XXX Only does first query for now!!
+    context_instance['query_result'] = process_string(report.queries.all()[0].query_command, repo)
 
     return render_to_response("report.html", context_instance)
 
