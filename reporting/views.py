@@ -67,15 +67,30 @@ def add_report(request, repo_id):
     context_instance = RequestContext(request)
     context_instance['reports_list'] = Report.objects.filter(user=sourceControlUser, repo=repo)
     context_instance['repo_name'] = repo.name
+
     return redirect("reports", repo_id=repo_id)
 
-def delete_report(request, report_id):
+def edit_report(request):
     if not request.user.is_authenticated():
         return redirect("index")
 
-    user = request.user
-    sourceControlUser = user.sourcecontroluser
-    report = Report.objects.get(user=sourceControlUser, pk=report_id)
+    report_name = request.POST['editName']
+    report_desc = request.POST['editDesc']
+    report_id = request.POST['editReport']
+
+    report = Report.objects.get(user=request.user.sourcecontroluser, pk=report_id)
+
+    report.name = report_name
+    report.description = report_desc
+    report.save()
+
+    return redirect("reports", repo_id=report.repo.pk)
+
+def delete_report(request, repo_id, report_id):
+    if not request.user.is_authenticated():
+        return redirect("index")
+
+    report = Report.objects.get(user=request.user.sourcecontroluser, pk=report_id)
     report.delete()
 
-    return redirect("reports")
+    return redirect("reports", repo_id=repo_id)

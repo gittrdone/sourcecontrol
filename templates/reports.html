@@ -10,7 +10,7 @@
 
     <div id="modalEditForm" class="reveal-modal" data-reveal>
         <div class="big_heading" id="editModalHeading">Edit</div>
-        <form id="editReportForm" action="/edit_report" method="POST" style="margin-top:10px;">
+        <form id="editReportForm" action="/edit_report/" method="POST" style="margin-top:10px;">
 
             <div id="nameValidate_edit" class="report_list_validate_label"></div>
             <label>Name
@@ -53,7 +53,7 @@
     {% if reports_list %}
         {% for report in reports_list %}
             <div id="report-{{ report.pk }}" class="large-12 columns card">
-                <h4><a href="/reports/detail/{{ report.pk }}"><b id="name-{{ report.pk }}">{{ report.name }}</b></a>
+                <h4><a href="/repo/{{ repo_id }}/reports/{{ report.pk }}"><b id="name-{{ report.pk }}">{{ report.name }}</b></a>
                 </h4>
                 <h5><b id="query-{{ report.pk }}">{{ report.query }}</b></h5>
 
@@ -66,7 +66,7 @@
                 <!--Dropdown-->
                 <ul id="editDropdown{{ report.pk }}" class="tiny f-dropdown" data-dropdown-content>
                     <li id="editReportButton" data-reveal-id="modalEditForm"><a href="#">Edit Report</a></li>
-                    <li id="deleteReport_edit"><a href="{% url "delete_report" report.pk %}">Delete Report</a></li>
+                    <li id="deleteReport_edit"><a href="{% url "delete_report" repo_id report.pk %}">Delete Report</a></li>
                 </ul>
             </div>
         {% endfor %}
@@ -82,7 +82,7 @@
 
     //Register a function handler for when the delete button is clicked that changes the
     //Form action to delete_repo instead of edit_repo
-    var deleteRepoButton = document.querySelector('#deleteReporg_edit');
+    var deleteRepoButton = document.querySelector('#deleteReport_edit');
     deleteRepoButton.addEventListener("click", changeToDelete);
     function changeToDelete(e) {
         var editForm = document.querySelector('#editReportForm');
@@ -98,7 +98,7 @@
 
     function edit(e) {
         var editForm = document.querySelector('#editReportForm');
-        editForm.action = '/edit_report';
+        editForm.action = '/edit_report/';
         console.log("Editing");
         var card = $(this).parents('.large-12.columns.card');
         console.log(card);
@@ -107,7 +107,7 @@
         var cardID = card.attr('id');
 
         //Parse out the 'repo-'
-        cardID = cardID.replace('repo-','');
+        cardID = cardID.replace('report-','');
         console.log(cardID);
 
         var nameIDString = '#name-' + cardID;
@@ -122,7 +122,7 @@
 
         var nameEditField = $('#editNameField');
         var descEditField = $('#editDescField');
-        var repoEditField = $('#editRepoField');
+        var reportEditField = $('#editReportField');
         var editModalHeading = $('#editModalHeading');
 
         console.log(nameEditField);
@@ -137,7 +137,7 @@
         editModalHeading.text("Edit - "+repo);
         nameEditField.val(name);
         descEditField.val(desc);
-        repoEditField.val(repo);
+        reportEditField.val(cardID);
 
         console.log("Name Edit Field Val:");
         console.log(nameEditField.val());
@@ -165,7 +165,7 @@
 
        $.ajax({
            type: "GET",
-           url: "{% url "add_report" report_id %}",
+           url: "{% url "add_report" repo_id %}",
            dataType: "json",
            data: sendInfoJSON
        })
