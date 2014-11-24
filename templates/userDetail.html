@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block head %}
-
+    <script type="text/javascript">
+        var parsedCommitData = {{ json_commits|safe }};
+    </script>
 {% endblock %}
 {% block content %}
     <div class="large-12 columns card">
@@ -28,13 +30,18 @@
     </div>
 
     <div class="large-12 columns card">
-        <div class="large-12 columns" style="height:250px;text-align:center">
+        <div class="large-6 columns" style="height:250px;text-align:center">
             <h6><b>Insertions vs. Deletions</b></h6>
             <div id="piecontainer" style="height:200px;"></div>
+        </div>
+        <div class="large-6 columns" style="height:250px;text-align:center">
+            <h6><b>Commits Over Time</b></h6>
+            <div id="barcontainer" style="height:200px;"></div>
         </div>
     </div>
 
 {% endblock %}
+
 {% block extra_js %}
     <script>
         var data = [
@@ -64,6 +71,23 @@
                 },
                 legend: {
                     show: false
+                }
+            });
+        });
+
+        $.getJSON( "{% url "user_repo_detail_bar_day" author.pk %}", function( data ) {
+            console.log(data)
+            $.plot('#barcontainer', [data], {
+                series: {
+                    bars: {
+                        show: true,
+                        barWidth: 0.6,
+                        align: "center"
+                    }
+                },
+                xaxis: {
+                    mode: "categories",
+                    tickLength: 0
                 }
             });
         });
