@@ -66,7 +66,7 @@ def repo_detail(request, repo_id, branch_id):
     context_instance['repo_pk'] = repo.pk
     context_instance['authors'] = branch.codeauthor_set.all().order_by('-num_commits')
     context_instance['json_authors'] = serializers.serialize("json", branch.codeauthor_set.all())
-    context_instance['branches'] = repo.git_repo.get_branch_list()
+    context_instance['branches'] = repo.git_repo.branches.all()
     context_instance['branch'] = branch
 
     hour_offset_from_utc = 4 #The library defaults to UTC

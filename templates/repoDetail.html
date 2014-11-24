@@ -22,7 +22,16 @@
             {% endif %}
 
             {% load staticfiles %}
-            <img src="{% static "images/git-branch.png" %}" class="branch-icon"/><div class="branch-text">{{ branch.branch_name }}</div>
+            <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
+            <a href="#" class="button" data-dropdown="drop">{{ branch.branch_name }} &raquo;</a>
+                <ul id="drop" class="[tiny small medium large content]f-dropdown" data-dropdown-content>
+                    {% for branchObject in branches %}
+                        {% if branchObject.pk != branch.pk %}
+                            <!-- {{ branch.pk }} -->
+                            <li><a href="/repo/detail/{{ repo.pk }}/{{ branchObject.pk }}">{{ branchObject.branch_name }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
         </div>
         <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
             {{ branch.num_files }}
