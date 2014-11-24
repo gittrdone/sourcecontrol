@@ -7,7 +7,7 @@
 {% endblock %}
 {% block content %}
     {% load staticfiles %}
-    <h2 class="my-repositories-heading" style="font-family: 'Francois One', sans-serif;">MY REPORTS</h2>
+    <h2 class="my-repositories-heading" style="font-family: 'Francois One', sans-serif;">{{ repo_name }} REPORTS</h2>
     <a href="#" data-reveal-id="modalForm"><img src="{% static "images/add.png" %}" class="add-repo-button"/></a>
 
     <div id="modalEditForm" class="reveal-modal" data-reveal>
@@ -29,14 +29,17 @@
 
     <div id="modalForm" class="reveal-modal" data-reveal>
         <div class="big_heading">Add New Report</div>
-        <form action="/add_report" method="GET" style="margin-top:10px;">
-            <input name="report_name" id="reportName" placeholder="Report Name" type="text"></input>
+        <form action="{% url "add_report" repo_id %}" method="GET" style="margin-top:10px;">
+            <input name="report_name" id="reportName" placeholder="Report Name" type="text">
             <div id="reportNameCheck" style="display:none;"></div>
 
-            <input name="report_query"  id="reportQuery" placeholder="Report Query" type="text"></input>
-            <div id="reportQueryCheck" style="display:none;"></div>
+            <input class="queryName" name="report_query_name"  id="reportQueryName" placeholder="Report Query Name" type="text">
+            <div id="reportQueryNameCheck" style="display:none;"></div>
 
-            <input name="report_desc" id="reportDesc" placeholder="Report Description" type="text"></input>
+            <input class="queryQuery" name="report_query_query"  id="reportQueryQuery" placeholder="Report Query Query" type="text">
+            <div id="reportQueryQueryCheck" style="display:none;"></div>
+
+            <input name="report_desc" id="reportDesc" placeholder="Report Description" type="text">
             <div id="reportDescCheck" style="display:none;"></div>
 
             <input id="submitReport" type="submit" value="Store" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
@@ -63,6 +66,34 @@
         </div>
     {% endif %}
 
+    <script>
+    var storeButton = document.querySelector("#submitReport");
+    storeButton.addEventListener("click", storeReport);
+
+    function storeReport(e) {
+        var reportName = $('#reportName').val();
+        var reportDesc = $('#reportDesc').val();
+        var queryList = $(".query").map(function() { return $(this).val() }).get();
+
+        var sendInfo = {
+           Name: reportName,
+           Desc: reportDesc,
+           QueryList: queryList
+       };
+
+        console.log(sendInfo);
+        var sendInfoJSON = JSON.stringify(sendInfo);
+        //$.post("", sendInfo);
+
+
+       $.ajax({
+           type: "GET",
+           url: "{% url "add_report" repo_id %}",
+           dataType: "json",
+           data: sendInfoJSON
+       })
+    }
+    </script>
 {% endblock %}
 
 {% block extra_js %}
