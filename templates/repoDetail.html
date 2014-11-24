@@ -23,8 +23,8 @@
 
             {% load staticfiles %}
             <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
-            <a href="#" class="button" data-dropdown="drop">{{ branch.branch_name }} &raquo;</a>
-                <ul id="drop" class="[tiny small medium large content]f-dropdown" data-dropdown-content>
+            <a href="#" class="button" style="margin: 0; padding: 0.5rem 1rem;" data-dropdown="drop">{{ branch.branch_name }} &raquo;</a>
+                <ul id="drop" class="small f-dropdown" data-dropdown-content>
                     {% for branchObject in branches %}
                         {% if branchObject.pk != branch.pk %}
                             <!-- {{ branch.pk }} -->
