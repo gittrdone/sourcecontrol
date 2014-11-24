@@ -1,8 +1,6 @@
 import datetime
 from django.http import JsonResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-from sourceControlApp.models import GitStore, SourceControlUser, UserGitStore
+from sourceControlApp.models import GitStore, SourceControlUser, UserGitStore, GitBranch
 
 def dates_between_datetimes(start,end):
     """
@@ -15,12 +13,13 @@ def dates_between_datetimes(start,end):
         yield start.date()
         start += datetime.timedelta(days=1)
 # Create your views here.
-def json_pie_data_for_repo(request, repo_id):
+def json_pie_data_for_repo(request, repo_id, branch_id):
     r = UserGitStore.objects.get(pk=repo_id)
+    b = GitBranch.objects.get(pk=branch_id)
 
     ## this a lot better to get the correct data without serializing the whole object ;)
     ## the select changes the name as part of the query thus saving time with having to rename dict keys
-    values = r.git_store.codeauthor_set.extra(
+    values = b.codeauthor_set.extra(
         select={'label':'name', 'data':'num_commits'}
     ).values(
         'label', 'data'
@@ -28,8 +27,9 @@ def json_pie_data_for_repo(request, repo_id):
     response = JsonResponse(list(values), safe=False)
     return response
 
-def json_bar_data_for_repo_commits(request, repo_id):
+def json_bar_data_for_repo_commits(request, repo_id, branch_id):
     r = UserGitStore.objects.get(pk=repo_id)
+    b = GitBranch.objects.get(pk=branch_id)
 
     ## ow ow ow
     hour_offset_from_utc = 4 #The library defaults to UTC
@@ -41,7 +41,7 @@ def json_bar_data_for_repo_commits(request, repo_id):
     ## whoa dict comprehensions, next level maneuver
     daily_commit_counts = {i:0 for i in dbd}
 
-    weekly_commits = r.git_store.commit_set.filter(commit_time__range=(last_week, today))
+    weekly_commits = b.commit_set.filter(commit_time__range=(last_week, today))
     for commit in weekly_commits:
         day_commit = commit.commit_time - datetime.timedelta(hours=hour_offset_from_utc)
         day = day_commit.date()

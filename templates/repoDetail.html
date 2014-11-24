@@ -15,22 +15,22 @@
     <div class="large-12 columns card">
         <div class="large-6 columns">
             <h3><b>{{ repo.name }}</b></h3>
-            <b>{{ repo.git_store.gitRepositoryURL }}</b><br><br>
+            <b>{{ repo.git_repo.git_repository_url }}</b><br><br>
 
             {% if repo.repo_description %}
                 <div style="color:grey;font-style:italic;">{{ repo.repo_description }}</div>
             {% endif %}
 
             {% load staticfiles %}
-            <img src="{% static "images/git-branch.png" %}" class="branch-icon"/><div class="branch-text">{{ repo.git_store.branch_name }}</div>
+            <img src="{% static "images/git-branch.png" %}" class="branch-icon"/><div class="branch-text">{{ branch.branch_name }}</div>
         </div>
         <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ repo.git_store.numFiles }}
+            {{ branch.num_files }}
             <br/><div style="font-size:14px;color:black;">files</div>
         </div>
 
         <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ repo.git_store.numCommits }}
+            {{ repo.git_repo.num_commits }}
             <br/><div style="font-size:14px;color:black;">commits</div>
         </div>
 
@@ -87,7 +87,7 @@
 {% block extra_js %}
     <script>
         //data = [{ label: "Series1",  data: 10},{ label: "Series2",  data: 30}];
-        $.getJSON( "{% url "repo_detail_pie" repo_pk %}", function( data ) {
+        $.getJSON( "{% url "repo_detail_pie" repo_pk branch.pk %}", function( data ) {
             console.log(data)
             $.plot('#piecontainer', data, {
                 series: {
@@ -113,7 +113,7 @@
                 }
             });
         });
-        $.getJSON( "{% url "repo_detail_bar_day" repo_pk %}", function( data ) {
+        $.getJSON( "{% url "repo_detail_bar_day" repo_pk branch.pk %}", function( data ) {
             console.log(data)
             $.plot('#barcontainer', [data], {
                 series: {

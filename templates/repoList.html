@@ -53,42 +53,44 @@
 
     {% if repo_list %}
         {% for repo in repo_list %}
-            <div id="repo-{{ repo.pk }}" class="large-12 columns card">
+            <div id="repo-{{ repo.0.pk }}" class="large-12 columns card">
                 <div class="large-10 columns">
-                    <h4>{% if repo.git_store.status == 3 %}<a href="/repo/detail/{{ repo.pk }}"><b id="name-{{ repo.pk }}">{{ repo.name }}</b></a>
-                        {% else %}<b id="name-{{ repo.pk }}">{{ repo.name }}</b>
+                    <h4>{% if repo.0.git_repo.status == 3 %}<a href="/repo/detail/{{ repo.0.pk }}/{{ repo.1 }}"><b id="name-{{ repo.0.pk }}">{{ repo.0.name }}</b></a>
+                        {% else %}<b id="name-{{ repo.0.pk }}">{{ repo.0.name }}</b>
                     {% endif %}
                     </h4>
-                    <h5><b id="url-{{ repo.pk }}">{{ repo.git_store.gitRepositoryURL }}</b></h5>
-                    {% if repo.git_store.status != 3 %}
+                    <h5><b id="url-{{ repo.0.pk }}">{{ repo.0.git_repo.git_repository_url }}</b></h5>
+                    {% if repo.0.git_repo.status != 3 %}
                         <!-- TODO: Messages for each possible state -->
-                        <h6 id="status-{{ repo.pk }}"><img src="{% static "images/spinner.gif" %}">Repo currently being processed.</h6>
+                        <h6 id="status-{{ repo.0.pk }}"><img src="{% static "images/spinner.gif" %}">Repo currently being processed.</h6>
                     {% endif %}
 
-                    {% if repo.repo_description %}
-                        <div class="desc-{{ repo.pk }}" style="color:grey;font-style:italic;display:{% if repo.git_store.status == 3 %}block{% else %}none{% endif %}";>{{ repo.repo_description }}</div>
+                    {% if repo.0.repo_description %}
+                        <div class="desc-{{ repo.0.pk }}" style="color:grey;font-style:italic;display:{% if repo.0.git_repo.status == 3 %}block{% else %}none{% endif %}";>{{ repo.0.repo_description }}</div>
                     {% endif %}
                 </div>
-                {% if repo.git_store.status == 3 %}
+                {% if repo.0.git_repo.status == 3 %}
                     <div class="large-1 columns" style="font-size:22px;color:darkblue;margin-top: 20px;">
-                        {{ repo.git_store.numFiles }}
+                        {{ repo.2 }}
                         <br/><div style="font-size:15px;color:black;">files</div>
                     </div>
                     <div class="large-1 columns" style="font-size:22px;color:darkblue;margin-top: 20px;">
-                        {{ repo.git_store.numCommits }}
+                        {{ repo.0.git_repo.num_commits }}
                         <br/><div style="font-size:15px;color:black;">commits</div>
                     </div>
                 {% endif %}
 
                 <div class="large-12 columns">
-                    <i class="fa fa-cogs responsive-icon" style="float:right;" data-options="align:left" data-dropdown="editDropdown{{ repo.pk }}"></i>
+                    <i class="fa fa-cogs responsive-icon" style="float:right;" data-options="align:left" data-dropdown="editDropdown{{ repo.0.pk }}"></i>
                 </div>
                 <!--Dropdown-->
-                <ul id="editDropdown{{ repo.pk }}" class="tiny f-dropdown" data-dropdown-content>
+                <ul id="editDropdown{{ repo.0.pk }}" class="tiny f-dropdown" data-dropdown-content>
                     <li id="editRepoButton" data-reveal-id="modalEditForm"><a href="#">Edit Repository</a></li>
-                    <li id="deleteRepo_edit"><a href="{% url "delete_repo" repo.pk %}">Delete Repository</a></li>
+                    <li id="deleteRepo_edit"><a href="/delete_repo/{{ repo.0.pk }}">Delete Repository</a></li>
                 </ul>
-
+                <!-- {{ repo.0.pk }} -->
+                <!-- {{ repo.1 }} -->
+                <!-- {{ repo.2 }} -->
             </div>
         {% endfor %}
     {% else %}
@@ -102,7 +104,8 @@
 {% block extra_js %}
     <script src="{% static "javascript/progress.js" %}"></script>
     <script type="text/javascript">
-        {% if git_error %}
+        {% if messages %}
+            // {% for message in messages %} {{ message }} {% endfor %}
             $(document).ready(function(){
                 $('#modalForm').foundation('reveal', 'open');
                 document.getElementById('repo_error').style.display = "block";
