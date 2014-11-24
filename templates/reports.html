@@ -1,22 +1,24 @@
 {% extends "base.html" %}
 {% block head %}
     <script type="text/javascript">
-        var reportsList = {{ reports_list }};
-        console.log(reportsList)
     </script>
 {% endblock %}
 {% block content %}
     {% load staticfiles %}
-    <h2 class="my-repositories-heading" style="font-family: 'Francois One', sans-serif;">MY REPORTS</h2>
+    <h2 class="my-repositories-heading" style="font-family: 'Francois One', sans-serif;">{{ repo_name }} REPORTS</h2>
     <a href="#" data-reveal-id="modalForm"><img src="{% static "images/add.png" %}" class="add-repo-button"/></a>
 
     <div id="modalEditForm" class="reveal-modal" data-reveal>
         <div class="big_heading" id="editModalHeading">Edit</div>
-        <form id="editReportForm" action="/edit_report" method="POST" style="margin-top:10px;">
+        <form id="editReportForm" action="/edit_report/" method="POST" style="margin-top:10px;">
 
-            <div id="nameValidate_edit" class="repo_list_validate_label"></div>
+            <div id="nameValidate_edit" class="report_list_validate_label"></div>
             <label>Name
                 <input name="editName" id="editNameField" type="text" placeholder="Name">
+            </label>
+
+            <label>Description
+                <textarea name="editDesc" id="editDescField" rows="3" style="resize:none;" placeholder="Description (optional)"></textarea>
             </label>
 
             <input type="hidden" id="editReportField" name="editReport" value="">
@@ -29,14 +31,17 @@
 
     <div id="modalForm" class="reveal-modal" data-reveal>
         <div class="big_heading">Add New Report</div>
-        <form action="/add_report" method="GET" style="margin-top:10px;">
-            <input name="report_name" id="reportName" placeholder="Report Name" type="text"></input>
+        <form action="{% url "add_report" repo_id %}" method="GET" style="margin-top:10px;">
+            <input name="report_name" id="reportName" placeholder="Report Name" type="text">
             <div id="reportNameCheck" style="display:none;"></div>
 
-            <input name="report_query"  id="reportQuery" placeholder="Report Query" type="text"></input>
-            <div id="reportQueryCheck" style="display:none;"></div>
+            <input class="queryName" name="report_query_name"  id="reportQueryName" placeholder="Report Query Name" type="text">
+            <div id="reportQueryNameCheck" style="display:none;"></div>
 
-            <input name="report_desc" id="reportDesc" placeholder="Report Description" type="text"></input>
+            <input class="queryQuery" name="report_query_query"  id="reportQueryQuery" placeholder="Report Query Query" type="text">
+            <div id="reportQueryQueryCheck" style="display:none;"></div>
+
+            <input name="report_desc" id="reportDesc" placeholder="Report Description" type="text">
             <div id="reportDescCheck" style="display:none;"></div>
 
             <input id="submitReport" type="submit" value="Store" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
@@ -48,13 +53,21 @@
     {% if reports_list %}
         {% for report in reports_list %}
             <div id="report-{{ report.pk }}" class="large-12 columns card">
-                <h4><a href="/reports/detail/{{ report.pk }}"><b id="name-{{ report.pk }}">{{ report.name }}</b></a>
+                <h4><a href="/repo/{{ repo_id }}/reports/{{ report.pk }}"><b id="name-{{ report.pk }}">{{ report.name }}</b></a>
                 </h4>
-                <h5><b id="query-{{ repo.pk }}">{{ report.query }}</b></h5>
+                <h5><b id="query-{{ report.pk }}">{{ report.query }}</b></h5>
 
-                {% if report.report_description %}
-                    <div class="desc-{{ report.pk }}" style="color:grey;font-style:italic;>{{ report.report_description }}</div>
+                {% if report.description %}
+                    <div class="desc-{{ report.pk }}" style="color:grey;font-style:italic; display:block;">{{ report.description }}</div>
                 {% endif %}
+                <div class="large-12 columns">
+                    <i class="fa fa-cogs responsive-icon" style="float:right;" data-options="align:left" data-dropdown="editDropdown{{ report.pk }}"></i>
+                </div>
+                <!--Dropdown-->
+                <ul id="editDropdown{{ report.pk }}" class="tiny f-dropdown" data-dropdown-content>
+                    <li id="editReportButton" data-reveal-id="modalEditForm"><a href="#">Edit Report</a></li>
+                    <li id="deleteReport_edit"><a href="{% url "delete_report" repo_id report.pk %}">Delete Report</a></li>
+                </ul>
             </div>
         {% endfor %}
     {% else %}
@@ -63,6 +76,101 @@
         </div>
     {% endif %}
 
+    <script>
+    var storeButton = document.querySelector("#submitReport");
+    storeButton.addEventListener("click", storeReport);
+
+    //Register a function handler for when the delete button is clicked that changes the
+    //Form action to delete_repo instead of edit_repo
+    var deleteRepoButton = document.querySelector('#deleteReport_edit');
+    deleteRepoButton.addEventListener("click", changeToDelete);
+    function changeToDelete(e) {
+        var editForm = document.querySelector('#editReportForm');
+        editForm.action = '/delete_report';
+    }
+
+    var editButtonList = document.querySelectorAll('#editReportButton');
+    var len = editButtonList.length;
+    //loop through list and add event listener
+    for (var i =0;  i < len; i++) {
+        editButtonList[i].addEventListener("click", edit);
+    }
+
+    function edit(e) {
+        var editForm = document.querySelector('#editReportForm');
+        editForm.action = '/edit_report/';
+        console.log("Editing");
+        var card = $(this).parents('.large-12.columns.card');
+        console.log(card);
+
+        //Get the repo number
+        var cardID = card.attr('id');
+
+        //Parse out the 'repo-'
+        cardID = cardID.replace('report-','');
+        console.log(cardID);
+
+        var nameIDString = '#name-' + cardID;
+        var descIDString = '.desc-' + cardID;
+        var repoString = '#url-' + cardID;
+        var name = $(nameIDString).html();
+        var desc = $(descIDString).html();
+        var repo = $(repoString).html();
+        console.log(name);
+        console.log(desc);
+        console.log(repo);
+
+        var nameEditField = $('#editNameField');
+        var descEditField = $('#editDescField');
+        var reportEditField = $('#editReportField');
+        var editModalHeading = $('#editModalHeading');
+
+        console.log(nameEditField);
+        console.log(descEditField);
+
+        console.log("Name Edit Field Val:");
+        console.log(nameEditField.val());
+
+        console.log("Desc Edit Field Val:");
+        console.log(descEditField.val());
+
+        editModalHeading.text("Edit - "+repo);
+        nameEditField.val(name);
+        descEditField.val(desc);
+        reportEditField.val(cardID);
+
+        console.log("Name Edit Field Val:");
+        console.log(nameEditField.val());
+
+        console.log("Desc Edit Field Val:");
+        console.log(descEditField.val());
+        return 1;
+    }
+
+    function storeReport(e) {
+        var reportName = $('#reportName').val();
+        var reportDesc = $('#reportDesc').val();
+        var queryList = $(".query").map(function() { return $(this).val() }).get();
+
+        var sendInfo = {
+           Name: reportName,
+           Desc: reportDesc,
+           QueryList: queryList
+       };
+
+        console.log(sendInfo);
+        var sendInfoJSON = JSON.stringify(sendInfo);
+        //$.post("", sendInfo);
+
+
+       $.ajax({
+           type: "GET",
+           url: "{% url "add_report" repo_id %}",
+           dataType: "json",
+           data: sendInfoJSON
+       })
+    }
+    </script>
 {% endblock %}
 
 {% block extra_js %}

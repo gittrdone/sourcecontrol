@@ -5,35 +5,47 @@
         var parsedWeekData = {{ week_commits|safe }};
     </script>
 {% endblock %}
+
+{% block optional_nav %}
+    <li class="divider"></li>
+    <li> <a href="{% url 'reports' repo.pk %}">{{ repo.name }} Reports</a></li>
+{% endblock %}
+
 {% block content %}
     <div class="large-12 columns card">
         <div class="large-6 columns">
             <h3><b>{{ repo.name }}</b></h3>
-            <b>{{ repo.git_store.gitRepositoryURL }}</b><br><br>
+            <b>{{ repo.git_repo.git_repository_url }}</b><br><br>
 
             {% if repo.repo_description %}
                 <div style="color:grey;font-style:italic;">{{ repo.repo_description }}</div>
             {% endif %}
 
             {% load staticfiles %}
-            <img src="{% static "images/git-branch.png" %}" class="branch-icon"/><div class="branch-text">{{ repo.git_store.branch_name }}</div>
+            <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
+            <a href="#" class="button" style="margin: 0; padding: 0.5rem 1rem;" data-dropdown="drop">{{ branch.branch_name }} &raquo;</a>
+                <ul id="drop" class="small f-dropdown" data-dropdown-content>
+                    {% for branchObject in branches %}
+                        {% if branchObject.pk != branch.pk %}
+                            <!-- {{ branch.pk }} -->
+                            <li><a href="/repo/detail/{{ repo.pk }}/{{ branchObject.pk }}">{{ branchObject.branch_name }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
         </div>
         <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ repo.git_store.numFiles }}
+            {{ branch.num_files }}
             <br/><div style="font-size:14px;color:black;">files</div>
         </div>
 
         <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ repo.git_store.numCommits }}
+            {{ branch.num_commits }}
             <br/><div style="font-size:14px;color:black;">commits</div>
         </div>
 
         <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
             {{ authors|length }}
             <br/><div style="font-size:14px;color:black;">committers</div>
-            <div class="button">
-                <a href="/repo/reports/{{ repo.pk }}">Test</a>
-            </div>
         </div>
     </div>
 
@@ -84,7 +96,7 @@
 {% block extra_js %}
     <script>
         //data = [{ label: "Series1",  data: 10},{ label: "Series2",  data: 30}];
-        $.getJSON( "{% url "repo_detail_pie" repo_pk %}", function( data ) {
+        $.getJSON( "{% url "repo_detail_pie" repo_pk branch.pk %}", function( data ) {
             console.log(data)
             $.plot('#piecontainer', data, {
                 series: {
@@ -110,7 +122,7 @@
                 }
             });
         });
-        $.getJSON( "{% url "repo_detail_bar_day" repo_pk %}", function( data ) {
+        $.getJSON( "{% url "repo_detail_bar_day" repo_pk branch.pk %}", function( data ) {
             console.log(data)
             $.plot('#barcontainer', [data], {
                 series: {

@@ -8,10 +8,10 @@
     <div class="large-12 columns card">
         <div class="large-6 columns">
             <h3><b>{{ author.name }}</b></h3>
-            <b>{{ author.repository }}</b><br><br>
+            <b>{{ author.git_branch.git_repository_url }}</b><br><br>
 
             {% load staticfiles %}
-            <img src="{% static "images/git-branch.png" %}" class="branch-icon"/><div class="branch-text">{{ author.repository.branch_name }}</div>
+            <img src="{% static "images/git-branch.png" %}" class="branch-icon"/><div class="branch-text">{{ author.git_branch.branch_name }}</div>
         </div>
         <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
             {{ author.num_commits }}
