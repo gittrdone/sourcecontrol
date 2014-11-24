@@ -42,6 +42,9 @@ def filter_on_query(q, repo):
       attr = cond.attrName().getText()
       comparator = cond.comparator().getText()
 
+      if attr == 'branch_name':
+          set_branch = True
+
       attr += {
           '=': '',
           '!=': '???',
@@ -63,7 +66,7 @@ def filter_on_query(q, repo):
     return "error"
 
   # XXX change to kwargs for different repo column names
-  objs = db_model.objects.filter(repository=repo)
+  objs = db_model.objects.filter(git_branch=repo.git_repo.branches.all()[0])
 
   for cond in conds:
     objs = objs.filter(**cond)
