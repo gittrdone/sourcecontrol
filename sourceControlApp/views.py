@@ -22,8 +22,12 @@ def index(request):
     default_branch_ids = []
     default_branch_files = []
     for repo in repos:
-        default_branch_files.append(repo.git_repo.branches.all()[0].num_files)
-        default_branch_ids.append(repo.git_repo.branches.all()[0].pk)
+        if repo.git_repo.status == 3:
+            default_branch_files.append(repo.git_repo.branches.all()[0].num_files)
+            default_branch_ids.append(repo.git_repo.branches.all()[0].pk)
+        else:
+            default_branch_files.append(-1)
+            default_branch_ids.append(-1)
 
     context_instance = RequestContext(request)
     context_instance["repo_list"] = zip(repos, default_branch_ids, default_branch_files)
@@ -93,8 +97,9 @@ def repo_status(request, repo_id):
     ret = {}
     ret['status'] = repo.status
     if repo.status == 3:
-        ret['numFiles'] = repo.numFiles
-        ret['numCommits'] = repo.numCommits
+        ret['numFiles'] = repo.branches.all()[0].num_files
+        ret['numCommits'] = repo.num_commits
+        ret['branchId'] = repo.branches.all()[0].pk
 
     return HttpResponse(dumps(ret), content_type="application/json")
 

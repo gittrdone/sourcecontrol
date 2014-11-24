@@ -22,7 +22,7 @@ function getData(repoNum) {
 
             $("#editRepoButton-" + repoNum).click(edit);
 
-            var url = "repo/detail/" + repoNum;
+            var url = "repo/detail/" + repoNum + '/' + data.branchId;
             $("#name-" + repoNum).wrap('<a href="' + url + '"></a>');
             $(".desc-" + repoNum).css('display', 'block');
         }
