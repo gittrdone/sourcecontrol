@@ -16,10 +16,10 @@
             {% endif %}
 
             {% load staticfiles %}
-            <img src="{% static "images/git-branch.png" %}" class="branch-icon"/><div class="branch-text">{{ repo.git_repo.branch_name }}</div>
+            <img src="{% static "images/git-branch.png" %}" class="branch-icon"/><div class="branch-text">{{ branch.branch_name }}</div>
         </div>
         <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ repo.git_repo.numFiles }}
+            {{ branch.num_files }}
             <br/><div style="font-size:14px;color:black;">files</div>
         </div>
 
@@ -81,7 +81,7 @@
 {% block extra_js %}
     <script>
         //data = [{ label: "Series1",  data: 10},{ label: "Series2",  data: 30}];
-        $.getJSON( "{% url "repo_detail_pie" repo_pk %}", function( data ) {
+        $.getJSON( "{% url "repo_detail_pie" repo_pk branch.pk %}", function( data ) {
             console.log(data)
             $.plot('#piecontainer', data, {
                 series: {
@@ -107,7 +107,7 @@
                 }
             });
         });
-        $.getJSON( "{% url "repo_detail_bar_day" repo_pk %}", function( data ) {
+        $.getJSON( "{% url "repo_detail_bar_day" repo_pk branch.pk %}", function( data ) {
             console.log(data)
             $.plot('#barcontainer', [data], {
                 series: {

@@ -5,6 +5,7 @@ from sourceControlApp.models import GitRepo, SourceControlUser, UserGitStore, Gi
 from sourceControlApp.repo_mgmt import get_repo_data_from_url, canonicalize_repo_url
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.http import HttpResponse
@@ -13,25 +14,23 @@ from .forms import UpdateUserGitStoreForm
 
 # Create your views here.
 def index(request):
-    if request.user.is_authenticated():
-        user = request.user
-        repos = user.sourcecontroluser.ownedRepos.all()
-        default_branch_ids = []
-        for repo in repos:
-            default_branch_ids.append(repo.git_repo.branches.all()[0].pk)
-
-        #form = UpdateUserGitStoreForm()
-    else:
-        repos = []
-        #have it throw an error saying to log in
-
-    if request.user.is_authenticated():
-        return render(request, 'repoList.html', { 'repo_list': repos, 'default_branch_ids': default_branch_ids })
-    else:
+    if not request.user.is_authenticated():
         return render(request, 'index.html', {})
 
-def add_repo(request):
+    user = request.user
+    repos = user.sourcecontroluser.ownedRepos.all()
+    default_branch_ids = []
+    default_branch_files = []
+    for repo in repos:
+        default_branch_files.append(repo.git_repo.branches.all()[0].num_files)
+        default_branch_ids.append(repo.git_repo.branches.all()[0].pk)
+
     context_instance = RequestContext(request)
+    context_instance["repo_list"] = zip(repos, default_branch_ids, default_branch_files)
+
+    return render_to_response('repoList.html', context_instance)
+
+def add_repo(request):
     repo_url = request.GET['repo']
     repo_name = request.GET['name']
     repo_description = request.GET['desc']
@@ -45,32 +44,18 @@ def add_repo(request):
         except:
             existing_store = None
 
-        if existing_store != None and len(sourceControlUser.ownedRepos.filter(git_repo=existing_store)) > 0:
+        if existing_store is not None and len(sourceControlUser.ownedRepos.filter(git_repo=existing_store)) > 0:
             error = True
         else:
             repo = get_repo_data_from_url(repo_url, repo_name, repo_description, sourceControlUser)
             error = (repo == -1) # Check for error flag
 
         if error:
-            context_instance["git_error"] = True
-            context_instance["git_error_name"] = repo_name
-            context_instance["git_error_description"] = repo_description
+            messages.error(request, "Not a valid repository!")
         else:
             sourceControlUser.ownedRepos.add(repo)
 
-        # Store object and render page
-        default_branch_files = []
-        repos = user.sourcecontroluser.ownedRepos.all()
-        for repo in repos:
-            branches_list = repo.git_repo.branches.all()
-            default_branch_files.append(branches_list[0].num_files)
-
-        context_instance["repo_url"] = repo_url
-        context_instance["repo_list"] = zip(sourceControlUser.ownedRepos.all(), branches_list, default_branch_files)
-        return render_to_response("repoList.html", context_instance)
-    else:
-        # XXX Throw error
-        return render_to_response("repoList.html", {})
+    return redirect("index")
 
 def repo_detail(request, repo_id, branch_id):
     repo = UserGitStore.objects.get(pk=repo_id)
@@ -82,6 +67,7 @@ def repo_detail(request, repo_id, branch_id):
     context_instance['authors'] = branch.codeauthor_set.all().order_by('-num_commits')
     context_instance['json_authors'] = serializers.serialize("json", branch.codeauthor_set.all())
     context_instance['branches'] = repo.git_repo.get_branch_list()
+    context_instance['branch'] = branch
 
     hour_offset_from_utc = 4 #The library defaults to UTC
     last_week = datetime.today() - timedelta(days=6) - timedelta(hours=hour_offset_from_utc) # Beginning of this week

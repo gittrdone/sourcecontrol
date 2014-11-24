@@ -40,7 +40,7 @@ class GitRepo(models.Model):
     num_commits = models.IntegerField(default=0)
 
     def get_branch_list(self):
-        branch_list = [br.branch_name for br in self.branches]
+        branch_list = [br.branch_name for br in self.branches.all()]
 
     def get_branch_by_branch_name(self, branch_name):
         for branch in self.branches:

@@ -86,7 +86,7 @@
                 <!--Dropdown-->
                 <ul id="editDropdown{{ repo.0.pk }}" class="tiny f-dropdown" data-dropdown-content>
                     <li id="editRepoButton" data-reveal-id="modalEditForm"><a href="#">Edit Repository</a></li>
-                    <li id="deleteRepo_edit"><a href="{% url "delete_repo" repo.0.pk %}">Delete Repository</a></li>
+                    <li id="deleteRepo_edit"><a href="/delete_repo/{{ repo.0.pk }}">Delete Repository</a></li>
                 </ul>
                 <!-- {{ repo.0.pk }} -->
                 <!-- {{ repo.1 }} -->
@@ -104,7 +104,8 @@
 {% block extra_js %}
     <script src="{% static "javascript/progress.js" %}"></script>
     <script type="text/javascript">
-        {% if git_error %}
+        {% if messages %}
+            // {% for message in messages %} {{ message }} {% endfor %}
             $(document).ready(function(){
                 $('#modalForm').foundation('reveal', 'open');
                 document.getElementById('repo_error').style.display = "block";
