@@ -40,7 +40,7 @@ def add_repo(request):
         sourceControlUser = user.sourcecontroluser
 
         try:
-            existing_store = GitRepo.objects.filter(gitRepositoryURL=canonicalize_repo_url(repo_url))[0]
+            existing_store = GitRepo.objects.filter(git_repository_url=canonicalize_repo_url(repo_url))[0]
         except:
             existing_store = None
 
@@ -152,7 +152,7 @@ def edit_repo(request):
         sourceControlUser = user.sourcecontroluser
 
         try:
-            existing_storee = GitRepo.objects.get(gitRepositoryURL=canonicalize_repo_url(repo_url))
+            existing_storee = GitRepo.objects.get(git_repository_url=canonicalize_repo_url(repo_url))
             existing_store = sourceControlUser.ownedRepos.get(git_repo = existing_storee)
         except:
             existing_store = None
