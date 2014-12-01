@@ -58,7 +58,7 @@ class UserGitStore(models.Model):
     repo_description = models.CharField(max_length=1000)
 
     def __unicode__ (self):
-        return unicode(self.repo) + self.name
+        return unicode(self.git_repo) + self.name
 
 class SourceControlUser(models.Model):
     user = models.OneToOneField(User)

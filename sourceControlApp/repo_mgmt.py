@@ -95,6 +95,7 @@ def get_repo_data_from_url(url, name, description, user):
     if not is_valid_repo(url):
         return -1
 
+    #download_and_process_repo(repo_object)
     download_and_process_repo.apply_async((repo_object,))
 
     return repo_entry
@@ -125,22 +126,19 @@ def download_and_process_repo(repo_object, branch_name=None):
     branch_db_object.status = 1 #initialized properly
     branch_db_object.save()
 
-    repo_object.branches.add(branch_db_object)
+    repo_object = GitRepo.objects.get(id = repo_object.id)
     repo_object.status = 2 # Processing
+    repo_object.branches.add(branch_db_object)
     repo_object.save()
 
     process_repo(repo, branch_db_object, this_path)
-
-    repo_object = GitRepo.objects.get(id = repo_object.id)
-    repo_object.status = 3 # Checking other repos
-    repo_object.save()
 
     if branch_name is None:
         default_branch = repo.listall_branches()[0]
         branch_list = [branch.replace('origin/', '') for branch in repo.listall_branches(2)]
         for branch in branch_list:
             if branch !=default_branch:
-                repo_object = GitRepo.objects.get(id = repo_object.id)
+                #repo_object = GitRepo.objects.get(id = repo_object.id)
                 download_and_process_repo(repo_object, branch)
                 #download_and_process_repo.apply_async((repo_object, branch, ))
 
@@ -151,7 +149,7 @@ def download_and_process_repo(repo_object, branch_name=None):
     os.system("rm -rf " + this_path)
     return repo_object
 
-def process_repo(repo, repo_object, path):
+def process_repo(repo, branch_db_object, path):
     """
     Updates a single repo by recloning the repo
     and updating the information in the database
@@ -159,14 +157,14 @@ def process_repo(repo, repo_object, path):
     :param repo_object: The model to store information in
     :return:
     """
-    repo_object.num_commits = count_commits(repo)
-    repo_object.num_files = count_files(path)
-    repo_object.branch_name = repo.listall_branches()[0]
+    branch_db_object.num_commits = count_commits(repo)
+    branch_db_object.num_files = count_files(path)
+    branch_db_object.branch_name = repo.listall_branches()[0]
 
     # Count commits per author
-    count_commits_per_author_branch(repo, repo_object)
-    repo_object.status = 3 # Done
-    repo_object.save()
+    count_commits_per_author_branch(repo, branch_db_object)
+    branch_db_object.status = 3 # Done
+    branch_db_object.save()
 
 def count_commits(repo):
     """
@@ -192,6 +190,7 @@ def count_commits_per_author_branch(repo, branch_db_object):
     :param repo_db_object: The model to update
     """
     url = branch_db_object.git_repository_url
+    git_repo = GitRepo.objects.get(git_repository_url = url)
 
     try:
         latest_commit = Commit.objects.filter(branches=branch_db_object).latest('commit_time')
@@ -238,13 +237,12 @@ def count_commits_per_author_branch(repo, branch_db_object):
             commit_db_object.branches.add(branch_db_object)
             commit_db_object.save()
         except ObjectDoesNotExist:
-            git_repo = GitRepo.objects.get(git_repository_url = url)
             commit_db_object = Commit.objects.create(commit_id = commit.id, commit_time=time, author=code_author)
             commit_db_object.git_repo = git_repo
             commit_db_object.branches.add(branch_db_object)
             commit_db_object.save()
             git_repo.num_commits += 1
-            git_repo.save()
+    git_repo.save()
 
 def count_commits_per_author(repo, repo_db_object):
     """
