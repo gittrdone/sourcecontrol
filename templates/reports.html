@@ -35,14 +35,14 @@
             <input name="report_name" id="reportName" placeholder="Report Name" type="text">
             <div id="reportNameCheck" style="display:none;"></div>
 
-            <input class="queryName" name="report_query_name"  id="reportQueryName" placeholder="Report Query Name" type="text">
-            <div id="reportQueryNameCheck" style="display:none;"></div>
+            <input name="report_desc" id="reportDesc" placeholder="Report Description (Optional)" type="text">
+            <div id="reportDescCheck" style="display:none;"></div>
 
-            <input class="queryQuery" name="report_query_query"  id="reportQueryQuery" placeholder="Report Query Query" type="text">
+            <input class="queryQuery" name="report_query_query"  id="reportQueryQuery" placeholder="Query String" type="text">
             <div id="reportQueryQueryCheck" style="display:none;"></div>
 
-            <input name="report_desc" id="reportDesc" placeholder="Report Description" type="text">
-            <div id="reportDescCheck" style="display:none;"></div>
+            <input class="queryName" name="report_query_name"  id="reportQueryName" placeholder="Query Name (Optional)" type="text">
+            <div id="reportQueryNameCheck" style="display:none;"></div>
 
             <input id="submitReport" type="submit" value="Store" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
             {% csrf_token %}
@@ -134,7 +134,7 @@
         console.log("Desc Edit Field Val:");
         console.log(descEditField.val());
 
-        editModalHeading.text("Edit - "+repo);
+        editModalHeading.text("Edit - "+name);
         nameEditField.val(name);
         descEditField.val(desc);
         reportEditField.val(cardID);
