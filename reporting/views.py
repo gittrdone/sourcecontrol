@@ -6,6 +6,7 @@ from django.template import RequestContext
 from sourceControlApp.querying.query_runner import process_string
 from reporting.models import Report, Query
 from sourceControlApp.models import UserGitStore
+from django.http import JsonResponse
 
 # View existing reports list
 def view_reports(request, repo_id):
@@ -34,8 +35,36 @@ def view_report(request, repo_id, report_id):
     context_instance['report'] = report
 
     # XXX Only does first query for now!!
-    context_instance['query_result'] = process_string(report.queries.all()[0].query_command, repo)
+    query_result = process_string(report.queries.all()[0].query_command, repo)
+    context_instance['query_result'] = query_result
 
+    query_chart_type = report.queries.all()[0].chart_type
+    context_instance['query_chart_type'] = query_chart_type
+
+    #MANGLE CHART DATA HERE (based on chart type)
+    if query_chart_type == "pie":
+        #if query_result.model == "users":
+        values = query_result.extra(
+            select={'label':'name', 'data':'num_commits'} ).values(
+                'label', 'data')
+
+        response = json.dumps(list(values))
+
+    elif query_chart_type == "bar":
+    #    if query_result.model == "user":
+        values = query_result.values_list('name', 'num_commits')
+        valueslist = [list(i) for i in values]
+
+        response = json.dumps(valueslist)
+
+    elif query_chart_type == "line":
+        #    if query_result.model == "user":
+        values = query_result.values_list('name', 'num_commits')
+        valueslist = [list(i) for i in values]
+
+        response = json.dumps(valueslist)
+
+    context_instance['response'] = response
     return render_to_response("report.html", context_instance)
 
 # The interface for making a new report
@@ -57,12 +86,13 @@ def add_report(request, repo_id):
     report_query_name = request.GET['report_query_name']
     report_query_query = request.GET['report_query_query']
     report_desc = request.GET['report_desc']
+    report_chart_type = request.GET['chart_type']
 
     user = request.user
     sourceControlUser = user.sourcecontroluser
     repo = UserGitStore.objects.get(sourcecontroluser=sourceControlUser, pk=repo_id)
 
-    query = Query(name=report_query_name, query_command=report_query_query, user=sourceControlUser)
+    query = Query(name=report_query_name, query_command=report_query_query, user=sourceControlUser, chart_type=report_chart_type)
     query.save()
 
     report = Report(user=sourceControlUser, name=report_name, description=report_desc, repo=repo)

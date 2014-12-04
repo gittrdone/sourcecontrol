@@ -41,10 +41,19 @@
             <input class="queryQuery" name="report_query_query"  id="reportQueryQuery" placeholder="Query String" type="text">
             <div id="reportQueryQueryCheck" style="display:none;"></div>
 
-            <input class="queryName" name="report_query_name"  id="reportQueryName" placeholder="Query Name (Optional)" type="text">
+            <input class="queryName" name="report_query_name"  id="reportQueryName" placeholder="Query Name" type="text">
             <div id="reportQueryNameCheck" style="display:none;"></div>
 
+            <div id="chart_options">
+            <label><h6>Chart Type</h6></label>
+            <input type="radio" name="chart_type" value="pie" id="chart_default" checked><label for="chart_default">Automatic</label>
+            <input type="radio" name="chart_type" value="pie" id="chart_pie"><label for="chart_pie"><i class="fa fa-pie-chart"></i>&nbsp;Pie</label>
+            <input type="radio" name="chart_type" value="bar" id="chart_bar"><label for="chart_bar"><i class="fa fa-bar-chart"></i>&nbsp;Bar</label>
+            <input type="radio" name="chart_type" value="line" id="chart_line"><label for="chart_line"><i class="fa fa-line-chart"></i>&nbsp;Line</label>
+            </div><br>
+
             <input id="submitReport" type="submit" value="Store" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
+
             {% csrf_token %}
         </form>
         <a class="close-reveal-modal">&#215;</a>
@@ -151,11 +160,13 @@
         var reportName = $('#reportName').val();
         var reportDesc = $('#reportDesc').val();
         var queryList = $(".query").map(function() { return $(this).val() }).get();
+        var queryChart = $("input[name=chart_type]:checked").val();
 
         var sendInfo = {
            Name: reportName,
            Desc: reportDesc,
-           QueryList: queryList
+           QueryList: queryList,
+           Chart: queryChart
        };
 
         console.log(sendInfo);

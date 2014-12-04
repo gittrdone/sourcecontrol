@@ -1,10 +1,4 @@
 {% extends "base.html" %}
-{% block head %}
-    <script type="text/javascript">
-        var parsedAuthorData = {{ json_authors|safe }};
-        var parsedWeekData = {{ week_commits|safe }};
-    </script>
-{% endblock %}
 
 {% block optional_nav %}
     <li class="divider"></li>
@@ -137,6 +131,9 @@
                 xaxis: {
                     mode: "categories",
                     tickLength: 0
+                },
+                yaxis: {
+                    min: 0
                 }
             });
         });

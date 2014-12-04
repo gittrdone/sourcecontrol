@@ -8,6 +8,14 @@ class Query(models.Model):
     query_command = models.CharField(max_length=1024)
     user = models.ForeignKey(SourceControlUser)
 
+    CHART_TYPE_CHOICES = (
+        ('pie', 'Pie'),
+        ('bar', 'Bar'),
+        ('line', 'Line')
+    )
+
+    chart_type = models.CharField(max_length=4, choices=CHART_TYPE_CHOICES, default='pie')
+
     def __unicode__(self):
         return unicode(self.name) + u' ' + unicode(self.query_command)
 
