@@ -2,8 +2,9 @@ import datetime
 from django.http import JsonResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from sourceControlApp.models import GitStore, SourceControlUser, UserGitStore, CodeAuthor, GitBranch
 import pytz
+from sourceControlApp.models import GitStore, SourceControlUser, UserGitStore, GitBranch, CodeAuthor
+
 
 def dates_between_datetimes(start,end):
     """
