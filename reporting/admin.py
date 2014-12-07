@@ -5,7 +5,7 @@ from reporting.models import Query, Report
 
 
 class QueryAdmin(admin.ModelAdmin):
-    list_display = ["name", "query_command", "user"]
+    list_display = ["name", "query_command", "user", "chart_type"]
 
 
 class ReportAdmin(admin.ModelAdmin):

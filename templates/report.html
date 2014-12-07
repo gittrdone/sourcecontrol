@@ -37,20 +37,76 @@
                 View All ({{ query_result.count }})
             {% endif %}
         </div>
+        <div class="large-12 columns" style="height:220px;text-align:center;margin-top: 40px;">
+            <div id="chartcontainer" style="height:200px;width: 50%;margin:0 auto;"></div>
+        </div>
     </div>
 
 {% endblock %}
 {% block extra_js %}
-<script>
-$(document).ready(function(){
-    $(".commithider").click(
-        function(e){
-            e.preventDefault();
-            $(".extra_committers").slideToggle(200,function() {
-                $(".commithider").text($(this).is(':visible') ? "Show Less" : "View All ({{ query_result.count }})");
+    <script>
+        $(document).ready(function(){
+            $(".commithider").click(
+                    function(e){
+                        e.preventDefault();
+                        $(".extra_committers").slideToggle(200,function() {
+                            $(".commithider").text($(this).is(':visible') ? "Show Less" : "View All ({{ query_result.count }})");
+                        });
+                    }
+            )
+        });
+
+        {% if query_chart_type == "pie" %}
+            $.plot('#chartcontainer', {{ response|safe }}, {
+                series: {
+                    pie: {
+                        show: true,
+                        radius: 1,
+                        label: {
+                            show: true,
+                            radius: 1,
+                            formatter: function (label, series) {
+                                return '<div style="font-size:11px; text-align:center; padding:2px; color:white;">' + label + '<br/>' + Math.round(series.percent) + '%</div>';
+                            },
+                            threshold: 0.09,
+                            background: {
+                                opacity: 0.8,
+                                color: '#444'
+                            }
+                        }
+                    }
+                },
+                legend: {
+                    show: false
+                }
             });
-        }
-    )
-});
-</script>
+        {% elif query_chart_type == "bar" %}
+            $.plot('#chartcontainer', [{{ response|safe }}], {
+                series: {
+                    bars: {
+                        show: true,
+                        barWidth: 0.6,
+                        align: "center"
+                    }
+                },
+                xaxis: {
+                    mode: "categories",
+                    tickLength: 0
+                },
+                yaxis: {
+                    min: 0
+                }
+            });
+        {% elif query_chart_type == "line" %}
+            $.plot('#chartcontainer', [{{ response|safe }}], {
+                xaxis: {
+                    mode: "categories",
+                    tickLength: 0
+                },
+                yaxis: {
+                    min: 0
+                }
+            });
+        {% endif %}
+    </script>
 {% endblock %}
