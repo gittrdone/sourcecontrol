@@ -2,7 +2,7 @@ import os
 import re
 import subprocess
 from datetime import tzinfo, timedelta, datetime
-import warnings
+from jenkinsapi.jenkins import Jenkins
 
 import requests
 from celery import task
@@ -327,3 +327,27 @@ def canonicalize_repo_url(url):
 
     # Use HTTP URL as canonical for now
     return "http" + re.match("https?(.*)", url).group(1)
+
+#Note to self
+#adjust model:
+#AAA for jenkins things e.g. jenkins url and stuff: add to git_repo or git_branch???
+#add fields or add new models?
+#1. add field to commit that reflect whether that commit breaks the build or not
+#   problem: can it break only one of the branches?
+#2. new model that contains all jenkins info.
+#   problem: array of dynamic size
+def get_jenkins_result(git_repo, jenkinsurl = 'http://localhost:8080', jobname = 'test', username = None, password = None):
+    job = Jenkins(jenkinsurl)[jobname]
+    last_build_number = job.get_last_buildnumber()
+    results = range(last_build_number)
+    for i in range(last_build_number):
+        build = job[i+1]
+        if build.is_good():
+            results[i] = 1
+        else:
+            results[i] = 0
+            #print build.get_revision() #this is actually commit id
+            #print build.get_revision_branch() #contain in about branch
+            #find a commit that matches the id of broken builds
+            break_commits = Commit.objects.all.filter(git_repo = git_repo, commit_id = build.get_revision())
+    return results
