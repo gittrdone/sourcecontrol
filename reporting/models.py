@@ -8,6 +8,13 @@ class Query(models.Model):
     query_command = models.CharField(max_length=1024)
     user = models.ForeignKey(SourceControlUser)
 
+    def auto_chart_type(self):
+        # XXX hacky version for now
+        if "users" in self.query_command:
+            return "pie"
+        else:
+            return "bar chart"
+
     def __unicode__(self):
         return unicode(self.name) + u' ' + unicode(self.query_command)
 

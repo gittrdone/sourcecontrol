@@ -11,7 +11,9 @@ kombu==3.0.23
 psycopg2==2.5.4
 pycparser==2.10
 pygit2==0.21.3
+python-dateutil==2.3
 pytz==2014.7
 redis==2.10.3
 requests==2.4.3
+six==1.8.0
 wsgiref==0.1.2
