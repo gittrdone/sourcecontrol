@@ -145,7 +145,8 @@ def download_and_process_repo(repo_object, branch_name=None):
     repo_object = GitRepo.objects.get(id = repo_object.id)
 
     #XXX I call the jenkins thing here XXX
-    if url == "https://github.com/tpatikorn/WAMIQP-test":
+    #only call on default branch
+    if branch_name is None:
         get_jenkins_result(repo_object)
 
     repo_object.status = 3 # Done
@@ -345,20 +346,17 @@ def get_jenkins_result(git_repo, jenkinsurl = 'http://localhost:8080', jobname =
     job = Jenkins(jenkinsurl)[jobname]
     last_build_number = job.get_last_buildnumber()
     results = range(last_build_number)
-    print("LOL")
     for i in range(last_build_number):
         build = job[i+1]
-        if ~build.is_good():
+        if not build.is_good():
             #print build.get_revision() #this is actually commit id
             #print build.get_revision_branch() #contain in about branch
             #find a commit that matches the id of broken builds
             break_commits = git_repo.commit_set.all().filter(commit_id = build.get_revision())
-            print("LOLOLOL")
-            print(len(break_commits))
-            for commit in break_commits:
-                commit.break_build_status = 1
-                commit.save()
-                author = commit.author
-                author.num_break_build += 1
-                author.save()
+            commit = break_commits[0] #commit_id should be unique
+            commit.break_build_status = 1
+            commit.save()
+            author = commit.author
+            author.num_break_build += 1
+            author.save()
     return results

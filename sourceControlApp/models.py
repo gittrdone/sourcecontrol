@@ -78,7 +78,7 @@ class CodeAuthor(models.Model):
     num_break_build = models.IntegerField(default=0)
 
     def __unicode__ (self):
-        return unicode(self.repository) + self.name
+        return unicode(self.git_branch) + self.name
 
 class Patch(models.Model):
     repository = models.ForeignKey(GitStore)
