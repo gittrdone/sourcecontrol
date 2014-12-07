@@ -6,7 +6,8 @@
 {% block content %}
     {% load staticfiles %}
     <h2 class="my-repositories-heading" style="font-family: 'Francois One', sans-serif;">{{ repo_name }} REPORTS</h2>
-    <a href="#" data-reveal-id="modalForm"><img src="{% static "images/add.png" %}" class="add-repo-button"/></a>
+    <!--<a href="#" data-reveal-id="modalForm"><img src="{% static "images/add.png" %}" class="add-repo-button"/></a>-->
+    <a href="/repo/{{ repo_id }}/reports/addReport.html"><img src="{% static "images/add.png" %}" class="add-repo-button"/></a>
 
     <div id="modalEditForm" class="reveal-modal" data-reveal>
         <div class="big_heading" id="editModalHeading">Edit</div>

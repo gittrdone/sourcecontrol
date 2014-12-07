@@ -5,6 +5,7 @@ from sourceControlApp.models import SourceControlUser, UserGitStore
 # Create your models here.
 class Query(models.Model):
     name = models.CharField(max_length=256)
+    desc = models.CharField(max_length=1024, default='')
     query_command = models.CharField(max_length=1024)
     user = models.ForeignKey(SourceControlUser)
 
@@ -15,6 +16,13 @@ class Query(models.Model):
     )
 
     chart_type = models.CharField(max_length=4, choices=CHART_TYPE_CHOICES, default='pie')
+
+    def auto_chart_type(self):
+        # XXX hacky version for now
+        if "users" in self.query_command:
+            return "pie"
+        else:
+            return "bar"
 
     def __unicode__(self):
         return unicode(self.name) + u' ' + unicode(self.query_command)

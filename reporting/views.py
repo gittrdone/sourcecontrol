@@ -77,27 +77,54 @@ def new_report(request, repo_id):
 
     return render_to_response("newReport.html", context_instance)
 
+def addReport(request, repo_id):
+    if not request.user.is_authenticated():
+        return redirect("index")
+
+    context_instance = RequestContext(request)
+    context_instance['repo_id'] = repo_id
+
+    return render_to_response("addReport.html", context_instance)
+
 # Endpoint for adding a new report to the DB
 def add_report(request, repo_id):
     if not request.user.is_authenticated():
         return redirect("index")
 
-    report_name = request.GET['report_name']
-    report_query_name = request.GET['report_query_name']
-    report_query_query = request.GET['report_query_query']
-    report_desc = request.GET['report_desc']
-    report_chart_type = request.GET['chart_type']
+    report_name = request.POST['report_name']
+    report_desc = request.POST['report_desc']
+    query_one_name = request.POST['query_1_name']
+    query_one_desc = request.POST['query_1_desc']
+    query_one_query = request.POST['query_1']
+    query_one_chart_type = request.POST['chart_1_type']
 
     user = request.user
     sourceControlUser = user.sourcecontroluser
     repo = UserGitStore.objects.get(sourcecontroluser=sourceControlUser, pk=repo_id)
 
-    query = Query(name=report_query_name, query_command=report_query_query, user=sourceControlUser, chart_type=report_chart_type)
-    query.save()
+    query_one = Query(name=query_one_name, query_command=query_one_query, desc=query_one_desc, user=sourceControlUser, chart_type=query_one_chart_type)
+    query_one.save()
 
     report = Report(user=sourceControlUser, name=report_name, description=report_desc, repo=repo)
     report.save()
-    report.queries.add(query)
+    report.queries.add(query_one)
+
+    num_queries = 1;
+    #count the queries
+    for i in range(2,10):
+        query_name = request.POST['query_' + i + '_name']
+        if query_name:
+            num_queries = i
+
+    #generate queries
+    for i in range(2, num_queries):
+        query_name = request.POST['query_' + i + '_name']
+        query_desc = request.POST['query_' + i + '_desc']
+        query_query = request.POST['query_' + i]
+        query_chart_type = request.POST['chart_' + i + '_type']
+        query = Query(name=query_name, desc=query_desc, query_command=query_query, user=sourceControlUser, chart_type=query_chart_type)
+        query.save()
+        report.queries.add(query)
 
     context_instance = RequestContext(request)
     context_instance['reports_list'] = Report.objects.filter(user=sourceControlUser, repo=repo)

@@ -1,6 +1,7 @@
 from antlr4 import *
 from sourceControlApp.querying.SourceControlParser import SourceControlParser
 from sourceControlApp.querying.SourceControlLexer import SourceControlLexer
+import dateutil
 
 from sourceControlApp.models import Commit, CodeAuthor
 
@@ -54,7 +55,22 @@ def filter_on_query(q, repo):
           'contains': '__icontains' # Case insensitive
       }[comparator]
 
-      conds.append({attr: cond.value().getText()})
+      if attr in ["commit_time"]:
+        conds.append({attr: dateutil.parser.parse(cond.value().getText())})
+      elif attr == "commit_day":
+        weekday_num = {
+          "sunday": 1,
+          "monday": 2,
+          "tuesday": 3,
+          "wednesday": 4,
+          "thursday": 5,
+          "friday": 6,
+          "saturday": 7
+        }
+
+        conds.append({"commit_time__week_day": weekday_num[cond.value().getText()[1:-1]]})
+      else:
+        conds.append({attr: cond.value().getText()})
 
   if obj_type == "users":
     db_model = CodeAuthor
@@ -65,8 +81,13 @@ def filter_on_query(q, repo):
   else:
     return "error"
 
-  # XXX change to kwargs for different repo column names
-  objs = db_model.objects.filter(git_branch=repo.git_repo.branches.all()[0])
+  if db_model == CodeAuthor:
+    # XXX change to kwargs for different repo column names
+    objs = db_model.objects.filter(git_branch=repo.branches.all()[0])
+  elif db_model == Commit:
+    # TODO Fix this stuff to use branches
+    objs = db_model.objects.filter(git_repo=repo)
+    pass
 
   for cond in conds:
     objs = objs.filter(**cond)
