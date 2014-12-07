@@ -60,7 +60,6 @@ class UserGitStore(models.Model):
     git_repo = models.ForeignKey(GitRepo, null=True, blank=True)
     name = models.CharField(max_length=100)
     repo_description = models.CharField(max_length=1000)
-    num_break_build = models.IntegerField(default=0)
 
     def __unicode__ (self):
         return unicode(self.git_repo) + self.name
@@ -76,6 +75,7 @@ class CodeAuthor(models.Model):
     git_branch = models.ForeignKey(GitBranch, null=True, blank=True)
     additions = models.IntegerField(default=0)
     deletions = models.IntegerField(default=0)
+    num_break_build = models.IntegerField(default=0)
 
     def __unicode__ (self):
         return unicode(self.repository) + self.name
