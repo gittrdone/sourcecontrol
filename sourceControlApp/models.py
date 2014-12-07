@@ -39,6 +39,10 @@ class GitRepo(models.Model):
     branches = models.ManyToManyField(GitBranch)
     num_commits = models.IntegerField(default=0)
 
+    #might be moved somewhere else in the future?
+    jenkins_url = models.CharField(max_length=300)
+    job_name = models.CharField(max_length=100)
+
     def get_branch_list(self):
         branch_list = [br.branch_name for br in self.branches.all()]
         return branch_list
@@ -56,6 +60,7 @@ class UserGitStore(models.Model):
     git_repo = models.ForeignKey(GitRepo, null=True, blank=True)
     name = models.CharField(max_length=100)
     repo_description = models.CharField(max_length=1000)
+    num_break_build = models.IntegerField(default=0)
 
     def __unicode__ (self):
         return unicode(self.git_repo) + self.name
@@ -96,6 +101,7 @@ class Commit(models.Model):
     patches = models.ManyToManyField(Patch, null=True, blank=True)
     commit_time = models.DateTimeField()
     num_patches = models.IntegerField(default = 0)
+    break_build_status = models.IntegerField(default = -1) #0 = no. 1 = yes. -1 = unknown
 
     def num_files_change(self):
         return self.num_patches
