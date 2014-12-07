@@ -77,16 +77,25 @@ def new_report(request, repo_id):
 
     return render_to_response("newReport.html", context_instance)
 
+def addReport(request, repo_id):
+    if not request.user.is_authenticated():
+        return redirect("index")
+
+    context_instance = RequestContext(request)
+    context_instance['repo_id'] = repo_id
+
+    return render_to_response("addReport.html", context_instance)
+
 # Endpoint for adding a new report to the DB
 def add_report(request, repo_id):
     if not request.user.is_authenticated():
         return redirect("index")
 
-    report_name = request.GET['report_name']
-    report_query_name = request.GET['report_query_name']
-    report_query_query = request.GET['report_query_query']
-    report_desc = request.GET['report_desc']
-    report_chart_type = request.GET['chart_type']
+    report_name = request.POST['report_name']
+    report_query_name = request.POST['report_query_name']
+    report_query_query = request.POST['report_query_query']
+    report_desc = request.POST['report_desc']
+    report_chart_type = request.POST['chart_type']
 
     user = request.user
     sourceControlUser = user.sourcecontroluser
