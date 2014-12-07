@@ -95,8 +95,8 @@ def get_repo_data_from_url(url, name, description, user):
     if not is_valid_repo(url):
         return -1
 
-    #download_and_process_repo(repo_object)
-    download_and_process_repo.apply_async((repo_object,))
+    download_and_process_repo(repo_object)
+    #download_and_process_repo.apply_async((repo_object,))
 
     return repo_entry
 
@@ -143,6 +143,7 @@ def download_and_process_repo(repo_object, branch_name=None):
                 #download_and_process_repo.apply_async((repo_object, branch, ))
 
     repo_object = GitRepo.objects.get(id = repo_object.id)
+    get_jenkins_result(repo_object)
     repo_object.status = 3 # Done
     repo_object.save()
 
@@ -340,14 +341,20 @@ def get_jenkins_result(git_repo, jenkinsurl = 'http://localhost:8080', jobname =
     job = Jenkins(jenkinsurl)[jobname]
     last_build_number = job.get_last_buildnumber()
     results = range(last_build_number)
+    print("LOL")
     for i in range(last_build_number):
         build = job[i+1]
-        if build.is_good():
-            results[i] = 1
-        else:
-            results[i] = 0
+        if ~build.is_good():
             #print build.get_revision() #this is actually commit id
             #print build.get_revision_branch() #contain in about branch
             #find a commit that matches the id of broken builds
-            break_commits = Commit.objects.all.filter(git_repo = git_repo, commit_id = build.get_revision())
+            break_commits = git_repo.commit_set.all().filter(commit_id = build.get_revision())
+            print("LOLOLOL")
+            print(len(break_commits))
+            for commit in break_commits:
+                commit.break_build_status = 1
+                commit.save()
+                author = commit.author
+                author.num_break_build += 1
+                author.save()
     return results
