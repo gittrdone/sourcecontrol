@@ -5,6 +5,7 @@ from sourceControlApp.models import SourceControlUser, UserGitStore
 # Create your models here.
 class Query(models.Model):
     name = models.CharField(max_length=256)
+    desc = models.CharField(max_length=1024, default='')
     query_command = models.CharField(max_length=1024)
     user = models.ForeignKey(SourceControlUser)
 
