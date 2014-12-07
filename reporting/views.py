@@ -112,16 +112,16 @@ def add_report(request, repo_id):
     num_queries = 1;
     #count the queries
     for i in range(2,10):
-        query_name = request.POST['query_' + i + '_name']
+        query_name = request.POST['query_' + str(i) + '_name']
         if query_name:
             num_queries = i
 
     #generate queries
     for i in range(2, num_queries):
-        query_name = request.POST['query_' + i + '_name']
-        query_desc = request.POST['query_' + i + '_desc']
-        query_query = request.POST['query_' + i]
-        query_chart_type = request.POST['chart_' + i + '_type']
+        query_name = request.POST['query_' + str(i) + '_name']
+        query_desc = request.POST['query_' + str(i) + '_desc']
+        query_query = request.POST['query_' + str(i)]
+        query_chart_type = request.POST['chart_' + str(i) + '_type']
         query = Query(name=query_name, desc=query_desc, query_command=query_query, user=sourceControlUser, chart_type=query_chart_type)
         query.save()
         report.queries.add(query)
