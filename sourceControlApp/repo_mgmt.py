@@ -95,8 +95,8 @@ def get_repo_data_from_url(url, name, description, user):
     if not is_valid_repo(url):
         return -1
 
-    download_and_process_repo(repo_object)
-    #download_and_process_repo.apply_async((repo_object,))
+    #download_and_process_repo(repo_object)
+    download_and_process_repo.apply_async((repo_object,))
 
     return repo_entry
 
@@ -143,7 +143,11 @@ def download_and_process_repo(repo_object, branch_name=None):
                 #download_and_process_repo.apply_async((repo_object, branch, ))
 
     repo_object = GitRepo.objects.get(id = repo_object.id)
-    get_jenkins_result(repo_object)
+
+    #XXX I call the jenkins thing here XXX
+    if url == "https://github.com/tpatikorn/WAMIQP-test":
+        get_jenkins_result(repo_object)
+
     repo_object.status = 3 # Done
     repo_object.save()
 
