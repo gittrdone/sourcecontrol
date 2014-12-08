@@ -13,17 +13,18 @@
 
 {% block content %}
     <div class="large-12 columns card">
-        <div class="large-6 columns">
-            <h3><b>{{ repo.name }}</b></h3>
-            <b>{{ repo.git_repo.git_repository_url }}</b><br><br>
+        <div class="large-12 columns">
+            <div class="large-6 columns">
+                <h3><b>{{ repo.name }}</b></h3>
+                <b>{{ repo.git_repo.git_repository_url }}</b><br><br>
 
-            {% if repo.repo_description %}
-                <div style="color:grey;font-style:italic;">{{ repo.repo_description }}</div>
-            {% endif %}
+                {% if repo.repo_description %}
+                    <div style="color:grey;font-style:italic;">{{ repo.repo_description }}</div>
+                {% endif %}
 
-            {% load staticfiles %}
-            <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
-            <a href="#" class="button" style="margin: 0; padding: 0.5rem 1rem;" data-dropdown="drop">{{ branch.branch_name }} &raquo;</a>
+                {% load staticfiles %}
+                <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
+                <a href="#" class="button" style="margin: 0; padding: 0.5rem 1rem;" data-dropdown="drop">{{ branch.branch_name }} &raquo;</a>
                 <ul id="drop" class="small f-dropdown" data-dropdown-content>
                     {% for branchObject in branches %}
                         {% if branchObject.pk != branch.pk %}
@@ -32,20 +33,23 @@
                         {% endif %}
                     {% endfor %}
                 </ul>
-        </div>
-        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ branch.num_files }}
-            <br/><div style="font-size:14px;color:black;">files</div>
-        </div>
+                <br><br>
+                <a href="{% url 'reports' repo.pk %}"><b>My <i>{{ repo.name }}</i> Reports</b></a>
+            </div>
+            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+                {{ branch.num_files }}
+                <br/><div style="font-size:14px;color:black;">files</div>
+            </div>
 
-        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ branch.num_commits }}
-            <br/><div style="font-size:14px;color:black;">commits</div>
-        </div>
+            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+                {{ branch.num_commits }}
+                <br/><div style="font-size:14px;color:black;">commits</div>
+            </div>
 
-        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ authors|length }}
-            <br/><div style="font-size:14px;color:black;">committers</div>
+            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+                {{ authors|length }}
+                <br/><div style="font-size:14px;color:black;">committers</div>
+            </div>
         </div>
     </div>
 

@@ -8,6 +8,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 import sys
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 
 #DB URL support
 import dj_database_url
@@ -109,3 +110,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, '..' ,'static')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
+
+TEMPLATE_CONTEXT_PROCESSORS = TCP + (
+    'sourcecontrol.processors.repo_nav_options',
+)
