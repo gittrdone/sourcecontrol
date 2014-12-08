@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 
 from sourceControlApp.querying.query_runner import process_string
-from reporting.models import Report, Query
+from reporting.models import Report, Query, auto_chart_type
 from sourceControlApp.models import UserGitStore
 from django.http import JsonResponse
 
@@ -35,35 +35,64 @@ def view_report(request, repo_id, report_id):
     context_instance['report'] = report
 
     # XXX Only does first query for now!!
-    query_result = process_string(report.queries.all()[0].query_command, repo)
+    query = report.queries.all()[0]
+    query_result = process_string(query.query_command, repo)
     context_instance['query_result'] = query_result
 
     query_chart_type = report.queries.all()[0].chart_type
     context_instance['query_chart_type'] = query_chart_type
 
+    context_instance['query_model'] = query.model
+
     #MANGLE CHART DATA HERE (based on chart type)
     if query_chart_type == "pie":
-        #if query_result.model == "users":
-        values = query_result.extra(
-            select={'label':'name', 'data':'num_commits'} ).values(
-                'label', 'data')
+        if query.model == "user":
+            values = query_result.extra(
+                select={'label':'name', 'data':'num_commits'}).values(
+                    'label', 'data')
+        elif query.model == "commit":
+            vals = {}
+            for commit in query_result:
+                date = commit.commit_time.date()
+                if date not in vals:
+                    vals[date] = 0
+                vals[date] += 1
+
+            values = [{'label': str(k), 'data': v} for k, v in vals.iteritems()]
 
         response = json.dumps(list(values))
 
     elif query_chart_type == "bar":
-    #    if query_result.model == "user":
-        values = query_result.values_list('name', 'num_commits')
-        valueslist = [list(i) for i in values]
+        if query.model == "user":
+            values = query_result.values_list('name', 'num_commits')
+            valueslist = [list(i) for i in values]
+        elif query.model == "commit":
+            vals = {}
+            for commit in query_result:
+                date = commit.commit_time.date()
+                if date not in vals:
+                    vals[date] = 0
+                vals[date] += 1
+            valueslist = [[str(k), v] for k,v in vals.iteritems()]
 
         response = json.dumps(valueslist)
 
     elif query_chart_type == "line":
-        #    if query_result.model == "user":
-        values = query_result.values_list('name', 'num_commits')
-        valueslist = [list(i) for i in values]
+        if query.model == "user":
+            values = query_result.values_list('name', 'num_commits')
+            valueslist = [list(i) for i in values]
+        elif query.model == "commit":
+            vals = {}
+            for commit in query_result:
+                date = commit.commit_time.date()
+                if date not in vals:
+                    vals[date] = 0
+                vals[date] += 1
+            valueslist = [[str(k), v] for k,v in vals.iteritems()]
 
         response = json.dumps(valueslist)
 
+    print response
     context_instance['response'] = response
     return render_to_response("report.html", context_instance)
 
@@ -98,6 +127,9 @@ def add_report(request, repo_id):
     query_one_query = request.POST['query_1']
     query_one_chart_type = request.POST['chart_1_type']
 
+    if query_one_chart_type == "auto":
+        query_one_chart_type = auto_chart_type(query_one_query)
+
     user = request.user
     sourceControlUser = user.sourcecontroluser
     repo = UserGitStore.objects.get(sourcecontroluser=sourceControlUser, pk=repo_id)
@@ -109,7 +141,7 @@ def add_report(request, repo_id):
     report.save()
     report.queries.add(query_one)
 
-    num_queries = 1;
+    num_queries = 1
     #count the queries
     for i in range(2,10):
         query_name = request.POST['query_' + str(i) + '_name']
@@ -122,6 +154,8 @@ def add_report(request, repo_id):
         query_desc = request.POST['query_' + str(i) + '_desc']
         query_query = request.POST['query_' + str(i)]
         query_chart_type = request.POST['chart_' + str(i) + '_type']
+        if query_chart_type == "auto":
+            query_chart_type = auto_chart_type(query_query)
         query = Query(name=query_name, desc=query_desc, query_command=query_query, user=sourceControlUser, chart_type=query_chart_type)
         query.save()
         report.queries.add(query)

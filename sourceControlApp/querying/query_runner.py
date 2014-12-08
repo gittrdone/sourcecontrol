@@ -1,7 +1,8 @@
 from antlr4 import *
 from sourceControlApp.querying.SourceControlParser import SourceControlParser
 from sourceControlApp.querying.SourceControlLexer import SourceControlLexer
-import dateutil
+import dateutil.parser
+import datetime
 
 from sourceControlApp.models import Commit, CodeAuthor
 
@@ -56,7 +57,9 @@ def filter_on_query(q, repo):
       }[comparator]
 
       if attr in ["commit_time"]:
-        conds.append({attr: dateutil.parser.parse(cond.value().getText())})
+        date = dateutil.parser.parse(cond.value().getText()[1:-1])
+        conds.append({'commit_time__range': (datetime.datetime.combine(date, datetime.time.min),
+                                             datetime.datetime.combine(date, datetime.time.max))})
       elif attr == "commit_day":
         weekday_num = {
           "sunday": 1,

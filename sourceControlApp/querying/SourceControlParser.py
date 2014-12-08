@@ -2,12 +2,6 @@
 from __future__ import print_function
 from antlr4 import *
 from io import StringIO
-package = globals().get("__package__", None)
-ischild = len(package)>0 if package is not None else False
-if ischild:
-    from .SourceControlListener import SourceControlListener
-else:
-    from SourceControlListener import SourceControlListener
 def serializedATN():
     with StringIO() as buf:
         buf.write(u"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3")
@@ -142,14 +136,6 @@ class SourceControlParser ( Parser ):
         def getRuleIndex(self):
             return SourceControlParser.RULE_command
 
-        def enterRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.enterCommand(self)
-
-        def exitRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.exitCommand(self)
-
 
 
 
@@ -202,14 +188,6 @@ class SourceControlParser ( Parser ):
         def getRuleIndex(self):
             return SourceControlParser.RULE_find
 
-        def enterRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.enterFind(self)
-
-        def exitRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.exitFind(self)
-
 
 
 
@@ -255,14 +233,6 @@ class SourceControlParser ( Parser ):
 
         def getRuleIndex(self):
             return SourceControlParser.RULE_get
-
-        def enterRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.enterGet(self)
-
-        def exitRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.exitGet(self)
 
 
 
@@ -317,14 +287,6 @@ class SourceControlParser ( Parser ):
 
         def getRuleIndex(self):
             return SourceControlParser.RULE_count
-
-        def enterRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.enterCount(self)
-
-        def exitRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.exitCount(self)
 
 
 
@@ -386,14 +348,6 @@ class SourceControlParser ( Parser ):
         def getRuleIndex(self):
             return SourceControlParser.RULE_query
 
-        def enterRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.enterQuery(self)
-
-        def exitRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.exitQuery(self)
-
 
 
 
@@ -436,14 +390,6 @@ class SourceControlParser ( Parser ):
 
         def getRuleIndex(self):
             return SourceControlParser.RULE_dataType
-
-        def enterRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.enterDataType(self)
-
-        def exitRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.exitDataType(self)
 
 
 
@@ -494,14 +440,6 @@ class SourceControlParser ( Parser ):
 
         def getRuleIndex(self):
             return SourceControlParser.RULE_cond
-
-        def enterRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.enterCond(self)
-
-        def exitRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.exitCond(self)
 
 
 
@@ -562,14 +500,6 @@ class SourceControlParser ( Parser ):
 
         def getRuleIndex(self):
             return SourceControlParser.RULE_condList
-
-        def enterRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.enterCondList(self)
-
-        def exitRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.exitCondList(self)
 
 
 
@@ -632,14 +562,6 @@ class SourceControlParser ( Parser ):
         def getRuleIndex(self):
             return SourceControlParser.RULE_getList
 
-        def enterRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.enterGetList(self)
-
-        def exitRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.exitGetList(self)
-
 
 
 
@@ -698,14 +620,6 @@ class SourceControlParser ( Parser ):
         def getRuleIndex(self):
             return SourceControlParser.RULE_value
 
-        def enterRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.enterValue(self)
-
-        def exitRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.exitValue(self)
-
 
 
 
@@ -754,14 +668,6 @@ class SourceControlParser ( Parser ):
         def getRuleIndex(self):
             return SourceControlParser.RULE_attrName
 
-        def enterRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.enterAttrName(self)
-
-        def exitRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.exitAttrName(self)
-
 
 
 
@@ -792,14 +698,6 @@ class SourceControlParser ( Parser ):
 
         def getRuleIndex(self):
             return SourceControlParser.RULE_valueName
-
-        def enterRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.enterValueName(self)
-
-        def exitRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.exitValueName(self)
 
 
 
@@ -841,14 +739,6 @@ class SourceControlParser ( Parser ):
 
         def getRuleIndex(self):
             return SourceControlParser.RULE_vlist
-
-        def enterRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.enterVlist(self)
-
-        def exitRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.exitVlist(self)
 
 
 
@@ -902,14 +792,6 @@ class SourceControlParser ( Parser ):
 
         def getRuleIndex(self):
             return SourceControlParser.RULE_comparator
-
-        def enterRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.enterComparator(self)
-
-        def exitRule(self, listener):
-            if isinstance( listener, SourceControlListener ):
-                listener.exitComparator(self)
 
 
 
