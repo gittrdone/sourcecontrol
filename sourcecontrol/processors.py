@@ -12,3 +12,5 @@ def repo_nav_options(request):
                 default_branch_files.append(-1)
                 default_branch_ids.append(-1)
         return {'repo_nav_options':zip(repos, default_branch_ids, default_branch_files)}
+    else:
+        return {'repo_nav_options':None}
