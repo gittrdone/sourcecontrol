@@ -5,6 +5,7 @@ from django.template import RequestContext
 import pytz
 from sourceControlApp.models import GitStore, SourceControlUser, UserGitStore, GitBranch, CodeAuthor
 
+
 def dates_between_datetimes(start,end):
     """
     this is a generator to generate a list of date values between two dates

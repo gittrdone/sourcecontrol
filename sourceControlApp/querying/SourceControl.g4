@@ -23,6 +23,6 @@ vlist: '[' value (',' SPACE? value)* ']';
 comparator: '>' | '<' | '=' | '!=' | 'in' | 'not in' | 'contains';
 
 INT: [0-9]+;
-STRING: '"' [ _a-zA-Z0-9]+ '"';
+STRING: '"' [ _\-a-zA-Z0-9]+ '"';
 ATTR_NAME: [_a-zA-Z0-9]+;
 SPACE: ' '+;

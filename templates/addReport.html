@@ -1,0 +1,247 @@
+{%  extends "base.html" %}
+
+{% block content %}
+
+<div class="large-12 columns card">
+    <form action="{% url "add_report" repo_id %}" method="POST">
+        <div class="large-9 columns" id="textboxes">
+            <h2>Report</h2>
+            <div id="errorDisplay" style="display:none; color:red;"></div>
+
+            <input name="report_name" id="reportName" placeholder="Name" type="text">
+            <input name="report_desc"  id="reportDesc" placeholder="Description" type="text">
+            <div id="query1">
+                <h4>Query One</h4>
+                <input name="query_1_name" id="queryOneName" placeholder="Name" type="text">
+                <input name="query_1_desc" id="queryOneDesc" placeholder="Description" type="text">
+                <input name="query_1" id="queryOne" placeholder="Query" type="text">
+                <div id="chart_one_options">
+                <label><h6>Chart Type</h6></label>
+                    <input class="default_option" type="radio" name="chart_1_type" value="auto" id="chart_one_default" checked><label for="chart_default">Automatic</label>
+                    <input type="radio" name="chart_1_type" value="pie" id="chart_pie"><label for="chart_pie"><i class="fa fa-pie-chart"></i>&nbsp;Pie</label>
+                    <input type="radio" name="chart_1_type" value="bar" id="chart_bar"><label for="chart_bar"><i class="fa fa-bar-chart"></i>&nbsp;Bar</label>
+                    <input type="radio" name="chart_1_type" value="line" id="chart_line"><label for="chart_line"><i class="fa fa-line-chart"></i>&nbsp;Line</label>
+                </div><br>
+            </div>
+
+            <div id="query2" style="display:none;">
+                <h4>Query Two</h4>
+                <input name="query_2_name" id="queryTwoName" placeholder="Name" type="text">
+                <input name="query_2_desc" id="queryTwoDesc" placeholder="Description" type="text">
+                <input name="query_2" id="queryTwo" placeholder="Query" type="text">
+                <div id="chart_two_options">
+                    <label><h6>Chart Type</h6></label>
+                    <input class="default_option" type="radio" name="chart_2_type" value="auto" id="chart_two_default" checked><label for="chart_default">Automatic</label>
+                    <input type="radio" name="chart_2_type" value="pie" id="chart_pie"><label for="chart_pie"><i class="fa fa-pie-chart"></i>&nbsp;Pie</label>
+                    <input type="radio" name="chart_2_type" value="bar" id="chart_bar"><label for="chart_bar"><i class="fa fa-bar-chart"></i>&nbsp;Bar</label>
+                    <input type="radio" name="chart_2_type" value="line" id="chart_line"><label for="chart_line"><i class="fa fa-line-chart"></i>&nbsp;Line</label>
+                </div><br>
+            </div>
+
+            <div id="query3" style="display:none;">
+                <h4>Query Three</h4>
+                <input name="query_3_name" id="queryThreeName" placeholder="Name" type="text">
+                <input name="query_3_desc" id="queryThreeDesc" placeholder="Description" type="text">
+                <input name="query_3" id="queryThree" placeholder="Query" type="text">
+                <div id="chart_three_options">
+                    <label><h6>Chart Type</h6></label>
+                    <input class="default_option" type="radio" name="chart_3_type" value="auto" id="chart_three_default" checked><label for="chart_default">Automatic</label>
+                    <input type="radio" name="chart_3_type" value="pie" id="chart_pie"><label for="chart_pie"><i class="fa fa-pie-chart"></i>&nbsp;Pie</label>
+                    <input type="radio" name="chart_3_type" value="bar" id="chart_bar"><label for="chart_bar"><i class="fa fa-bar-chart"></i>&nbsp;Bar</label>
+                    <input type="radio" name="chart_3_type" value="line" id="chart_line"><label for="chart_line"><i class="fa fa-line-chart"></i>&nbsp;Line</label>
+                </div><br>
+            </div>
+
+            <div id="query4" style="display:none;">
+                <h4>Query Four</h4>
+                <input name="query_4_name" id="queryFourName" placeholder="Name" type="text">
+                <input name="query_4_desc" id="queryFourDesc" placeholder="Description" type="text">
+                <input name="query_4" id="queryFour" placeholder="Query" type="text">
+                <div id="chart_four_options">
+                    <label><h6>Chart Type</h6></label>
+                    <input class="default_option" type="radio" name="chart_4_type" value="auto" id="chart_four_default" checked><label for="chart_default">Automatic</label>
+                    <input type="radio" name="chart_4_type" value="pie" id="chart_pie"><label for="chart_pie"><i class="fa fa-pie-chart"></i>&nbsp;Pie</label>
+                    <input type="radio" name="chart_4_type" value="bar" id="chart_bar"><label for="chart_bar"><i class="fa fa-bar-chart"></i>&nbsp;Bar</label>
+                    <input type="radio" name="chart_4_type" value="line" id="chart_line"><label for="chart_line"><i class="fa fa-line-chart"></i>&nbsp;Line</label>
+                </div><br>
+            </div>
+
+            <div id="query5" style="display:none;">
+                <h4>Query Five</h4>
+                <input name="query_5_name" id="queryFiveName" placeholder="Name" type="text">
+                <input name="query_5_desc" id="queryFiveDesc" placeholder="Description" type="text">
+                <input name="query_5" id="queryFive" placeholder="Query" type="text">
+                <div id="chart_five_options">
+                    <label><h6>Chart Type</h6></label>
+                    <input class="default_option" type="radio" name="chart_5_type" value="auto" id="chart_five_default" checked><label for="chart_default">Automatic</label>
+                    <input type="radio" name="chart_5_type" value="pie" id="chart_pie"><label for="chart_pie"><i class="fa fa-pie-chart"></i>&nbsp;Pie</label>
+                    <input type="radio" name="chart_5_type" value="bar" id="chart_bar"><label for="chart_bar"><i class="fa fa-bar-chart"></i>&nbsp;Bar</label>
+                    <input type="radio" name="chart_5_type" value="line" id="chart_line"><label for="chart_line"><i class="fa fa-line-chart"></i>&nbsp;Line</label>
+                </div><br>
+            </div>
+
+            <div id="query6" style="display:none;">
+                <h4>Query Six</h4>
+                <input name="query_6_name" id="querySixName" placeholder="Name" type="text">
+                <input name="query_6_desc" id="querySixDesc" placeholder="Description" type="text">
+                <input name="query_6" id="querySix" placeholder="Query" type="text">
+                <div id="chart_six_options">
+                    <label><h6>Chart Type</h6></label>
+                    <input class="default_option" type="radio" name="chart_6_type" value="auto" id="chart_six_default" checked><label for="chart_default">Automatic</label>
+                    <input type="radio" name="chart_6_type" value="pie" id="chart_pie"><label for="chart_pie"><i class="fa fa-pie-chart"></i>&nbsp;Pie</label>
+                    <input type="radio" name="chart_6_type" value="bar" id="chart_bar"><label for="chart_bar"><i class="fa fa-bar-chart"></i>&nbsp;Bar</label>
+                    <input type="radio" name="chart_6_type" value="line" id="chart_line"><label for="chart_line"><i class="fa fa-line-chart"></i>&nbsp;Line</label>
+                </div><br>
+            </div>
+
+            <div id="query7" style="display:none;">
+                <h4>Query Seven</h4>
+                <input name="query_7_name" id="querySevenName" placeholder="Name" type="text">
+                <input name="query_7_desc" id="querySevenDesc" placeholder="Description" type="text">
+                <input name="query_7" id="querySeven" placeholder="Query" type="text">
+                <div id="chart_seven_options">
+                    <label><h6>Chart Type</h6></label>
+                    <input class="default_option" type="radio" name="chart_7_type" value="auto" id="chart_seven_default" checked><label for="chart_default">Automatic</label>
+                    <input type="radio" name="chart_7_type" value="pie" id="chart_pie"><label for="chart_pie"><i class="fa fa-pie-chart"></i>&nbsp;Pie</label>
+                    <input type="radio" name="chart_7_type" value="bar" id="chart_bar"><label for="chart_bar"><i class="fa fa-bar-chart"></i>&nbsp;Bar</label>
+                    <input type="radio" name="chart_7_type" value="line" id="chart_line"><label for="chart_line"><i class="fa fa-line-chart"></i>&nbsp;Line</label>
+                </div><br>
+            </div>
+
+            <div id="query8" style="display:none;">
+                <h4>Query Eight</h4>
+                <input name="query_8_name" id="queryEightName" placeholder="Name" type="text">
+                <input name="query_8_desc" id="queryEightDesc" placeholder="Description" type="text">
+                <input name="query_8" id="queryEight" placeholder="Query" type="text">
+                <div id="chart_eight_options">
+                    <label><h6>Chart Type</h6></label>
+                    <input class="default_option" type="radio" name="chart_8_type" value="auto" id="chart_eight_default" checked><label for="chart_default">Automatic</label>
+                    <input type="radio" name="chart_8_type" value="pie" id="chart_pie"><label for="chart_pie"><i class="fa fa-pie-chart"></i>&nbsp;Pie</label>
+                    <input type="radio" name="chart_8_type" value="bar" id="chart_bar"><label for="chart_bar"><i class="fa fa-bar-chart"></i>&nbsp;Bar</label>
+                    <input type="radio" name="chart_8_type" value="line" id="chart_line"><label for="chart_line"><i class="fa fa-line-chart"></i>&nbsp;Line</label>
+                </div><br>
+            </div>
+
+            <div id="query9" style="display:none;">
+                <h4>Query Nine</h4>
+                <input name="query_9_name" id="queryNineName" placeholder="Name" type="text">
+                <input name="query_9_desc" id="queryNineDesc" placeholder="Description" type="text">
+                <input name="query_9" id="queryNine" placeholder="Query" type="text">
+                <div id="chart_nine_options">
+                    <label><h6>Chart Type</h6></label>
+                    <input class="default_option" type="radio" name="chart_9_type" value="auto" id="chart_nine_default" checked><label for="chart_default">Automatic</label>
+                    <input type="radio" name="chart_9_type" value="pie" id="chart_pie"><label for="chart_pie"><i class="fa fa-pie-chart"></i>&nbsp;Pie</label>
+                    <input type="radio" name="chart_9_type" value="bar" id="chart_bar"><label for="chart_bar"><i class="fa fa-bar-chart"></i>&nbsp;Bar</label>
+                    <input type="radio" name="chart_9_type" value="line" id="chart_line"><label for="chart_line"><i class="fa fa-line-chart"></i>&nbsp;Line</label>
+                </div><br>
+            </div>
+
+            <div id="query10" style="display:none;">
+                <h4>Query Ten</h4>
+                <input name="query_10_name" id="queryTenName" placeholder="Name" type="text">
+                <input name="query_10_desc" id="queryTenDesc" placeholder="Description" type="text">
+                <input name="query_10" id="queryTen" placeholder="Query" type="text">
+                <div id="chart_ten_options">
+                    <label><h6>Chart Type</h6></label>
+                    <input class="default_option" type="radio" name="chart_10_type" value="auto" id="chart_ten_default" checked><label for="chart_default">Automatic</label>
+                    <input type="radio" name="chart_10_type" value="pie" id="chart_pie"><label for="chart_pie"><i class="fa fa-pie-chart"></i>&nbsp;Pie</label>
+                    <input type="radio" name="chart_10_type" value="bar" id="chart_bar"><label for="chart_bar"><i class="fa fa-bar-chart"></i>&nbsp;Bar</label>
+                    <input type="radio" name="chart_10_type" value="line" id="chart_line"><label for="chart_line"><i class="fa fa-line-chart"></i>&nbsp;Line</label>
+                </div><br>
+            </div>
+        </div>
+        <div class="large-3 columns" id="buttons">
+            <input class="button" id="add_report_button" name="add_report_button" value="Create Report" type="submit">
+            <input class="button" id="add_query_button" name="add_query_button" value="Add Query" type="button">
+            <input class="button" id="remove_query_button" name="remove_query_button" value="Remove Query" type="button">
+            <a href="/queryhelp">Query help</a>
+        </div>
+        {% csrf_token %}
+    </form>
+</div>
+
+<script>
+
+    var errorDisplay = document.getElementById('errorDisplay');
+
+    var addQueryButton = document.querySelector('#add_query_button');
+    addQueryButton.addEventListener("click", addQuery);
+    var numQueries = 1;
+    function addQuery(e) {
+        if(numQueries < 10) {
+            numQueries = numQueries + 1;
+            var divToAddID = "query" + numQueries;
+            var divToAdd = document.getElementById(divToAddID);
+            divToAdd.style.display = 'block';
+            errorDisplay.style.display = 'none';
+        }
+
+        else {
+            errorDisplay.innerHTML = "Can't have more than 10 queries in one report!";
+            errorDisplay.style.display = 'block';
+        }
+    }
+
+    var removeQueryButton = document.querySelector('#remove_query_button');
+    removeQueryButton.addEventListener("click", removeQuery);
+    function removeQuery(e) {
+        if(numQueries > 1) {
+            //check if user is deleting inputted data
+            var divToRemoveID = "query" + numQueries;
+            var divToRemove = document.getElementById(divToRemoveID);
+            var inputs = $(divToRemove).children('input');
+            var hasContent = false;
+            for(var i = 0; i < inputs.length; i++) {
+                if($(inputs[i]).val() != '') {
+                    hasContent = true;
+                }
+            }
+            if(hasContent) {
+                console.log("there is content!");
+            }
+
+            else {
+                divToRemove.style.display = 'none';
+                errorDisplay.style.display = 'none';
+                numQueries = numQueries - 1;
+                for(var i = 0; i < inputs.length; i++) {
+                    $(inputs[i]).val('');
+                }
+            }
+        }
+
+        else {
+            errorDisplay.innerHTML = "A report must have at least one query!";
+            errorDisplay.style.display = 'block';
+        }
+    }
+
+    var theButton = document.querySelector("#add_report_button");
+    theButton.addEventListener("click", register);
+
+    function register(e)
+    {
+        var textInputs = $(':text');
+        var content = true;
+        for(var i = 0; i < (numQueries*3 + 2); i++) {
+            if($(textInputs[i]).val() == '') {
+                content = false;
+            }
+        }
+        console.log(content);
+        if(content == false)
+        {
+            errorDisplay.innerHTML = "All fields are required!";
+            errorDisplay.style.display = 'block';
+            e.preventDefault();
+        }
+
+        else {
+            errorDisplay.style.display = 'none';
+        }
+        return content;
+    }
+
+</script>
+
+{% endblock %}

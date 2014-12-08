@@ -8,7 +8,7 @@ class UserGitStoreAdmin(admin.ModelAdmin):
     list_display = ["git_repo","name", "repo_description"]
 
 class CodeAuthorAdmin(admin.ModelAdmin):
-    list_display = ["name", "repository", "num_commits", "additions", "deletions"]
+    list_display = ["name", "git_branch", "num_commits", "additions", "deletions", "num_break_build"]
 
 class CommitAdmin(admin.ModelAdmin):
     list_display = ["git_repo", "author", "commit_id"]

@@ -187,3 +187,6 @@ def delete_repo(request, id):
     else:
         # XXX Throw error
         return render_to_response("index")
+
+def queryhelp(request):
+    return render_to_response("queryhelp.html", {})
