@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% load staticfiles %}
+
+    <!-- {{ query_result }} -->
+    <h2 class="my-repositories-heading" style="font-family: 'Francois One', sans-serif;">Query Help</h2>
+
+    <div class="large-12 columns card">
+        <p>SourceControl.me allows you to enter queries that specify custom metrics to analyze. These queries specify
+        information to use to create new visualizations in reports. We use a language inspired by SQL for creating
+        queries.</p>
+        <p>The query language provides three basic commands: find, get, and count. Find queries retrieve either users,
+        commits, or branches. Get queries extract information from those sources. Count queries simply count the number
+        of results of a query.</p>
+        <p>Find queries find information sources within a repository. The simplest find query is perhaps</p>
+        <p style="margin-left: 30px; font-family: monospace;">find users</p>
+        <p>Which will simply return all users who have committed to the repository. This can be done with branches
+        and commits as well. Queries can be augmented with parameters to gather only wanted results. For example, we can get
+        users with large numbers of commits with</p>
+        <p style="margin-left: 30px; font-family: monospace;">find users where num_commits &gt; 10</p>
+        <p>Additional conditions can be specified by appending them with commas in between.</p>
+        <p>Get queries retrieve pertinent information from within repository information sources. For example, if
+        we want to focus on the additions of users, we can get that specific piece of information from them with</p>
+        <p style="margin-left: 30px; font-family: monospace;">get additions from users</p>
+        <p>These queries can also of course use filters. Finally, count queries simply return the number of results
+        for a certain query. For example, to find the number of commits on a certain day we could use</p>
+        <p style="margin-left: 30px; font-family: monospace;">count commits where commit_time = "12-04-2014"</p>
+        <p>For addition information refer to our additional resources:
+        <ul>
+        <li><a href="#">Query Examples</a>: An annotated set of query examples</li>
+        <li><a href="#">Query Reference</a>: A reference of all parameters and features of the query language</li>
+        </ul>
+        </p>
+        <p><b>Note that this document is incomplete and not all queries may work.
+           For examples of working queries refer to
+           <a href="https://docs.google.com/document/d/1OKS_GyRhdF1t7KvGAWcpj80PW1Yyve0CD8VafT7Kepo/edit">this document</a>.</b></p>
+    </div>
+
+{% endblock %}
