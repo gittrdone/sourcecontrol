@@ -1,4 +1,5 @@
 import json
+from collections import OrderedDict
 
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
@@ -51,7 +52,7 @@ def view_report(request, repo_id, report_id):
                 select={'label':'name', 'data':'num_commits'}).values(
                     'label', 'data')
         elif query.model == "commit":
-            vals = {}
+            vals = OrderedDict()
             for commit in query_result:
                 date = commit.commit_time.date()
                 if date not in vals:
@@ -67,12 +68,13 @@ def view_report(request, repo_id, report_id):
             values = query_result.values_list('name', 'num_commits')
             valueslist = [list(i) for i in values]
         elif query.model == "commit":
-            vals = {}
+            vals = OrderedDict()
             for commit in query_result:
                 date = commit.commit_time.date()
                 if date not in vals:
                     vals[date] = 0
                 vals[date] += 1
+            vals = OrderedDict(sorted(vals.items()))
             valueslist = [[str(k), v] for k,v in vals.iteritems()]
 
         response = json.dumps(valueslist)
@@ -82,12 +84,13 @@ def view_report(request, repo_id, report_id):
             values = query_result.values_list('name', 'num_commits')
             valueslist = [list(i) for i in values]
         elif query.model == "commit":
-            vals = {}
+            vals = OrderedDict()
             for commit in query_result:
                 date = commit.commit_time.date()
                 if date not in vals:
                     vals[date] = 0
                 vals[date] += 1
+            vals = OrderedDict(sorted(vals.items()))
             valueslist = [[str(k), v] for k,v in vals.iteritems()]
 
         response = json.dumps(valueslist)
