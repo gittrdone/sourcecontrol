@@ -41,7 +41,7 @@ class GitRepo(models.Model):
 
     #might be moved somewhere else in the future?
     jenkins_url = models.CharField(max_length=300, null=True, blank=True)
-    job_name = models.CharField(max_length=100, null=True, blank=True)
+    jenkins_job_name = models.CharField(max_length=100, null=True, blank=True)
 
     def get_branch_list(self):
         branch_list = [br.branch_name for br in self.branches.all()]
