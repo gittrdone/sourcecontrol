@@ -334,6 +334,14 @@ def canonicalize_repo_url(url):
     # Use HTTP URL as canonical for now
     return "http" + re.match("https?(.*)", url).group(1)
 
+def update_jenkins_info(git_repo, jenkins_url = "", jenkins_job_name = ""):
+    if jenkins_url == None or jenkins_url == "" or jenkins_job_name == None or jenkins_job_name == "":
+        return -1
+    git_repo.jenkins_url = jenkins_url
+    git_repo.jenkins_job_name = jenkins_job_name
+    git_repo.save()
+    get_jenkins_result(git_repo)
+
 #Note to self
 #adjust model:
 #AAA for jenkins things e.g. jenkins url and stuff: add to git_repo or git_branch???
@@ -342,7 +350,9 @@ def canonicalize_repo_url(url):
 #   problem: can it break only one of the branches?
 #2. new model that contains all jenkins info.
 #   problem: array of dynamic size
-def get_jenkins_result(git_repo, jenkinsurl = 'http://localhost:8080', jobname = 'test', username = None, password = None):
+def get_jenkins_result(git_repo):
+    jenkinsurl = git_repo.jenkins_url
+    jobname = git_repo.jenkins_job_name
     job = Jenkins(jenkinsurl)[jobname]
     last_build_number = job.get_last_buildnumber()
     results = range(last_build_number)
