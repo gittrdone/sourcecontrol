@@ -16,3 +16,12 @@ def repo_nav_options(request):
         return {'repo_nav_options':zip(repos, default_branch_ids, default_branch_files)}
     else:
         return {'repo_nav_options':None}
+
+
+def repo_nav_options_reports(request):
+    user = request.user
+    if request.user.is_authenticated():
+        repos = user.sourcecontroluser.ownedRepos.values('report__name', 'report__pk', 'name', 'pk')
+        return {'repo_nav_options_reports': repos}
+    else:
+        return {'repo_nav_options_reports': None}

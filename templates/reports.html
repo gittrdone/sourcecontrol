@@ -6,7 +6,7 @@
 {% block content %}
     {% load staticfiles %}
     <h2 class="my-repositories-heading" style="font-family: 'Francois One', sans-serif;">{{ repo_name }} REPORTS</h2>
-    <!--<a href="#" data-reveal-id="modalForm"><img src="{% static "images/add.png" %}" class="add-repo-button"/></a>-->
+
     <a href="/repo/{{ repo_id }}/reports/addReport.html"><img src="{% static "images/add.png" %}" class="add-repo-button"/></a>
 
     <div id="modalEditForm" class="reveal-modal" data-reveal>
@@ -60,6 +60,9 @@
         <a class="close-reveal-modal">&#215;</a>
     </div>
 
+    <div class="large-12 columns">
+    <a href="/repo/detail/{{ repo_id }}/{{ branch_id }}"><i class="fa fa-arrow-left"></i>&nbsp;{{ repo_name }} Repository View</a>
+    </div>
     {% if reports_list %}
         {% for report in reports_list %}
             <div id="report-{{ report.pk }}" class="large-12 columns card">

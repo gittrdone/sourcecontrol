@@ -1,51 +1,53 @@
 {% extends "base.html" %}
 
-{% block optional_nav %}
-    <li class="divider"></li>
-    <li> <a href="{% url 'reports' repo.pk %}">{{ repo.name }} Reports</a></li>
-{% endblock %}
-
 {% block content %}
     <div class="large-12 columns card">
-        <div class="large-12 columns">
-            <div class="large-6 columns">
-                <h3><b>{{ repo.name }}</b></h3>
-                <b>{{ repo.git_repo.git_repository_url }}</b><br><br>
+    <div class="large-12 columns">
+        <div class="large-6 columns">
+            <h3><b>{{ repo.name }}</b></h3>
+            <b>{{ repo.git_repo.git_repository_url }}</b><br><br>
 
 
-                {% if repo.repo_description %}
-                    <div style="color:grey;font-style:italic;padding-bottom: 10px">{{ repo.repo_description }}</div>
-                {% endif %}
+            {% if repo.repo_description %}
+                <div style="color:grey;font-style:italic;padding-bottom: 10px">{{ repo.repo_description }}</div>
+            {% endif %}
+        </div>
+        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+            {{ branch.num_files }}
+            <br/><div style="font-size:14px;color:black;">files</div>
+        </div>
 
-                <div>
-                    {% load staticfiles %}
-                    <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
-                    <a href="#" data-dropdown="drop" style="vertical-align:middle;">{{ branch.branch_name }} <i class="fa fa-caret-down"></i></a>
-                    <ul id="drop" class="small f-dropdown" data-dropdown-content>
-                        {% for branchObject in branches %}
-                            {% if branchObject.pk != branch.pk %}
-                                <!-- {{ branch.pk }} -->
-                                <li><a href="/repo/detail/{{ repo.pk }}/{{ branchObject.pk }}">{{ branchObject.branch_name }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-                {{ branch.num_files }}
-                <br/><div style="font-size:14px;color:black;">files</div>
-            </div>
+        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+            {{ branch.num_commits }}
+            <br/><div style="font-size:14px;color:black;">commits</div>
+        </div>
 
-            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-                {{ branch.num_commits }}
-                <br/><div style="font-size:14px;color:black;">commits</div>
-            </div>
-
-            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-                {{ authors|length }}
-                <br/><div style="font-size:14px;color:black;">committers</div>
+        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+            {{ authors|length }}
+            <br/><div style="font-size:14px;color:black;">committers</div>
+        </div>
+    </div>
+    <div class="large-12 columns">
+        <div class="large-9 columns">
+            <div>
+                {% load staticfiles %}
+                <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
+                <a href="#" data-dropdown="drop" style="vertical-align:middle;">{{ branch.branch_name }} <i class="fa fa-caret-down"></i></a>
+                <ul id="drop" class="small f-dropdown" data-dropdown-content>
+                    {% for branchObject in branches %}
+                        {% if branchObject.pk != branch.pk %}
+                            <!-- {{ branch.pk }} -->
+                            <li><a href="/repo/detail/{{ repo.pk }}/{{ branchObject.pk }}">{{ branchObject.branch_name }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
             </div>
         </div>
+
+        <div class="large-3 columns" style="font-weight: bold;text-align: right;padding-right: 50px;">
+            <a href="{% url 'reports' repo.pk %}"><i class="fa fa-line-chart"></i>&nbsp;View Reports</a>
+        </div>
+    </div>
     </div>
 
     <div class="large-12 columns card">

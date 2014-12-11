@@ -49,7 +49,7 @@
                 {% if user.is_authenticated %}
 
 
-                    <li><a href="/">Home</a></li>
+                    <li><a href="/"><i class="fa fa-home"></i>&nbsp;Home</a></li>
                     <li class="divider"></li>
 
                     {% if repo_nav_options %}
@@ -61,7 +61,30 @@
                                 {% endfor %}
                             </ul>
                         </li>
+                        <li class="divider"></li>
                     {% endif %}
+                    {% if repo_nav_options_reports %}
+                        {% regroup repo_nav_options_reports by name as report_list %}
+
+                        <li class="has-dropdown">
+                            <a> My Reports</a>
+                            <ul class="dropdown">
+                                {% for r in report_list %}
+                                    <li {% if r.list %}class="has-dropdown"{% endif %}>
+                                        <a href="#">{{ r.grouper }}</a>
+                                        <ul class="dropdown">
+                                            <li><a href="/repo/{{ r.list.0.pk }}/reports">All Reports</a></li>
+                                            {% for item in r.list %}
+                                            <li><a href="{% url "view_report" item.pk item.report__pk %}">{{ item.report__name }}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endif %}
+
 
                     <li class="divider"></li>
                     <li class="has-dropdown">

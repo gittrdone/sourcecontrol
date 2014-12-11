@@ -113,4 +113,5 @@ TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'sourcecontrol.processors.repo_nav_options',
+    'sourcecontrol.processors.repo_nav_options_reports'
 )

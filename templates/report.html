@@ -6,6 +6,9 @@
     <!-- {{ query_result }} -->
     <h2 class="my-repositories-heading" style="font-family: 'Francois One', sans-serif;">{{ report.name }}</h2>
 
+    <div class="large-12 columns">
+    <a href="/repo/{{ repo_id }}/reports"><i class="fa fa-arrow-left"></i>&nbsp;All Reports</a>
+    </div>
     <div class="large-12 columns card">
     {% if query_model == "user" %}
         {% for result in query_result %}
