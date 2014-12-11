@@ -1,3 +1,5 @@
+from reporting.models import Report
+
 def repo_nav_options(request):
     user = request.user
     if request.user.is_authenticated():
@@ -5,7 +7,7 @@ def repo_nav_options(request):
         default_branch_ids = []
         default_branch_files = []
         for repo in repos:
-            if repo.git_repo.status == 3:
+            if repo.git_repo and repo.git_repo.status == 3:
                 default_branch_files.append(repo.git_repo.branches.all()[0].num_files)
                 default_branch_ids.append(repo.git_repo.branches.all()[0].pk)
             else:
