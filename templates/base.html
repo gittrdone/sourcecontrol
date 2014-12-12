@@ -15,6 +15,9 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/5.4.1/js/vendor/modernizr.js"></script>
     <!--Font Awesome-->
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <style type="text/css">
+        #flot-tooltip { font-size: 12px; font-family: Verdana, Arial, sans-serif; position: absolute; display: none; border: 2px solid; padding: 2px; background-color: #FFF; opacity: 0.8; -moz-border-radius: 5px; -webkit-border-radius: 5px; -khtml-border-radius: 5px; border-radius: 5px; }
+    </style>
 
     <title>SourceControl.Me | Repository Analysis</title>
     {% block head %}
@@ -75,7 +78,7 @@
                                         <ul class="dropdown">
                                             <li><a href="/repo/{{ r.list.0.pk }}/reports">All Reports</a></li>
                                             {% for item in r.list %}
-                                            <li><a href="{% url "view_report" item.pk item.report__pk %}">{{ item.report__name }}</a></li>
+                                                <li><a href="{% url "view_report" item.pk item.report__pk %}">{{ item.report__name }}</a></li>
                                             {% endfor %}
                                         </ul>
                                     </li>
@@ -135,6 +138,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.pie.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.categories.min.js"></script>
+<script src="//cdn.jsdelivr.net/jquery.flot.tooltip/0.7.1/jquery.flot.tooltip.min.js"></script>
 {% block extra_js %}
 
 {% endblock %}
