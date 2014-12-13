@@ -78,7 +78,9 @@
                                         <ul class="dropdown">
                                             <li><a href="/repo/{{ r.list.0.pk }}/reports">All Reports</a></li>
                                             {% for item in r.list %}
+                                                {% if item.pk and item.report__pk %}
                                                 <li><a href="{% url "view_report" item.pk item.report__pk %}">{{ item.report__name }}</a></li>
+                                                {% endif %}
                                             {% endfor %}
                                         </ul>
                                     </li>
