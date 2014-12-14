@@ -56,12 +56,17 @@ def add_repo(request):
 
         if existing_store is not None and len(sourceControlUser.ownedRepos.filter(git_repo=existing_store)) > 0:
             error = True
+            already_own = True
         else:
             repo = get_repo_data_from_url(repo_url, repo_name, repo_description, sourceControlUser)
             error = (repo == -1) # Check for error flag
+            already_own = False
 
         if error:
-            messages.error(request, "Not a valid repository!")
+            if already_own:
+                messages.error(request, "You already have this repository in your account!")
+            else:
+                messages.error(request, "Not a valid repository!")
         else:
             sourceControlUser.ownedRepos.add(repo)
         if use_jenkins and repo_jenkins_url != None and repo_jenkins_job_name != None:
