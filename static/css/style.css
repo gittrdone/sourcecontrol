@@ -94,3 +94,25 @@ body {
 .responsive-icon:active {
     color:black;
 }
+
+/* Used to temporarily change input placeholder text
+to red
+http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css
+*/
+
+/*
+::-webkit-input-placeholder { // WebKit browsers
+    color:    red;
+}
+:-moz-placeholder { // Mozilla Firefox 4 to 18
+   color:    red;
+   opacity:  1;
+}
+::-moz-placeholder { // Mozilla Firefox 19+
+   color:    red;
+   opacity:  1;
+}
+:-ms-input-placeholder { // Internet Explorer 10+
+   color:    red;
+}
+*/
