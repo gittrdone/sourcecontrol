@@ -2,7 +2,7 @@ from datetime import date, datetime, timedelta
 from json import dumps
 from django.shortcuts import render, render_to_response, get_object_or_404
 from sourceControlApp.models import GitRepo, SourceControlUser, UserGitStore, GitBranch
-from sourceControlApp.repo_mgmt import get_repo_data_from_url, canonicalize_repo_url
+from sourceControlApp.repo_mgmt import get_repo_data_from_url, canonicalize_repo_url, update_jenkins_info
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -38,6 +38,12 @@ def add_repo(request):
     repo_url = request.GET['repo']
     repo_name = request.GET['name']
     repo_description = request.GET['desc']
+    use_jenkins = True
+    try:
+        repo_jenkins_url = request.GET['jenkinsUrl']
+        repo_jenkins_job_name = request.GET['jenkinsJobName']
+    except:
+        use_jenkins = False
 
     if request.user.is_authenticated():
         user = request.user
@@ -58,6 +64,8 @@ def add_repo(request):
             messages.error(request, "Not a valid repository!")
         else:
             sourceControlUser.ownedRepos.add(repo)
+        if use_jenkins and repo_jenkins_url != None and repo_jenkins_job_name != None:
+            update_jenkins_info(repo.git_repo,repo_jenkins_url,repo_jenkins_job_name)
 
     return redirect("index")
 

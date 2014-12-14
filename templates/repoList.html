@@ -46,6 +46,13 @@
             <textarea name="desc" rows="3" style="resize:none;" placeholder="Description (optional)"
                       {% if git_error and git_error_description %}value="{{ git_error_description }}"{% endif %}></textarea>
 
+            <!-- jenkins stuff -->
+            <label>use jenkins? <input type="checkbox" name="useJenkins" id="useJenkinsCheckBox" onclick="changeJenkinsEnable(this);"></label>
+            <input class="error" name="jenkinsUrl" type="text" id="jenkinsUrlField" placeholder="Jenkins URL" disabled>
+            <br>
+            <input class="error" name="jenkinsJobName" type="text" id="jenkinsJobNameField" placeholder="Jenkins Job Name" disabled>
+            <br>
+
             <input id="submitRepo" type="submit" value="Store" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
         </form>
         <a class="close-reveal-modal">&#215;</a>
@@ -225,4 +232,11 @@
             return 1;
         }
     </script>
+    <script>
+        function changeJenkinsEnable(element) {
+            document.getElementById("jenkinsJobNameField").disabled = !element.checked;
+            document.getElementById("jenkinsUrlField").disabled = !element.checked;
+        }
+    </script>
+
 {% endblock %}
