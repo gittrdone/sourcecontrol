@@ -50,6 +50,22 @@
             </div>
         </div>
 
+        {% if author.num_build > 0 %}
+        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+            {{ author.num_break_build }}
+            <br/><div style="font-size:14px;color:black;">break</div>
+        </div>
+
+        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+            {{ author.num_fix_build }}
+            <br/><div style="font-size:14px;color:black;">fix</div>
+        </div>
+
+        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+            {{ author.num_build }}
+            <br/><div style="font-size:14px;color:black;">builds involved</div>
+        </div>
+        {% endif %}
     </div>
 
     <div class="large-12 columns card">

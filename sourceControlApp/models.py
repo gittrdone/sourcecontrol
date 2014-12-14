@@ -75,7 +75,14 @@ class CodeAuthor(models.Model):
     git_branch = models.ForeignKey(GitBranch, null=True, blank=True)
     additions = models.IntegerField(default=0)
     deletions = models.IntegerField(default=0)
+    #the total number of broken builds by THIS CodeAuthor
+    #Note: this CodeAuthor might not be the one who start the breaking sequence
     num_break_build = models.IntegerField(default=0)
+    #the total number of builds that fix by THIS CodeAuthor
+    #Note: this CodeAuthor is the one that stop the breaking sequence
+    num_fix_build = models.IntegerField(default=0)
+    #the total number of builds by THIS CodeAuthor
+    num_build = models.IntegerField(default=0)
 
     def __unicode__ (self):
         return unicode(self.git_branch) + self.name

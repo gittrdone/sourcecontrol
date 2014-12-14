@@ -5,8 +5,8 @@
         <div class="large-12 columns">
             <div class="large-6 columns">
                 <h3><b>{{ repo.name }}</b></h3>
-                <b>{{ repo.git_repo.git_repository_url }}</b><br><br>
 
+                <b>{{ repo.git_repo.git_repository_url }}</b><br><br>
 
                 {% if repo.repo_description %}
                     <div style="color:grey;font-style:italic;padding-bottom: 10px">{{ repo.repo_description }}</div>
@@ -33,6 +33,9 @@
                     {% load staticfiles %}
                     <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
                     <a href="#" data-dropdown="drop" style="vertical-align:middle;">{{ branch.branch_name }} <i class="fa fa-caret-down"></i></a>
+                    {% if repo.git_repo.jenkins_url != "" and repo.git_repo.jenkins_url != None %}
+                    Jenkins URL {{ repo.git_repo.jenkins_url }}
+                    {% endif %}
                     <ul id="drop" class="small f-dropdown" data-dropdown-content>
                         {% for branchObject in branches %}
                             {% if branchObject.pk != branch.pk %}

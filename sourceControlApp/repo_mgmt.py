@@ -146,8 +146,8 @@ def download_and_process_repo(repo_object, branch_name=None):
 
     #XXX I call the jenkins thing here XXX
     #only call on default branch
-    #if branch_name is None:
-        #get_jenkins_result(repo_object)
+    if branch_name is None and repo_object.jenkins_url != "":
+        get_jenkins_result(repo_object)
 
     repo_object.status = 3 # Done
     repo_object.save()
@@ -340,7 +340,6 @@ def update_jenkins_info(git_repo, jenkins_url = "", jenkins_job_name = ""):
     git_repo.jenkins_url = jenkins_url
     git_repo.jenkins_job_name = jenkins_job_name
     git_repo.save()
-    get_jenkins_result(git_repo)
 
 #Note to self
 #adjust model:
@@ -356,17 +355,23 @@ def get_jenkins_result(git_repo):
     job = Jenkins(jenkinsurl)[jobname]
     last_build_number = job.get_last_buildnumber()
     results = range(last_build_number)
+    prev = True #the previous build status. used to determined fixer
     for i in range(last_build_number):
         build = job[i+1]
+        #print build.get_revision() #this is actually commit id
+        #print build.get_revision_branch() #contain in about branch
+        commit = git_repo.commit_set.all().filter(commit_id = build.get_revision())[0] #commit_id should be unique
+        author = commit.author
         if not build.is_good():
-            #print build.get_revision() #this is actually commit id
-            #print build.get_revision_branch() #contain in about branch
             #find a commit that matches the id of broken builds
-            break_commits = git_repo.commit_set.all().filter(commit_id = build.get_revision())
-            commit = break_commits[0] #commit_id should be unique
             commit.break_build_status = 1
             commit.save()
-            author = commit.author
             author.num_break_build += 1
             author.save()
+        elif not prev:
+            author.num_fix_build += 1
+            author.save()
+        prev = build.is_good()
+        author.num_build += 1
+        author.save()
     return results
