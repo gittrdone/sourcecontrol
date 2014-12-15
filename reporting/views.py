@@ -35,6 +35,7 @@ def view_report(request, repo_id, report_id):
     report = Report.objects.get(user=request.user.sourcecontroluser, repo=repo, pk=report_id)
 
     context_instance = RequestContext(request)
+    context_instance['default_branch_id'] = repo.git_repo.branches.all()[0].pk
     context_instance['repo_id'] = repo_id
     context_instance['report'] = report
 
