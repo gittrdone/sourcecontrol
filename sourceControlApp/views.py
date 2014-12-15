@@ -75,8 +75,7 @@ def add_repo(request):
                 messages.error(request, "Not a valid repository!")
         else:
             sourceControlUser.ownedRepos.add(repo)
-
-        update_jenkins_info(repo.git_repo,repo_jenkins_url,repo_jenkins_job_name)
+            update_jenkins_info(repo.git_repo,repo_jenkins_url,repo_jenkins_job_name)
 
     return redirect("index")
 
