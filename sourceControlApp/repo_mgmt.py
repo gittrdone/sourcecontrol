@@ -52,7 +52,7 @@ def update_repo(repo_object):
     process_repo(repo, repo_object, repo_path)
     repo_object.save()
 
-def get_repo_data_from_url(url, name, description, user):
+def get_repo_data_from_url(url, name, description, user, email_address=""):
     """
     Updates a single repo by recloning the repo
     and updating the information in the database
@@ -61,6 +61,7 @@ def get_repo_data_from_url(url, name, description, user):
     :param description: Description of the repo
     :return: A reference the the repo in the database
     """
+
     os.system("rm -rf " + repo_path)
 
     if url[:4] != "http":
@@ -96,12 +97,12 @@ def get_repo_data_from_url(url, name, description, user):
         return -1
 
     #download_and_process_repo(repo_object)
-    download_and_process_repo.apply_async((repo_object,))
+    download_and_process_repo.apply_async((repo_object, None, email_address,))
 
     return repo_entry
 
 @task
-def download_and_process_repo(repo_object, branch_name=None):
+def download_and_process_repo(repo_object, branch_name=None, email_to=""):
     """
     more robust way to process repo
     :param repo_object: The pygit2 repo to pull information from
@@ -148,9 +149,21 @@ def download_and_process_repo(repo_object, branch_name=None):
 
     #XXX I call the jenkins thing here XXX
     #only call on default branch
-    if branch_name is None and repo_object.jenkins_url is not None:
-        get_jenkins_result(repo_object)
-    
+    if branch_name is None:
+        if repo_object.jenkins_url is not None and repo_object.jenkins_url != "":
+            try:
+                get_jenkins_result(repo_object)
+            except:
+                #something wrong
+                #for now just wipe out the jenkins info, i guess
+                repo_object.jenkins_url = ""
+                repo_object.jenkins_job_name = ""
+
+        if email_to is not None and email_to != "":
+            from django.core.mail import send_mail
+            send_mail('SourceControl.me: Your repository is ready!', 'Your repository: '+url+' is ready',
+                      'no_reply@SourceControl.me', [email_to,'tpatikorn@gmail.com'])
+
     repo_object.status = 3 # Done
     repo_object.save()
 
