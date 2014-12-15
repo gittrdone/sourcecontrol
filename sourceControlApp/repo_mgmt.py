@@ -124,6 +124,8 @@ def download_and_process_repo(repo_object, branch_name=None):
 
     branch_db_object = GitBranch(git_repository_url = url)
     branch_db_object.status = 1 #initialized properly
+    if branch_name is None:
+        branch_db_object.is_default = 1 #set it to default
     branch_db_object.save()
 
     repo_object = GitRepo.objects.get(id = repo_object.id)
