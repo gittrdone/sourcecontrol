@@ -49,7 +49,7 @@ class GitRepo(models.Model):
         for branch in self.branches.all():
             if branch.is_default==1:
                 return branch
-        return None #this should not happen
+        return self.branches.all()[0] #this should not happen
 
     @property
     def get_branch_list(self):
