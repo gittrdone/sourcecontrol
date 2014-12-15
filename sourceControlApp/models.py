@@ -28,6 +28,7 @@ class GitBranch(models.Model):
     num_files = models.IntegerField(default=0)
     num_commits = models.IntegerField(default=0)
     status = models.IntegerField(default=0)
+    is_default = models.IntegerField(default=0)
 
     def __unicode__ (self):
            return unicode(self.git_repository_url) + ":" + unicode(self.branch_name)
@@ -43,6 +44,14 @@ class GitRepo(models.Model):
     jenkins_url = models.CharField(max_length=300, null=True, blank=True)
     jenkins_job_name = models.CharField(max_length=100, null=True, blank=True)
 
+    @property
+    def default_branch(self):
+        for branch in self.branches.all():
+            if branch.is_default==1:
+                return branch
+        return None #this should not happen
+
+    @property
     def get_branch_list(self):
         branch_list = [br.branch_name for br in self.branches.all()]
         return branch_list
