@@ -6,46 +6,74 @@
 {% endblock %}
 {% block content %}
     <div class="large-12 columns card">
-        <div class="large-6 columns">
-            <h3><b>{{ author.name }}</b></h3>
-            <b>{{ author.git_branch.git_repository_url }}</b><br><br>
+        <div class="large-12 columns">
+            <div class="large-6 columns">
+                <h3><b>{{ author.name }}</b></h3>
+                <b>{{ author.git_branch.git_repository_url }}</b><br><br>
 
-            {% load staticfiles %}
-            <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
-            <div class="branch-text">{{ author.git_branch.branch_name }}</div>
+            </div>
+            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+                {{ author.num_commits }}
+                <br/><div style="font-size:14px;color:black;">commits</div>
+            </div>
+
+            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+                {{ lines_per_commit }}
+                <br/><div style="font-size:14px;color:black;">lines/commit</div>
+            </div>
+
+            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+                {{ author.additions }}
+                <br/><div style="font-size:14px;color:black;">insertions</div>
+            </div>
+
         </div>
-        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ author.num_commits }}
-            <br/><div style="font-size:14px;color:black;">commits</div>
+        <div class="large-12 columns">
+            <div class="large-9 columns">
+                <div>
+                    {% load staticfiles %}
+                    <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
+                    <a href="#" data-dropdown="drop" style="vertical-align:middle;">{{ branch.branch_name }} <i class="fa fa-caret-down"></i></a>
+                    <ul id="drop" class="small f-dropdown" data-dropdown-content>
+                        {% for branchObject in branches %}
+                            {% if branchObject.pk != branch.pk %}
+                                <!-- {{ branch.pk }} -->
+                                <li><a href="/authors/detail/{{ branchObject.codeauthor__pk }}/{{ repo_pk }}/{{ branchObject.pk }}">{{ branchObject.branch_name }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="large-3 columns">
+                <b><a href="/repo/detail/{{ repo_pk }}/{{ branch.pk }}">Repository View</a></b>
+            </div>
         </div>
 
-        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ author.additions }}
-            <br/><div style="font-size:14px;color:black;">insertions</div>
-        </div>
-
-        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ author.deletions }}
-            <br/><div style="font-size:14px;color:black;">deletions</div>
-        </div>
-
-        {% if author.num_build > 0 %}
-        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ author.num_break_build }}
-            <br/><div style="font-size:14px;color:black;">break</div>
-        </div>
-
-        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ author.num_fix_build }}
-            <br/><div style="font-size:14px;color:black;">fix</div>
-        </div>
-
-        <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-            {{ author.num_build }}
-            <br/><div style="font-size:14px;color:black;">builds involved</div>
-        </div>
-        {% endif %}
     </div>
+
+    {% if author.num_build > 0 %}
+        <div class="large-12 columns card">
+            <div class="large-6 columns">
+                <h3><b>Build Information</b></h3>
+            </div>
+            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+                {{ author.num_break_build }}
+                <br/><div style="font-size:14px;color:black;">break</div>
+            </div>
+
+            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+                {{ author.num_fix_build }}
+                <br/><div style="font-size:14px;color:black;">fix</div>
+            </div>
+
+            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+                {{ author.num_build }}
+                <br/><div style="font-size:14px;color:black;">builds involved</div>
+            </div>
+
+        </div>
+    {% endif %}
 
     <div class="large-12 columns card">
         <div class="large-6 columns" style="height:250px;text-align:center">
@@ -57,6 +85,8 @@
             <div id="barcontainer" style="height:200px;"></div>
         </div>
     </div>
+
+
 
 {% endblock %}
 
