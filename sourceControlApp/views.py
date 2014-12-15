@@ -38,12 +38,18 @@ def add_repo(request):
     repo_url = request.GET['repo']
     repo_name = request.GET['name']
     repo_description = request.GET['desc']
-    use_jenkins = True
     try:
         repo_jenkins_url = request.GET['jenkinsUrl']
         repo_jenkins_job_name = request.GET['jenkinsJobName']
     except:
-        use_jenkins = False
+        repo_jenkins_url = ""
+        repo_jenkins_job_name = ""
+
+    doEmail = True
+    try:
+        email_to = request.GET['emailTo']
+    except:
+        email_to = ""
 
     if request.user.is_authenticated():
         user = request.user
@@ -58,7 +64,7 @@ def add_repo(request):
             error = True
             already_own = True
         else:
-            repo = get_repo_data_from_url(repo_url, repo_name, repo_description, sourceControlUser)
+            repo = get_repo_data_from_url(repo_url, repo_name, repo_description, sourceControlUser, email_address=email_to)
             error = (repo == -1) # Check for error flag
             already_own = False
 
@@ -69,7 +75,6 @@ def add_repo(request):
                 messages.error(request, "Not a valid repository!")
         else:
             sourceControlUser.ownedRepos.add(repo)
-        if use_jenkins and repo_jenkins_url != None and repo_jenkins_job_name != None:
             update_jenkins_info(repo.git_repo,repo_jenkins_url,repo_jenkins_job_name)
 
     return redirect("index")

@@ -115,3 +115,9 @@ TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'sourcecontrol.processors.repo_nav_options',
     'sourcecontrol.processors.repo_nav_options_reports'
 )
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'sourcecontrolme@gmail.com'
+EMAIL_HOST_PASSWORD = 'sourcecontrol.me'

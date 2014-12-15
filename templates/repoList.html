@@ -52,6 +52,10 @@
             <input class="error" name="jenkinsJobName" type="text" id="jenkinsJobNameField" placeholder="Jenkins Job Name" disabled>
             <br>
 
+            <label>Send email notification? <input type="checkbox" name="emailNoti" id="emailNotiBox" onclick="changeEmailNoti(this);"></label>
+            <input class="error" name="emailTo" type="text" id="emailToField" placeholder="email to sand notification to" disabled>
+            <br>
+
             <input id="submitRepo" type="submit" value="Store" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
         </form>
         <a class="close-reveal-modal">&#215;</a>
@@ -235,6 +239,9 @@
         function changeJenkinsEnable(element) {
             document.getElementById("jenkinsJobNameField").disabled = !element.checked;
             document.getElementById("jenkinsUrlField").disabled = !element.checked;
+        }
+            function changeEmailNoti(element) {
+            document.getElementById("emailToField").disabled = !element.checked;
         }
     </script>
 
