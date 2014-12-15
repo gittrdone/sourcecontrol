@@ -162,7 +162,7 @@ def download_and_process_repo(repo_object, branch_name=None, email_to=""):
         if email_to is not None and email_to != "":
             from django.core.mail import send_mail
             send_mail('SourceControl.me: Your repository is ready!', 'Your repository: '+url+' is ready',
-                      'no_reply@SourceControl.me', [email_to,'tpatikorn@gmail.com'])
+                      'no_reply@SourceControl.me', [email_to])
 
     repo_object.status = 3 # Done
     repo_object.save()
