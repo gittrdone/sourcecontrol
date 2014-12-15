@@ -3,15 +3,21 @@
 {% block content %}
     {% load staticfiles %}
 
-    <!-- {{ query_result }} -->
     <h2 class="my-repositories-heading" style="font-family: 'Francois One', sans-serif;">{{ report.name }}</h2>
 
     <div class="large-12 columns">
         <a href="/repo/{{ repo_id }}/reports"><i class="fa fa-arrow-left"></i>&nbsp;All Reports</a>
     </div>
+
+    {% for query in queries %}
     <div class="large-12 columns card">
-        {% if query_model == "user" %}
-            {% for result in query_result %}
+        <div class="large-12 columns">
+        <h3>{{ query.query.name }}</h3>
+        <b>{{ query.query.desc }}</b><br />
+        <div style="color:grey;font-style:italic;padding-bottom: 10px;padding-top: 5px"><span style="font-style:normal">Command:</span> {{ query.query.query_command }}</div>
+        </div>
+        {% if query.query.model == "user" %}
+            {% for result in query.query_result %}
                 {% if forloop.counter <= 4 %}
                     <div class="large-6 columns" style="float:left;">
                         <div class="large-8 columns" style="margin-bottom: 10px;">
@@ -23,7 +29,7 @@
                         </div>
                     </div>
                 {% else %}
-                    <div class="hide extra_committers">
+                    <div class="hide extra_committers-{{ query.query.pk }}">
                         <div class="large-6 columns" style="float:left;">
                             <div class="large-8 columns" style="margin-bottom: 10px;">
                                 <a href="/authors/detail/{{ result.pk }}/{{ repo_id }}/{{ default_branch_id }}"><h5 class="blue-clicky-text"><b>{{ result.name }}</b></h5></a>
@@ -36,33 +42,35 @@
                     </div>
                 {% endif %}
             {% endfor %}
-            <div class="large-12 columns commithider blue-clicky-text" style="text-align: center; margin-top: 10px; color: black;">
-                {% if query_result.count > 4 %}
-                    View All ({{ query_result.count }})
+            <div class="large-12 columns commithider-{{ query.query.pk }} blue-clicky-text" style="text-align: center; margin-top: 10px; color: black;">
+                {% if query.query_result.count > 4 %}
+                    View All ({{ query.query_result.count }})
                 {% endif %}
             </div>
         {% endif %}
         <div class="large-12 columns" style="height:220px;text-align:center;margin-top: 40px;">
-            <div id="chartcontainer" style="height:200px;width: 50%;margin:0 auto;"></div>
+            <div id="chartcontainer-{{ query.query.pk }}" style="height:200px;width: 50%;margin:0 auto;"></div>
         </div>
     </div>
+    {% endfor %}
 
 {% endblock %}
 {% block extra_js %}
     <script>
+        {% for query in queries %}
         $(document).ready(function(){
-            $(".commithider").click(
+            $(".commithider-{{ query.query.pk }}").click(
                     function(e){
                         e.preventDefault();
-                        $(".extra_committers").slideToggle(200,function() {
-                            $(".commithider").text($(this).is(':visible') ? "Show Less" : "View All ({{ query_result.count }})");
+                        $(".extra_committers-{{ query.query.pk }}").slideToggle(200,function() {
+                            $(".commithider-{{ query.query.pk }}").text($(this).is(':visible') ? "Show Less" : "View All ({{ query.query_result.count }})");
                         });
                     }
             )
         });
 
-        {% if query_chart_type == "pie" %}
-            $.plot('#chartcontainer', {{ response|safe }}, {
+        {% if query.query.chart_type == "pie" %}
+            $.plot('#chartcontainer-{{ query.query.pk }}', {{ query.response|safe }}, {
                 series: {
                     pie: {
                         show: true,
@@ -97,7 +105,7 @@
                 }).appendTo("body").fadeIn(200);
             }
 
-            $("#chartcontainer").bind("plothover", function (event, pos, item) {
+            $("#chartcontainer-{{ query.query.pk }}").bind("plothover", function (event, pos, item) {
                 if (item) {
                     if ((previousPoint != item.dataIndex) || (previousLabel != item.series.label)) {
                         previousPoint = item.dataIndex;
@@ -119,8 +127,8 @@
                     previousPoint = null;
                 }
             });
-        {% elif query_chart_type == "bar" %}
-            $.plot('#chartcontainer', [{{ response|safe }}], {
+        {% elif query.query.chart_type == "bar" %}
+            $.plot('#chartcontainer-{{ query.query.pk }}', [{{ query.response|safe }}], {
                 series: {
                     bars: {
                         show: true,
@@ -148,7 +156,7 @@
                 }).appendTo("body").fadeIn(200);
             }
 
-            $("#chartcontainer").bind("plothover", function (event, pos, item) {
+            $("#chartcontainer-{{ query.query.pk }}").bind("plothover", function (event, pos, item) {
                 if (item) {
                     if (previousPoint != item.dataIndex) {
                         previousPoint = item.dataIndex;
@@ -169,8 +177,8 @@
                     previousPoint = null;
                 }
             });
-        {% elif query_chart_type == "line" %}
-            $.plot('#chartcontainer', [{{ response|safe }}], {
+        {% elif query.query.chart_type == "line" %}
+            $.plot('#chartcontainer-{{ query.query.pk }}', [{{ query.response|safe }}], {
                 lines: { show: true },
                 points: {
                     radius: 3,
@@ -197,7 +205,7 @@
                 }).appendTo("body").fadeIn(200);
             }
 
-            $("#chartcontainer").bind("plothover", function (event, pos, item) {
+            $("#chartcontainer-{{ query.query.pk }}").bind("plothover", function (event, pos, item) {
                 if (item) {
                     if (previousPoint != item.dataIndex) {
                         previousPoint = item.dataIndex;
@@ -219,5 +227,6 @@
                 }
             });
         {% endif %}
+        {% endfor %}
     </script>
 {% endblock %}

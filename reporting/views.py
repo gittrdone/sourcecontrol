@@ -39,68 +39,64 @@ def view_report(request, repo_id, report_id):
     context_instance['repo_id'] = repo_id
     context_instance['report'] = report
 
-    # XXX Only does first query for now!!
-    query = report.queries.all()[0]
-    query_result = process_string(query.query_command, repo)
-    context_instance['query_result'] = query_result
+    queries = report.queries.all()
+    query_data = []
+    for query in queries:
+        query_result = process_string(query.query_command, repo)
 
-    query_chart_type = report.queries.all()[0].chart_type
-    context_instance['query_chart_type'] = query_chart_type
+        #MANGLE CHART DATA HERE (based on chart type)
+        if query.chart_type == "pie":
+            if query.model == "user":
+                values = query_result.extra(
+                    select={'label':'name', 'data':'num_commits'}).values(
+                        'label', 'data')
+            elif query.model == "commit":
+                vals = OrderedDict()
+                for commit in query_result:
+                    date = commit.commit_time.date()
+                    if date not in vals:
+                        vals[date] = 0
+                    vals[date] += 1
 
-    context_instance['query_model'] = query.model
+                values = [{'label': str(k), 'data': v} for k, v in vals.iteritems()]
 
-    #MANGLE CHART DATA HERE (based on chart type)
-    if query_chart_type == "pie":
-        if query.model == "user":
-            values = query_result.extra(
-                select={'label':'name', 'data':'num_commits'}).values(
-                    'label', 'data')
-        elif query.model == "commit":
-            vals = OrderedDict()
-            for commit in query_result:
-                date = commit.commit_time.date()
-                if date not in vals:
-                    vals[date] = 0
-                vals[date] += 1
+            response = json.dumps(list(values))
 
-            values = [{'label': str(k), 'data': v} for k, v in vals.iteritems()]
+        elif query.chart_type == "bar":
+            if query.model == "user":
+                values = query_result.values_list('name', 'num_commits')
+                valueslist = [list(i) for i in values]
+            elif query.model == "commit":
+                vals = OrderedDict()
+                for commit in query_result:
+                    date = commit.commit_time.date()
+                    if date not in vals:
+                        vals[date] = 0
+                    vals[date] += 1
+                vals = OrderedDict(sorted(vals.items()))
+                valueslist = [[str(k), v] for k,v in vals.iteritems()]
 
-        response = json.dumps(list(values))
+            response = json.dumps(valueslist)
 
-    elif query_chart_type == "bar":
-        if query.model == "user":
-            values = query_result.values_list('name', 'num_commits')
-            valueslist = [list(i) for i in values]
-        elif query.model == "commit":
-            vals = OrderedDict()
-            for commit in query_result:
-                date = commit.commit_time.date()
-                if date not in vals:
-                    vals[date] = 0
-                vals[date] += 1
-            vals = OrderedDict(sorted(vals.items()))
-            valueslist = [[str(k), v] for k,v in vals.iteritems()]
+        elif query.chart_type == "line":
+            if query.model == "user":
+                values = query_result.values_list('name', 'num_commits')
+                valueslist = [list(i) for i in values]
+            elif query.model == "commit":
+                vals = OrderedDict()
+                for commit in query_result:
+                    date = commit.commit_time.date()
+                    if date not in vals:
+                        vals[date] = 0
+                    vals[date] += 1
+                vals = OrderedDict(sorted(vals.items()))
+                valueslist = [[str(k), v] for k,v in vals.iteritems()]
 
-        response = json.dumps(valueslist)
+            response = json.dumps(valueslist)
 
-    elif query_chart_type == "line":
-        if query.model == "user":
-            values = query_result.values_list('name', 'num_commits')
-            valueslist = [list(i) for i in values]
-        elif query.model == "commit":
-            vals = OrderedDict()
-            for commit in query_result:
-                date = commit.commit_time.date()
-                if date not in vals:
-                    vals[date] = 0
-                vals[date] += 1
-            vals = OrderedDict(sorted(vals.items()))
-            valueslist = [[str(k), v] for k,v in vals.iteritems()]
+        query_data.append({'query': query, 'query_result': query_result, 'response': response})
 
-        response = json.dumps(valueslist)
-
-    print response
-    context_instance['response'] = response
+    context_instance['queries'] = query_data
     return render_to_response("report.html", context_instance)
 
 # The interface for making a new report
@@ -150,13 +146,13 @@ def add_report(request, repo_id):
 
     num_queries = 1
     #count the queries
-    for i in range(2,10):
+    for i in range(2,10+1):
         query_name = request.POST['query_' + str(i) + '_name']
         if query_name:
             num_queries = i
 
     #generate queries
-    for i in range(2, num_queries):
+    for i in range(2, num_queries+1):
         query_name = request.POST['query_' + str(i) + '_name']
         query_desc = request.POST['query_' + str(i) + '_desc']
         query_query = request.POST['query_' + str(i)]
@@ -166,6 +162,7 @@ def add_report(request, repo_id):
         query = Query(name=query_name, desc=query_desc, query_command=query_query, user=sourceControlUser, chart_type=query_chart_type)
         query.save()
         report.queries.add(query)
+        report.save()
 
     context_instance = RequestContext(request)
     context_instance['reports_list'] = Report.objects.filter(user=sourceControlUser, repo=repo)
