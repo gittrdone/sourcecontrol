@@ -148,9 +148,9 @@ def download_and_process_repo(repo_object, branch_name=None):
 
     #XXX I call the jenkins thing here XXX
     #only call on default branch
-    if branch_name is None and repo_object.jenkins_url != "":
+    if branch_name is None and repo_object.jenkins_url is not None:
         get_jenkins_result(repo_object)
-
+    
     repo_object.status = 3 # Done
     repo_object.save()
 
