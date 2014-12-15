@@ -29,13 +29,15 @@
         </div>
         <div class="large-12 columns">
             <div class="large-9 columns">
+
+                {% if repo.git_repo.jenkins_url != "" and repo.git_repo.jenkins_url != None %}
+                   <div style="font-style: italic; margin-bottom: 8px;color:gray;font-size: 15px"><i class="fa fa-check" style="color:green;"></i>&nbsp;Jenkins Info</div>
+                {% endif %}
+
                 <div>
                     {% load staticfiles %}
                     <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
                     <a href="#" data-dropdown="drop" style="vertical-align:middle;">{{ branch.branch_name }} <i class="fa fa-caret-down"></i></a>
-                    {% if repo.git_repo.jenkins_url != "" and repo.git_repo.jenkins_url != None %}
-                    Jenkins URL {{ repo.git_repo.jenkins_url }}
-                    {% endif %}
                     <ul id="drop" class="small f-dropdown" data-dropdown-content>
                         {% for branchObject in branches %}
                             {% if branchObject.pk != branch.pk %}
@@ -47,8 +49,8 @@
                 </div>
             </div>
 
-            <div class="large-3 columns" style="font-weight: bold;text-align: right;padding-right: 50px;">
-                <a href="{% url 'reports' repo.pk %}"><i class="fa fa-line-chart"></i>&nbsp;View Reports</a>
+            <div class="large-3 columns" style="text-align: right;padding-right: 50px;">
+                <b><a href="{% url 'reports' repo.pk %}"><i class="fa fa-line-chart"></i>&nbsp;View Reports</a></b>
             </div>
         </div>
     </div>
@@ -168,7 +170,7 @@
                         var e = window.event;
                         var x = e.clientX + 'px',
                                 y = e.clientY + 'px',
-                        z = item.series.color;
+                                z = item.series.color;
                         var percentage = Math.round(item.datapoint[0]);
 
                         showTooltip(x, y, "<b>" + item.series.label + "</b>, " + percentage + "%",
@@ -192,7 +194,7 @@
                     }
                 },
                 grid: {
-                  hoverable: true
+                    hoverable: true
                 },
                 xaxis: {
                     mode: "categories",
@@ -221,7 +223,7 @@
                         var e = window.event;
                         var x = e.clientX - 20 + 'px',
                                 y = e.clientY - 20 + 'px',
-                        z = item.series.color;
+                                z = item.series.color;
                         var commitCount = item.datapoint[1];
 
                         showTooltip(x, y, "<b>" + commitCount + " commit(s)</b>",
