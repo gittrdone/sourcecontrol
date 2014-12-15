@@ -11,6 +11,11 @@
 
     {% for query in queries %}
     <div class="large-12 columns card">
+        <div class="large-12 columns">
+        <h3>{{ query.query.name }}</h3>
+        <b>{{ query.query.desc }}</b><br />
+        <div style="color:grey;font-style:italic;padding-bottom: 10px;padding-top: 5px"><span style="font-style:normal">Command:</span> {{ query.query.query_command }}</div>
+        </div>
         {% if query.query.model == "user" %}
             {% for result in query.query_result %}
                 {% if forloop.counter <= 4 %}
