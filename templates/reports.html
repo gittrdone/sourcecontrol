@@ -24,7 +24,7 @@
 
             <input type="hidden" id="editReportField" name="editReport" value="">
 
-            <input id="editReport_edit" type="submit" value="Save" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
+            <input id="editReport_edit" type="submit" value="Save" class="button save-submit-button">
             {% csrf_token %}
         </form>
         <a class="close-reveal-modal">&#215;</a>
@@ -53,7 +53,7 @@
             <input type="radio" name="chart_type" value="line" id="chart_line"><label for="chart_line"><i class="fa fa-line-chart"></i>&nbsp;Line</label>
             </div><br>
 
-            <input id="submitReport" type="submit" value="Store" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
+            <input id="submitReport" type="submit" value="Store" class="button save-submit-button">
 
             {% csrf_token %}
         </form>
@@ -71,7 +71,7 @@
                 <h5><b id="query-{{ report.pk }}">{{ report.query }}</b></h5>
 
                 {% if report.description %}
-                    <div class="desc-{{ report.pk }}" style="color:grey;font-style:italic; display:block;">{{ report.description }}</div>
+                    <div class="desc-{{ report.pk }} description-text">{{ report.description }}</div>
                 {% endif %}
                 <div class="large-12 columns">
                     <i class="fa fa-cogs responsive-icon" style="float:right;" data-options="align:left" data-dropdown="editDropdown{{ report.pk }}"></i>

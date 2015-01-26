@@ -95,24 +95,75 @@ body {
     color:black;
 }
 
-/* Used to temporarily change input placeholder text
-to red
-http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css
-*/
+.detail-big-numerals {
+    font-size:20px;
+    color:darkblue;
+    margin-top: 20px;
+}
 
-/*
-::-webkit-input-placeholder { // WebKit browsers
-    color:    red;
+.detail-small-titles {
+    font-size:14px;
+    color:black;
 }
-:-moz-placeholder { // Mozilla Firefox 4 to 18
-   color:    red;
-   opacity:  1;
+
+.build-detail-big-numerals {
+    font-size:20px;
+    color:darkblue;
+    margin-top: 8px;
 }
-::-moz-placeholder { // Mozilla Firefox 19+
-   color:    red;
-   opacity:  1;
+
+.chart-div {
+  height:300px;
+  text-align:center;
 }
-:-ms-input-placeholder { // Internet Explorer 10+
-   color:    red;
+
+.chart-div-height {
+    height:200px;
 }
-*/
+
+.committers-big-numerals {
+    font-size:19px;
+    color:darkblue;
+}
+
+.view-all-commits {
+    text-align: center;
+    margin-top: 10px;
+    color: black;
+}
+
+.report-query-text {
+    color:grey;
+    font-style:italic;
+    padding-bottom: 10px;
+    padding-top: 5px
+}
+
+.report-chart-card {
+    height:220px;
+    text-align:center;
+    margin-top: 40px;
+}
+
+.report-chart {
+    height:200px;
+    width: 50%;
+    margin:0 auto;
+}
+
+.save-submit-button {
+    margin-bottom: 0px;
+    padding-left: 80px;
+    padding-right: 80px;
+}
+
+.description-text {
+    color:grey;
+    font-style:italic;
+    display:block;
+}
+
+.queryhelp-paragraph {
+    margin-left: 30px;
+    font-family: monospace;
+}

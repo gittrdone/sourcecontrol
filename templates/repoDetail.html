@@ -12,19 +12,19 @@
                     <div style="color:grey;font-style:italic;padding-bottom: 10px">{{ repo.repo_description }}</div>
                 {% endif %}
             </div>
-            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+            <div class="large-2 columns detail-big-numerals">
                 {{ branch.num_files }}
-                <br/><div style="font-size:14px;color:black;">files</div>
+                <br/><div class="detail-small-titles">files</div>
             </div>
 
-            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+            <div class="large-2 columns detail-big-numerals">
                 {{ branch.num_commits }}
-                <br/><div style="font-size:14px;color:black;">commits</div>
+                <br/><div class="detail-small-titles">commits</div>
             </div>
 
-            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+            <div class="large-2 columns detail-big-numerals">
                 {{ authors|length }}
-                <br/><div style="font-size:14px;color:black;">committers</div>
+                <br/><div class="detail-small-titles">committers</div>
             </div>
         </div>
         <div class="large-12 columns">
@@ -59,42 +59,42 @@
         {% for author in authors %}
             {% if forloop.counter <= 4 %}
                 <div class="large-6 columns" style="float:left;">
-                    <div class="large-8 columns" style="margin-bottom: 10px;">
+                    <div class="large-8 columns" style="margin-bottom:10px;">
                         <a href="/authors/detail/{{ author.pk }}/{{ repo_pk }}/{{ branch.pk }}"><h5 class="blue-clicky-text"><b>{{ author.name }}</b></h5></a>
                     </div>
-                    <div class="large-4 columns" style="font-size:19px;color:darkblue;">
+                    <div class="large-4 columns committers-big-numerals">
                         {{ author.num_commits }}
-                        &nbsp;<div style="font-size:12px;color:black;">commits</div>
+                        &nbsp;<div class="detail-small-titles">commits</div>
                     </div>
                 </div>
             {% else %}
                 <div class="hide extra_committers">
                     <div class="large-6 columns" style="float:left;">
-                        <div class="large-8 columns" style="margin-bottom: 10px;">
+                        <div class="large-8 columns" style="margin-bottom:10px;">
                             <a href="/authors/detail/{{ author.pk }}/{{ repo_pk }}/{{ branch.pk }}"><h5 class="blue-clicky-text"><b>{{ author.name }}</b></h5></a>
                         </div>
-                        <div class="large-4 columns" style="font-size:19px;color:darkblue;">
+                        <div class="large-4 columns committers-big-numerals">
                             {{ author.num_commits }}
-                            &nbsp;<div style="font-size:12px;color:black;">commits</div>
+                            &nbsp;<div class="detail-small-titles">commits</div>
                         </div>
                     </div>
                 </div>
             {% endif %}
         {% endfor %}
-        <div class="large-12 columns commithider blue-clicky-text" style="text-align: center; margin-top: 10px; color: black;">
+        <div class="large-12 columns commithider blue-clicky-text" style="text-align:center;margin-top:10px;color:black;">
             {% if authors.count > 4 %}
                 View All ({{ authors.count }})
             {% endif %}
         </div>
     </div>
-    <div class="large-12 columns card">
-        <div class="large-6 columns" style="height:250px;text-align:center">
+    <div class="large-12 columns card chart-div">
+        <div class="large-6 columns">
             <h6><b>Commits per Author</b></h6>
-            <div id="piecontainer" style="height:200px;"></div>
+            <div id="piecontainer" class="chart-div-height"></div>
         </div>
-        <div class="large-6 columns" style="height:250px;text-align:center">
+        <div class="large-6 columns">
             <h6><b>Commits Over Time</b></h6>
-            <div id="barcontainer" style="height:200px;"></div>
+            <div id="barcontainer"class="chart-div-height"></div>
         </div>
     </div>
 
@@ -138,17 +138,6 @@
                 grid: {
                     hoverable: true
                 }
-                /*tooltip: true,
-                 tooltipOpts: {
-                 id: "tooltip",
-                 content: "%p.0%, %s", // show percentages, rounding to 2 decimal places
-                 shifts: {
-                 x: 20,
-                 y: 0
-                 },
-                 defaultTheme: false
-                 }*/
-
             });
 
             function showTooltip(x, y, contents, z) {
