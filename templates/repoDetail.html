@@ -3,7 +3,7 @@
 {% block content %}
     <div class="large-12 columns card">
         <div class="large-12 columns">
-            <div class="large-6 columns">
+            <div class="large-8 columns">
                 <h3><b>{{ repo.name }}</b></h3>
 
                 <b>{{ repo.git_repo.git_repository_url }}</b><br><br>
@@ -12,12 +12,12 @@
                     <div style="color:grey;font-style:italic;padding-bottom: 10px">{{ repo.repo_description }}</div>
                 {% endif %}
             </div>
-            <div class="large-2 columns detail-big-numerals">
+            <div class="large-1 columns detail-big-numerals">
                 {{ branch.num_files }}
                 <br/><div class="detail-small-titles">files</div>
             </div>
 
-            <div class="large-2 columns detail-big-numerals">
+            <div class="large-1 columns detail-big-numerals">
                 {{ branch.num_commits }}
                 <br/><div class="detail-small-titles">commits</div>
             </div>
