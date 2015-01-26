@@ -7,26 +7,25 @@
 {% block content %}
     <div class="large-12 columns card">
         <div class="large-12 columns">
-            <div class="large-6 columns">
+            <div class="large-8 columns">
                 <h3><b>{{ author.name }}</b></h3>
                 <b>{{ author.git_branch.git_repository_url }}</b><br><br>
 
             </div>
-            <div class="large-2 columns detail-big-numerals">
+            <div class="large-1 columns detail-big-numerals">
                 {{ author.num_commits }}
                 <br/><div class="detail-small-titles">commits</div>
+            </div>
+
+            <div class="large-1 columns detail-big-numerals">
+                {{ author.additions }}
+                <br/><div class="detail-small-titles"">insertions</div>
             </div>
 
             <div class="large-2 columns detail-big-numerals">
                 {{ lines_per_commit }}
                 <br/><div class="detail-small-titles">lines/commit</div>
             </div>
-
-            <div class="large-2 columns detail-big-numerals">
-                {{ author.additions }}
-                <br/><div class="detail-small-titles"">insertions</div>
-            </div>
-
         </div>
         <div class="large-12 columns">
             <div class="large-9 columns">
