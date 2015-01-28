@@ -5,7 +5,9 @@
     <div class="card">
         <form id="signup" action="do_signup" method="POST">
             <input name="user_name" id="userName" placeholder="Username" type="text"></input>
-            <div id="userCheck" style="display:none;"></div>
+            {% if fail %} <div id="userCheck" style="color:red; margin-bottom:6px; font-size:80%;">An account with that name already exists!</div>
+            {% else %} <div id="userCheck" style="display:none;"></div>
+            {% endif %}
 
             <input name="email"  id="emailInput" placeholder="Email" type="text"></input>
             <div id="emailCheck" style="display:none;"></div>
@@ -50,6 +52,7 @@
             {
                 userCheck.innerHTML="";
                 userCheck.style.display="none";
+                userField.style.marginBottom("1rem");
             }
 
             if (emailField.value == "")

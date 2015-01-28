@@ -146,16 +146,22 @@ def signup(request):
 def do_signup(request):
     #create a user
     user_name = request.POST["user_name"]
-    email = request.POST["email"]
-    password = request.POST["password"]
-    user = User.objects.create_user(user_name, email, password)
-    user.save()
 
-    auth_result = authenticate(username = user_name, password = password)
-    login(request, auth_result)
+    #check if user object with same name already exists
+    if User.objects.filter(username=user_name):
+        return render(request, 'signup.html', {'fail': True})
+
+    else:
+        email = request.POST["email"]
+        password = request.POST["password"]
+        user = User.objects.create_user(user_name, email, password)
+        user.save()
+
+        auth_result = authenticate(username = user_name, password = password)
+        login(request, auth_result)
     
-    sourceControlUser = SourceControlUser.objects.create(user=user) 
-    return redirect('index')
+        sourceControlUser = SourceControlUser.objects.create(user=user)
+        return redirect('index')
 
 def do_logout(request):
     logout(request)
