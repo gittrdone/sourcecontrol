@@ -21,7 +21,7 @@
 
             <input type="hidden" id="editRepoField" name="editRepo" value="">
 
-            <input id="editRepo_edit" type="submit" value="Save" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
+            <input id="editRepo_edit" type="submit" value="Save" class="button save-submit-button">
             {% csrf_token %}
         </form>
         <a class="close-reveal-modal">&#215;</a>
@@ -56,7 +56,7 @@
             <input class="error" name="emailTo" type="text" id="emailToField" placeholder="Email to Send Notification to" disabled>
             <br>
 
-            <input id="submitRepo" type="submit" value="Store" class="button" style="margin-bottom: 0px;padding-left: 80px;padding-right: 80px;">
+            <input id="submitRepo" type="submit" value="Store" class="button save-submit-button">
         </form>
         <a class="close-reveal-modal">&#215;</a>
     </div>
@@ -80,13 +80,13 @@
                     {% endif %}
                 </div>
                 {% if repo.0.git_repo.status == 3 %}
-                    <div class="large-1 columns" style="font-size:22px;color:darkblue;margin-top: 20px;">
+                    <div class="large-1 columns detail-big-numerals">
                         {{ repo.2 }}
-                        <br/><div style="font-size:15px;color:black;">files</div>
+                        <br/><div class="detail-small-titles">files</div>
                     </div>
-                    <div class="large-1 columns" style="font-size:22px;color:darkblue;margin-top: 20px;">
+                    <div class="large-1 columns detail-big-numerals">
                         {{ repo.0.git_repo.num_commits }}
-                        <br/><div style="font-size:15px;color:black;">commits</div>
+                        <br/><div class="detail-small-titles">commits</div>
                     </div>
                 {% endif %}
 

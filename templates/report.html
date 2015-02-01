@@ -14,7 +14,7 @@
         <div class="large-12 columns">
         <h3>{{ query.query.name }}</h3>
         <b>{{ query.query.desc }}</b><br />
-        <div style="color:grey;font-style:italic;padding-bottom: 10px;padding-top: 5px"><span style="font-style:normal">Command:</span> {{ query.query.query_command }}</div>
+        <div class="report-query-text"><span style="font-style:normal">Command:</span> {{ query.query.query_command }}</div>
         </div>
         {% if query.query.model == "user" %}
             {% for result in query.query_result %}
@@ -23,9 +23,9 @@
                         <div class="large-8 columns" style="margin-bottom: 10px;">
                             <a href="/authors/detail/{{ result.pk }}/{{ repo_id }}/{{ default_branch_id }}"><h5 class="blue-clicky-text"><b>{{ result.name }}</b></h5></a>
                         </div>
-                        <div class="large-4 columns" style="font-size:19px;color:darkblue;">
+                        <div class="large-4 columns committers-big-numerals">
                             {{ result.num_commits }}
-                            &nbsp;<div style="font-size:12px;color:black;">commits</div>
+                            &nbsp;<div class="detail-small-titles">commits</div>
                         </div>
                     </div>
                 {% else %}
@@ -34,21 +34,21 @@
                             <div class="large-8 columns" style="margin-bottom: 10px;">
                                 <a href="/authors/detail/{{ result.pk }}/{{ repo_id }}/{{ default_branch_id }}"><h5 class="blue-clicky-text"><b>{{ result.name }}</b></h5></a>
                             </div>
-                            <div class="large-4 columns" style="font-size:19px;color:darkblue;">
+                            <div class="large-4 columns committers-big-numerals">
                                 {{ result.num_commits }}
-                                &nbsp;<div style="font-size:12px;color:black;">commits</div>
+                                &nbsp;<div class="detail-small-titles">commits</div>
                             </div>
                         </div>
                     </div>
                 {% endif %}
             {% endfor %}
-            <div class="large-12 columns commithider-{{ query.query.pk }} blue-clicky-text" style="text-align: center; margin-top: 10px; color: black;">
+            <div class="large-12 columns commithider-{{ query.query.pk }} blue-clicky-text view-all-commits">
                 {% if query.query_result.count > 4 %}
                     View All ({{ query.query_result.count }})
                 {% endif %}
             </div>
         {% endif %}
-        <div class="large-12 columns" style="height:220px;text-align:center;margin-top: 40px;">
+        <div class="large-12 columns report-chart-card">
             <div id="chartcontainer-{{ query.query.pk }}" style="height:200px;width: 50%;margin:0 auto;"></div>
         </div>
     </div>

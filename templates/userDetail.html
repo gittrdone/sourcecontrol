@@ -7,26 +7,25 @@
 {% block content %}
     <div class="large-12 columns card">
         <div class="large-12 columns">
-            <div class="large-6 columns">
+            <div class="large-8 columns">
                 <h3><b>{{ author.name }}</b></h3>
                 <b>{{ author.git_branch.git_repository_url }}</b><br><br>
 
             </div>
-            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+            <div class="large-1 columns detail-big-numerals">
                 {{ author.num_commits }}
-                <br/><div style="font-size:14px;color:black;">commits</div>
+                <br/><div class="detail-small-titles">commits</div>
             </div>
 
-            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
-                {{ lines_per_commit }}
-                <br/><div style="font-size:14px;color:black;">lines/commit</div>
-            </div>
-
-            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 20px;">
+            <div class="large-1 columns detail-big-numerals">
                 {{ author.additions }}
-                <br/><div style="font-size:14px;color:black;">insertions</div>
+                <br/><div class="detail-small-titles"">insertions</div>
             </div>
 
+            <div class="large-2 columns detail-big-numerals">
+                {{ lines_per_commit }}
+                <br/><div class="detail-small-titles">lines/commit</div>
+            </div>
         </div>
         <div class="large-12 columns">
             <div class="large-9 columns">
@@ -57,19 +56,19 @@
             <div class="large-6 columns">
                 <h4><b style="margin-left: 10px;">Build Information</b></h4>
             </div>
-            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 8px;">
+            <div class="large-2 columns build-detail-big-numerals">
                 {{ author.num_build }}
-                <br/><div style="font-size:14px;color:black;">build(s)</div>
+                <br/><div class="detail-small-titles">build(s)</div>
             </div>
 
-            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 8px;">
+            <div class="large-2 columns build-detail-big-numerals">
                 {{ author.num_break_build }}
-                <br/><div style="font-size:14px;color:black;">broken build(s)</div>
+                <br/><div class="detail-small-titles">broken build(s)</div>
             </div>
 
-            <div class="large-2 columns" style="font-size:20px;color:darkblue;margin-top: 8px;">
+            <div class="large-2 columns build-detail-big-numerals">
                 {{ author.num_fix_build }}
-                <br/><div style="font-size:14px;color:black;">build fix(es)</div>
+                <br/><div class="detail-small-titles">build fix(es)</div>
             </div>
 
 
@@ -77,14 +76,14 @@
         </div>
     {% endif %}
 
-    <div class="large-12 columns card">
-        <div class="large-6 columns" style="height:250px;text-align:center">
+    <div class="large-12 columns card chart-div">
+        <div class="large-6 columns">
             <h6><b>Insertions vs. Deletions</b></h6>
-            <div id="piecontainer" style="height:200px;"></div>
+            <div id="piecontainer" class="chart-div-height"></div>
         </div>
-        <div class="large-6 columns" style="height:250px;text-align:center">
+        <div class="large-6 columns">
             <h6><b>Commits Over Time</b></h6>
-            <div id="barcontainer" style="height:200px;"></div>
+            <div id="barcontainer" class="chart-div-height"></div>
         </div>
     </div>
 
