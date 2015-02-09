@@ -1,6 +1,7 @@
 import os
 import re
 import subprocess
+import sys
 from datetime import tzinfo, timedelta, datetime
 from jenkinsapi.jenkins import Jenkins
 
@@ -97,7 +98,10 @@ def get_repo_data_from_url(url, name, description, user, email_address=""):
         return -1
 
     #download_and_process_repo(repo_object)
-    download_and_process_repo.apply_async((repo_object, None, email_address,))
+
+    # XXX MEGAHACK We should be using mocks and OO to avoid checking for test mode!!
+    if 'test' not in sys.argv:
+        download_and_process_repo.apply_async((repo_object, None, email_address,))
 
     return repo_entry
 
