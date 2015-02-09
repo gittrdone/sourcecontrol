@@ -126,7 +126,7 @@ class Commit(models.Model):
         return unicode(self.git_repo) + unicode(self.author)
 
 class FileEntry(models.Model):
-    file_name = models.CharField(max_length=300)
+    file_path = models.CharField(max_length=300)
     git_branch = models.ForeignKey(GitBranch)
     additions = models.IntegerField(default=0)
     deletions = models.IntegerField(default=0)
