@@ -2,7 +2,7 @@ from reporting.models import Report
 
 def repo_nav_options(request):
     user = request.user
-    if request.user.is_authenticated():
+    if request.user.is_authenticated() and hasattr(request.user, 'sourcecontroluser'):
         repos = user.sourcecontroluser.ownedRepos.all()
         repos_to_display = []
         default_branch_ids = []
@@ -19,7 +19,7 @@ def repo_nav_options(request):
 
 def repo_nav_options_reports(request):
     user = request.user
-    if request.user.is_authenticated():
+    if request.user.is_authenticated() and hasattr(request.user, 'sourcecontroluser'):
         repos = user.sourcecontroluser.ownedRepos.filter(git_repo__status=3).values('report__name', 'report__pk', 'name', 'pk')
         return {'repo_nav_options_reports': repos}
     else:
