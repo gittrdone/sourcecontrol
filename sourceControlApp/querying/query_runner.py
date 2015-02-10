@@ -4,7 +4,7 @@ from sourceControlApp.querying.SourceControlLexer import SourceControlLexer
 import dateutil.parser
 import datetime
 
-from sourceControlApp.models import Commit, CodeAuthor
+from sourceControlApp.models import Commit, CodeAuthor, FileEntry
 
 def get_tree(string):
   input = InputStream.InputStream(string)
@@ -81,6 +81,8 @@ def filter_on_query(q, repo):
     db_model = Commit
   elif obj_type == "branches":
     db_model = Commit
+  elif obj_type == "files":
+    db_model = FileEntry
   else:
     return "error"
 
@@ -91,7 +93,8 @@ def filter_on_query(q, repo):
     # TODO Fix this stuff to use branches
     objs = db_model.objects.filter(git_repo=repo.git_repo)
     pass
-
+  elif db_model == FileEntry:
+      objs = db_model.objects.filter(git_branch=repo.git_repo.branches.all()[0])
   for cond in conds:
     objs = objs.filter(**cond)
 

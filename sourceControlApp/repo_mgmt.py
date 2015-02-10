@@ -97,11 +97,11 @@ def get_repo_data_from_url(url, name, description, user, email_address=""):
     if not is_valid_repo(url):
         return -1
 
-    #download_and_process_repo(repo_object)
+    download_and_process_repo(repo_object, None, email_address)
 
     # XXX MEGAHACK We should be using mocks and OO to avoid checking for test mode!!
-    if 'test' not in sys.argv:
-        download_and_process_repo.apply_async((repo_object, None, email_address,))
+    #if 'test' not in sys.argv:
+    #    download_and_process_repo.apply_async((repo_object, None, email_address,))
 
     return repo_entry
 
