@@ -214,3 +214,19 @@ def delete_repo(request, id):
 
 def queryhelp(request):
     return render_to_response("queryhelp.html", {})
+
+def edit_user_settings(request):
+    context_instance = RequestContext(request)
+
+    if request.user.is_authenticated():
+        user = request.user
+        sourceControlUser = user.sourcecontroluser
+        user_name = request.POST["edit_name"]
+        email = request.POST["edit_email"]
+        user.username = user_name
+        user.email = email
+        user.save()
+        return redirect("index")
+
+    else:
+        return render_to_response("index")

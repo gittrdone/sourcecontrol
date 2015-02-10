@@ -19,6 +19,7 @@ urlpatterns = patterns('',
     url(r'^do_login', views.do_logon, name='do_login'),
 
     url(r'^queryhelp', views.queryhelp, name='query_help'),
+    url(r'^edit_user_settings', views.edit_user_settings, name='edit_user_settings'),
 
     url(r'^logout', views.do_logout, name='logout'),
 )
