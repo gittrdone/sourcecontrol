@@ -28,6 +28,8 @@ class Query(models.Model):
             return "user"
         elif "commits" in self.query_command:
             return "commit"
+        elif "files" in self.query_command:
+            return "file"
         else:
             pass
 

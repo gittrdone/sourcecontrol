@@ -59,7 +59,9 @@ def view_report(request, repo_id, report_id):
                     vals[date] += 1
 
                 values = [{'label': str(k), 'data': v} for k, v in vals.iteritems()]
-
+            elif query.model == "file":
+                values = query_result.values_list('file_path', 'num_edit')
+                valueslist = [list(i) for i in values]
             response = json.dumps(list(values))
 
         elif query.chart_type == "bar":
@@ -75,7 +77,9 @@ def view_report(request, repo_id, report_id):
                     vals[date] += 1
                 vals = OrderedDict(sorted(vals.items()))
                 valueslist = [[str(k), v] for k,v in vals.iteritems()]
-
+            elif query.model == "file":
+                values = query_result.values_list('file_path', 'num_edit')
+                valueslist = [list(i) for i in values]
             response = json.dumps(valueslist)
 
         elif query.chart_type == "line":
@@ -91,6 +95,9 @@ def view_report(request, repo_id, report_id):
                     vals[date] += 1
                 vals = OrderedDict(sorted(vals.items()))
                 valueslist = [[str(k), v] for k,v in vals.iteritems()]
+            elif query.model == "file":
+                values = query_result.values_list('file_path', 'num_edit')
+                valueslist = [list(i) for i in values]
 
             response = json.dumps(valueslist)
 

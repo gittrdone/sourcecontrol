@@ -35,7 +35,7 @@ def json_bar_data_for_repo_commits(request, repo_id, branch_id):
     r = UserGitStore.objects.get(pk=repo_id)
     b = GitBranch.objects.get(pk=branch_id)
 
-    ## ow ow ow
+    ## XXX ow ow ow
     hour_offset_from_utc = 4 #The library defaults to UTC
     last_week = datetime.datetime.today() - datetime.timedelta(days=6) - datetime.timedelta(hours=hour_offset_from_utc) # Beginning of this week
     today = datetime.datetime.now() - datetime.timedelta(hours=hour_offset_from_utc)

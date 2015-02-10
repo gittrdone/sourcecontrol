@@ -1,16 +1,17 @@
 import os
 import re
 import subprocess
+import sys
 from datetime import tzinfo, timedelta, datetime
 from jenkinsapi.jenkins import Jenkins
 
 import requests
 from celery import task
-from pygit2 import clone_repository, GitError
+from pygit2 import clone_repository, GitError, GIT_SORT_TIME
 from django.core.exceptions import ObjectDoesNotExist
 import random
 
-from sourceControlApp.models import UserGitStore, GitStore, CodeAuthor, Commit, GitRepo, GitBranch
+from sourceControlApp.models import UserGitStore, GitStore, CodeAuthor, Commit, GitRepo, GitBranch, FileEntry
 
 repo_path = '_repo'
 
@@ -96,8 +97,11 @@ def get_repo_data_from_url(url, name, description, user, email_address=""):
     if not is_valid_repo(url):
         return -1
 
-    #download_and_process_repo(repo_object)
-    download_and_process_repo.apply_async((repo_object, None, email_address,))
+    #download_and_process_repo(repo_object, None, email_address)
+
+    # XXX MEGAHACK We should be using mocks and OO to avoid checking for test mode!!
+    if 'test' not in sys.argv:
+        download_and_process_repo.apply_async((repo_object, None, email_address,))
 
     return repo_entry
 
@@ -213,12 +217,34 @@ def count_commits_per_author_branch(repo, branch_db_object):
     url = branch_db_object.git_repository_url
     git_repo = GitRepo.objects.get(git_repository_url = url)
 
+    DAY = 86400
+    DAYS7 = 604800
+    DAYS30 = 2592000
+    MIN_EDITS_PER_FILES = 3
+    MIN_COMMITS = 30
+
     try:
         latest_commit = Commit.objects.filter(branches=branch_db_object).latest('commit_time')
     except ObjectDoesNotExist:
         latest_commit = None
 
-    for commit in repo.walk(repo.head.target):
+    last_commit = None
+    #Get last commit
+    for commit in repo.walk(repo.head.target, GIT_SORT_TIME):
+        last_commit = commit
+        break
+
+    last_commit_date = last_commit.commit_time
+
+    #list_all_files = [list_entry]
+    #list_entry = [file_path, edit_count, in_current_built]
+    list_all_files = []
+    diff_all = last_commit.tree.diff_to_tree()
+    for patch in diff_all:
+        list_all_files.append([patch.new_file_path, 1, True])
+
+    commit_count = 0
+    for commit in repo.walk(repo.head.target, GIT_SORT_TIME):
         tz = VariableNonDstTZ(commit.author.offset)
         time=datetime.fromtimestamp(commit.author.time, tz=tz)
 
@@ -233,11 +259,26 @@ def count_commits_per_author_branch(repo, branch_db_object):
             diff = commit.tree.diff_to_tree(p[0].tree)
         else:
             diff = commit.tree.diff_to_tree()
+
+        add_to_list = last_commit_date - commit.commit_time < DAYS30
+
         for patch in diff:
             #Note that the comparison is backward,
             #So addition should become deletions and vice versa
             additions += patch.deletions
             deletions += patch.additions
+
+            #update list of #changes
+            added = False
+            if add_to_list or commit_count < MIN_COMMITS:
+                for list_entry in list_all_files:
+                    if list_entry[0] == patch.new_file_path:
+                        list_entry[1] += 1
+                        added = True
+                        break
+                if ~added:
+                    list_all_files.append([patch.new_file_path, 1, False])
+        commit_count += 1
 
         author_names = re.findall("^Author: ([^<>]*) <(.*)>", commit.message, re.MULTILINE)
         if author_names:
@@ -263,6 +304,18 @@ def count_commits_per_author_branch(repo, branch_db_object):
             commit_db_object.branches.add(branch_db_object)
             commit_db_object.save()
             git_repo.num_commits += 1
+
+    filtered_list = filter(lambda x: x[1] >= MIN_EDITS_PER_FILES, list_all_files)
+
+    import json
+    from django.core.mail import send_mail
+    content = json.dumps(filtered_list)
+    send_mail('SourceControl.me: Files Report', content,
+              'no_reply@SourceControl.me', ['tpatikorn@hotmail.com'])
+
+    for e in filtered_list:
+        FileEntry.objects.create(file_path=e[0], git_branch=branch_db_object, num_edit=e[1], in_current_built=e[2])
+
     git_repo.save()
 
 def count_commits_per_author(repo, repo_db_object):

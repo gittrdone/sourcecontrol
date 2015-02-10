@@ -74,7 +74,7 @@
                             <ul class="dropdown">
                                 {% for r in report_list %}
                                     <li {% if r.list %}class="has-dropdown"{% endif %}>
-                                        <a href="#">{{ r.grouper }}</a>
+                                        <a>{{ r.grouper }}</a>
                                         <ul class="dropdown">
                                             <li><a href="/repo/{{ r.list.0.pk }}/reports">All Reports</a></li>
                                             {% for item in r.list %}
