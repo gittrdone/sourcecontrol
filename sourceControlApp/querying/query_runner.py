@@ -4,7 +4,7 @@ from sourceControlApp.querying.SourceControlLexer import SourceControlLexer
 import dateutil.parser
 import datetime
 
-from sourceControlApp.models import Commit, CodeAuthor, FileEntry
+from sourceControlApp.models import Commit, CodeAuthor, FileEntry, GitBranch
 
 def get_tree(string):
   input = InputStream.InputStream(string)
@@ -30,10 +30,12 @@ def process_string(str, repo):
   return ret
 
 def filter_on_query(q, repo):
+  set_branch = False
   obj_type = q.dataType().getText()
   
   cond_list = q.condList()
   conds = []
+  exclude_conds = []
 
   if cond_list is not None:
     for cond in cond_list.children:
@@ -47,9 +49,17 @@ def filter_on_query(q, repo):
       if attr == 'branch_name':
           set_branch = True
 
+      if comparator == '!=':
+          conds_ = exclude_conds
+          comparator = '='
+      elif comparator == 'not in':
+          conds_ = exclude_conds
+          comparator = 'in'
+      else:
+          conds_ = conds
+
       attr += {
           '=': '',
-          '!=': '???',
           '>': '__gt',
           '<': '__lt',
           'in': '__in',
@@ -58,8 +68,8 @@ def filter_on_query(q, repo):
 
       if attr in ["commit_time"]:
         date = dateutil.parser.parse(cond.value().getText()[1:-1])
-        conds.append({'commit_time__range': (datetime.datetime.combine(date, datetime.time.min),
-                                             datetime.datetime.combine(date, datetime.time.max))})
+        conds_.append({'commit_time__range': (datetime.datetime.combine(date, datetime.time.min),
+                                              datetime.datetime.combine(date, datetime.time.max))})
       elif attr == "commit_day":
         weekday_num = {
           "sunday": 1,
@@ -71,16 +81,16 @@ def filter_on_query(q, repo):
           "saturday": 7
         }
 
-        conds.append({"commit_time__week_day": weekday_num[cond.value().getText()[1:-1]]})
+        conds_.append({"commit_time__week_day": weekday_num[cond.value().getText()[1:-1]]})
       else:
-        conds.append({attr: cond.value().getText()})
+        conds_.append({attr: cond.value().getText()})
 
   if obj_type == "users":
     db_model = CodeAuthor
   elif obj_type == "commits":
     db_model = Commit
   elif obj_type == "branches":
-    db_model = Commit
+    db_model = GitBranch
   elif obj_type == "files":
     db_model = FileEntry
   else:
@@ -98,6 +108,9 @@ def filter_on_query(q, repo):
   for cond in conds:
     objs = objs.filter(**cond)
 
+  for exclude_cond in exclude_conds:
+    objs = objs.exclude(**exclude_cond)
+
   return objs
   
 
@@ -107,8 +120,8 @@ def process_find(find, repo):
   if q is None:
     return
 
-  users = filter_on_query(q, repo)
-  return users
+  objects = filter_on_query(q, repo)
+  return objects
 
 def process_get(get, repo):
   q = get.query()
@@ -116,9 +129,28 @@ def process_get(get, repo):
   if q is None:
     return
 
+  objects = filter_on_query(q, repo)
+
+  result = []
+
+  gets = q.getList()
+
+  for object in objects:
+    current = {}
+    current['object'] = object
+    for get in gets:
+      current[get] = getattr(object, get)
+    result.append(current)
+
+  return result
+
+
 def process_count(count, repo):
   q = count.query()
 
   if q is None:
     return
+
+  objects = filter_on_query(q, repo)
+  return len(objects)
   
