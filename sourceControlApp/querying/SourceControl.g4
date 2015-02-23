@@ -15,7 +15,7 @@ query: dataType (SPACE 'where' SPACE condList)?;
 dataType: 'users' | 'branches' | 'commits' | 'files';
 cond: attrName SPACE? comparator SPACE? value;
 condList: cond (',' SPACE? cond)*;
-getList: valueName (',' SPACE? valueName)*;
+getList: attrName (',' SPACE? attrName)*;
 value: INT | STRING | vlist;
 attrName: ATTR_NAME;
 valueName: STRING;

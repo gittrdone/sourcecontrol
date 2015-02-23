@@ -83,7 +83,10 @@ def filter_on_query(q, repo):
 
         conds_.append({"commit_time__week_day": weekday_num[cond.value().getText()[1:-1]]})
       else:
-        conds_.append({attr: cond.value().getText()})
+        cond_value = cond.value().getText()
+        if cond_value[0] == '"':
+            cond_value = cond_value[1:-1]
+        conds_.append({attr: cond_value})
 
   if obj_type == "users":
     db_model = CodeAuthor
@@ -102,9 +105,11 @@ def filter_on_query(q, repo):
   elif db_model == Commit:
     # TODO Fix this stuff to use branches
     objs = db_model.objects.filter(git_repo=repo.git_repo)
-    pass
   elif db_model == FileEntry:
-      objs = db_model.objects.filter(git_branch=repo.git_repo.branches.all()[0])
+    objs = db_model.objects.filter(git_branch=repo.git_repo.branches.all()[0])
+  elif db_model == GitBranch:
+    objs = repo.git_repo.branches.all()
+
   for cond in conds:
     objs = objs.filter(**cond)
 
@@ -133,13 +138,15 @@ def process_get(get, repo):
 
   result = []
 
-  gets = q.getList()
+  gets = get.getList().children
 
   for object in objects:
     current = {}
     current['object'] = object
     for get in gets:
-      current[get] = getattr(object, get)
+      if not isinstance(get, SourceControlParser.AttrNameContext):
+        continue
+      current[get.getText()] = getattr(object, get.getText())
     result.append(current)
 
   return result

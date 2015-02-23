@@ -62,3 +62,6 @@ _repo*/
 
 # Redis dump
 dump.rdb
+
+# OS X crap
+.DS_Store

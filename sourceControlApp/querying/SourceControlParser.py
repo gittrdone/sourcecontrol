@@ -34,9 +34,9 @@ def serializedATN():
         buf.write(u"\2IH\3\2\2\2IJ\3\2\2\2JK\3\2\2\2KL\5\24\13\2L\17\3\2")
         buf.write(u"\2\2MU\5\16\b\2NP\7\t\2\2OQ\7\31\2\2PO\3\2\2\2PQ\3\2")
         buf.write(u"\2\2QR\3\2\2\2RT\5\16\b\2SN\3\2\2\2TW\3\2\2\2US\3\2\2")
-        buf.write(u"\2UV\3\2\2\2V\21\3\2\2\2WU\3\2\2\2X`\5\30\r\2Y[\7\t\2")
-        buf.write(u"\2Z\\\7\31\2\2[Z\3\2\2\2[\\\3\2\2\2\\]\3\2\2\2]_\5\30")
-        buf.write(u"\r\2^Y\3\2\2\2_b\3\2\2\2`^\3\2\2\2`a\3\2\2\2a\23\3\2")
+        buf.write(u"\2UV\3\2\2\2V\21\3\2\2\2WU\3\2\2\2X`\5\26\f\2Y[\7\t\2")
+        buf.write(u"\2Z\\\7\31\2\2[Z\3\2\2\2[\\\3\2\2\2\\]\3\2\2\2]_\5\26")
+        buf.write(u"\f\2^Y\3\2\2\2_b\3\2\2\2`^\3\2\2\2`a\3\2\2\2a\23\3\2")
         buf.write(u"\2\2b`\3\2\2\2cg\7\26\2\2dg\7\27\2\2eg\5\32\16\2fc\3")
         buf.write(u"\2\2\2fd\3\2\2\2fe\3\2\2\2g\25\3\2\2\2hi\7\30\2\2i\27")
         buf.write(u"\3\2\2\2jk\7\27\2\2k\31\3\2\2\2lm\7\n\2\2mu\5\24\13\2")
@@ -304,7 +304,7 @@ class SourceControlParser ( Parser ):
             self.match(self.SPACE)
             self.state = 52
             _la = self._input.LA(1)
-            if _la==SourceControlParser.STRING:
+            if _la==SourceControlParser.ATTR_NAME:
                 self.state = 47 
                 self.getList()
                 self.state = 48
@@ -546,11 +546,11 @@ class SourceControlParser ( Parser ):
             super(SourceControlParser.GetListContext, self).__init__(parent, invokingState)
             self.parser = parser
 
-        def valueName(self, i=None):
+        def attrName(self, i=None):
             if i is None:
-                return self.getTypedRuleContexts(SourceControlParser.ValueNameContext)
+                return self.getTypedRuleContexts(SourceControlParser.AttrNameContext)
             else:
-                return self.getTypedRuleContext(SourceControlParser.ValueNameContext,i)
+                return self.getTypedRuleContext(SourceControlParser.AttrNameContext,i)
 
 
         def SPACE(self, i=None):
@@ -573,7 +573,7 @@ class SourceControlParser ( Parser ):
         try:
             self.enterOuterAlt(localctx, 1)
             self.state = 86 
-            self.valueName()
+            self.attrName()
             self.state = 94
             self._errHandler.sync(self)
             _la = self._input.LA(1)
@@ -588,7 +588,7 @@ class SourceControlParser ( Parser ):
 
 
                 self.state = 91 
-                self.valueName()
+                self.attrName()
                 self.state = 96
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
