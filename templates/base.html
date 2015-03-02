@@ -102,26 +102,26 @@
                                     <li><a target="_blank" href="/queryhelp">Query Help</a></li>
                                 </ul>
                             </li>
-                            <li id="editSettings" data-reveal-id="modalEditForm"><a href="#">Settings</a></li>
+                            <li id="editSettings" data-reveal-id="modalSettingsEditForm"><a href="#">Settings</a></li>
                         </ul>
                     </li>
                     <li class="divider"></li>
-                        <div id="modalEditForm" class="reveal-modal" data-reveal>
-                            <div class="big_heading" id="editModalHeading">User Settings</div>
+                        <div id="modalSettingsEditForm" class="reveal-modal" data-reveal>
+                            <div class="big_heading" id="editSettingsModalHeading">User Settings</div>
                             <form id="editSettingsForm" action="/edit_user_settings/" method="POST" style="margin-top:10px;">
 
                             <div id="nameValidate_edit" class="report_list_validate_label"></div>
                             <label>Username
-                                <input name="edit_name" id="editNameField" type="text" placeholder="{{ user }}">
+                                <input name="edit_name" id="editSettingsNameField" type="text" placeholder="{{ user }}">
                             </label>
 
                             <label>Email
-                                <input name="edit_email" id="editEmailField" type="text" placeholder="{{ user.email }}">
+                                <input name="edit_email" id="editSettingsEmailField" type="text" placeholder="{{ user.email }}">
                             </label>
 
-                            <input type="hidden" id="editReportField" name="editReport" value="">
+                            <input type="hidden" id="editSettingsReportField" name="editReport" value="">
 
-                            <input id="editReport_edit" type="submit" value="Save" class="button save-submit-button">
+                            <input id="editSettingsReport_edit" type="submit" value="Save" class="button save-submit-button">
                             {% csrf_token %}
                             </form>
                         <a class="close-reveal-modal">&#215;</a>

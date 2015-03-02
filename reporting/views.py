@@ -201,3 +201,31 @@ def delete_report(request, repo_id, report_id):
     report.delete()
 
     return redirect("reports", repo_id=repo_id)
+
+def edit_query(request):
+    if not request.user.is_authenticated():
+        return redirect("index")
+
+    query_name = request.POST['editName']
+    query_desc = request.POST['editDesc']
+    query_command = request.POST['editCommand']
+    query_id = request.POST['editQuery']
+
+    query = Query.objects.get(user=request.user.sourcecontroluser, pk=query_id)
+
+    query.name = query_name
+    query.desc = query_desc
+    query.query_command = query_command
+    query.save()
+
+    return redirect("view_report", repo_id=request.POST['repoID'], report_id=request.POST['reportID'])
+
+
+def delete_query(request, repo_id, report_id, query_id):
+    if not request.user.is_authenticated():
+        return redirect("index")
+
+    query = Query.objects.get(user=request.user.sourcecontroluser, pk=query_id)
+    query.delete()
+
+    return redirect("view_report", repo_id=repo_id, report_id=report_id)

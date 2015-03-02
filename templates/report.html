@@ -9,12 +9,39 @@
         <a href="/repo/{{ repo_id }}/reports"><i class="fa fa-arrow-left"></i>&nbsp;All Reports</a>
     </div>
 
+    <div id="queryEditForm" class="reveal-modal" data-reveal>
+        <div class="big_heading" id="modalHeading">Edit</div>
+        <form id="editQueryForm" action="/edit_report/" method="POST" style="margin-top:10px;">
+
+            <div id="nameValidate_edit" class="report_list_validate_label"></div>
+            <label>Query name
+                <input name="editName" id="nameField" type="text" placeholder="Name">
+            </label>
+
+            <label>Query description
+                <textarea name="editDesc" id="descField" rows="3" style="resize:none;" placeholder="Description (optional)"></textarea>
+            </label>
+
+            <label>Query command
+                <input name="editCommand" id="commandField" type="text" placeholder="Command">
+            </label>
+
+            <input type="hidden" id="queryField" name="editQuery" value="">
+            <input type="hidden" name="repoID" value="{{ repo_id }}">
+            <input type="hidden" name="reportID" value="{{ report.pk }}">
+
+            <input id="editReport_edit" type="submit" value="Save" class="button save-submit-button">
+            {% csrf_token %}
+        </form>
+        <a class="close-reveal-modal">&#215;</a>
+    </div>
+
     {% for query in queries %}
-    <div class="large-12 columns card">
+    <div id="query-{{ query.query.pk }}" class="large-12 columns card">
         <div class="large-12 columns">
-        <h3>{{ query.query.name }}</h3>
-        <b>{{ query.query.desc }}</b><br />
-        <div class="report-query-text"><span style="font-style:normal">Command:</span> {{ query.query.query_command }}</div>
+        <h3 id="name-{{ query.query.pk }}">{{ query.query.name }}</h3>
+        <b id="desc-{{ query.query.pk }}">{{ query.query.desc }}</b><br />
+        <div class="report-query-text"><span style="font-style:normal">Command:</span> <span id="command-{{ query.query.pk }}">{{ query.query.query_command }}</span></div>
         </div>
         {% if query.query.model == "user" %}
             {% for result in query.query_result %}
@@ -51,12 +78,62 @@
         <div class="large-12 columns report-chart-card">
             <div id="chartcontainer-{{ query.query.pk }}" style="height:200px;width: 50%;margin:0 auto;"></div>
         </div>
+
+        <!--Edit button-->
+        <div class="large-12 columns">
+            <i class="fa fa-cogs responsive-icon" style="float:right;" data-options="align:left" data-dropdown="editDropdown{{ query.query.pk }}"></i>
+        </div>
+        <!--Dropdown-->
+        <ul id="editDropdown{{ query.query.pk }}" class="tiny f-dropdown" data-dropdown-content>
+            <li id="editQueryButton" data-reveal-id="queryEditForm"><a href="#">Edit Query</a></li>
+            <li id="deleteQuery_edit"><a href="{% url "delete_query" repo_id report.pk query.query.pk %}">Delete Query</a></li>
+        </ul>
     </div>
     {% endfor %}
 
 {% endblock %}
 {% block extra_js %}
     <script>
+
+    var editButtonList = document.querySelectorAll('#editQueryButton');
+    var len = editButtonList.length;
+    //loop through list and add event listener
+    for (var i =0;  i < len; i++) {
+        editButtonList[i].addEventListener("click", edit);
+    }
+
+    function edit(e) {
+        var editForm = document.querySelector('#editQueryForm');
+        editForm.action = '/edit_query/';
+        var card = $(this).parents('.large-12.columns.card');
+
+        //Get the repo number
+        var cardID = card.attr('id');
+
+        //Parse out the 'query-'
+        cardID = cardID.replace('query-','');
+
+        var nameIDString = '#name-' + cardID;
+        var descIDString = '#desc-' + cardID;
+        var commandString = '#command-' + cardID;
+        var name = $(nameIDString).html();
+        var desc = $(descIDString).html();
+        var command = $(commandString).text();
+
+        var nameEditField = $('#nameField');
+        var descEditField = $('#descField');
+        var queryEditField = $('#queryField');
+        var commandEditField = $('#commandField');
+        var editModalHeading = $('#modalHeading');
+
+        editModalHeading.text("Edit - "+name);
+        nameEditField.val(name);
+        descEditField.val(desc);
+        commandEditField.val(command);
+        queryEditField.val(cardID);
+        return 1;
+    }
+
         {% for query in queries %}
         $(document).ready(function(){
             $(".commithider-{{ query.query.pk }}").click(
