@@ -128,6 +128,7 @@ def process_find(find, repo):
   objects = filter_on_query(q, repo)
   return objects
 
+# Appends list of objects to the end
 def process_get(get, repo):
   q = get.query()
 
@@ -149,6 +150,7 @@ def process_get(get, repo):
       current[get.getText()] = getattr(object, get.getText())
     result.append(current)
 
+  result.append(objects)
   return result
 
 

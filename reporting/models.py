@@ -24,14 +24,15 @@ class Query(models.Model):
 
     @property
     def model(self):
+        #XXX gross
         if "users" in self.query_command:
             return "user"
         elif "commits" in self.query_command:
             return "commit"
-        elif "files" in self.query_command:
-            return "file"
         elif "branches" in self.query_command:
             return "branch"
+        elif "files" in self.query_command:
+            return "file"
         else:
             pass
 

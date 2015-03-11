@@ -44,11 +44,18 @@ def view_report(request, repo_id, report_id):
     for query in queries:
         query_result = process_string(query.query_command, repo)
 
+        # XXX Check for error
+
+        custom_value = None
+        if query.query_command[:3] == 'get': # XXX gross
+            custom_value = query.query_command.split()[1] # XXX also gross
+            query_result = query_result[len(query_result) - 1]
+
         #MANGLE CHART DATA HERE (based on chart type)
         if query.chart_type == "pie":
             if query.model == "user":
                 values = query_result.extra(
-                    select={'label':'name', 'data':'num_commits'}).values(
+                    select={'label':'name', 'data': custom_value or 'num_commits'}).values(
                         'label', 'data')
             elif query.model == "commit":
                 vals = OrderedDict()
@@ -60,16 +67,16 @@ def view_report(request, repo_id, report_id):
 
                 values = [{'label': str(k), 'data': v} for k, v in vals.iteritems()]
             elif query.model == "file":
-                values = query_result.values_list('file_path', 'num_edit')
+                values = query_result.values_list('file_path', custom_value or 'num_edit')
                 valueslist = [list(i) for i in values]
             elif query.model == "branch":
-                values = query_result.values_list('branch_name', 'num_commits')
+                values = query_result.values_list('branch_name', custom_value or 'num_commits')
                 valueslist = [list(i) for i in values]
             response = json.dumps(list(values))
 
         elif query.chart_type == "bar":
             if query.model == "user":
-                values = query_result.values_list('name', 'num_commits')
+                values = query_result.values_list('name', custom_value or 'num_commits')
                 valueslist = [list(i) for i in values]
             elif query.model == "commit":
                 vals = OrderedDict()
@@ -81,16 +88,16 @@ def view_report(request, repo_id, report_id):
                 vals = OrderedDict(sorted(vals.items()))
                 valueslist = [[str(k), v] for k,v in vals.iteritems()]
             elif query.model == "file":
-                values = query_result.values_list('file_path', 'num_edit')
+                values = query_result.values_list('file_path', custom_value or 'num_edit')
                 valueslist = [list(i) for i in values]
             elif query.model == "branch":
-                values = query_result.values_list('branch_name', 'num_commits')
+                values = query_result.values_list('branch_name', custom_value or 'num_commits')
                 valueslist = [list(i) for i in values]
             response = json.dumps(valueslist)
 
         elif query.chart_type == "line":
             if query.model == "user":
-                values = query_result.values_list('name', 'num_commits')
+                values = query_result.values_list('name', custom_value or 'num_commits')
                 valueslist = [list(i) for i in values]
             elif query.model == "commit":
                 vals = OrderedDict()
@@ -102,10 +109,10 @@ def view_report(request, repo_id, report_id):
                 vals = OrderedDict(sorted(vals.items()))
                 valueslist = [[str(k), v] for k,v in vals.iteritems()]
             elif query.model == "file":
-                values = query_result.values_list('file_path', 'num_edit')
+                values = query_result.values_list('file_path', custom_value or 'num_edit')
                 valueslist = [list(i) for i in values]
             elif query.model == "branch":
-                values = query_result.values_list('branch_name', 'num_commits')
+                values = query_result.values_list('branch_name', custom_value or 'num_commits')
                 valueslist = [list(i) for i in values]
 
             response = json.dumps(valueslist)
