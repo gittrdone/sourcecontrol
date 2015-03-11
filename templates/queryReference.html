@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% load staticfiles %}
+
+    <h2 class="my-repositories-heading" style="font-family: 'Francois One', sans-serif;">Query Reference</h2>
+
+    <div class="large-12 columns card">
+        <p><b>Query Types</b></p>
+        <p>SourceControl's query language allows for 4 different types of queries</p>
+        <p class="queryhelp-paragraph">find OBJECT where CONDITIONS</p>
+        <p>Returns objects matching a given set of conditions</p>
+        <p class="queryhelp-paragraph">get DATA from OBJECT where CONDITIONS</p>
+        <p>Returns the specified data type from the objects found using the given
+        query parameters.</p>
+        <p class="queryhelp-paragraph">count OBJECT where CONDITIONS</p>
+        <p>Just like 'find' queries, but simply returns a count of the data
+        points gathered.</p>
+        <br />
+
+        <p><b>Condition Syntax</b></p>
+        <p>Conditions take the form</p>
+        <p class="queryhelp-paragraph">DATA OP VALUE</p>
+        <p>where DATA is a type is a data point associated with the OBJECT. OP
+        is one of '>', '<', '=', '!=', 'in', 'not in', 'contains'. Value is simply the value
+        to compare against. For strings, the value must contained in double quotes.</p>
+        <br />
+
+        <p><b>Object Types</b></p>
+        <p>Used in place of OBJECT in queries. </p>
+        <p class="queryhelp-paragraph"><b>users</b></p>
+        <p>Used to query on committers of a repository. Data point used for 'find' queries is num_commits.</p>
+        <p><b><i>DATA points</i></b></p>
+        <p><i>num_commits</i> - Number of commits the user has made</p>
+        <p><i>additions</i> - Number of lines added</p>
+        <p><i>deletions</i> - Number of lines deletion</p>
+        <p><i>num_break_build</i> - Number of builds broken by this user</p>
+        <p><i>num_fix_build</i> - Number of builds fixed by this user</p>
+        <p><i>num_build</i> - Number of builds by this user</p>
+        <br />
+        <p class="queryhelp-paragraph"><b>commits</b></p>
+        <p>Find commits on the repository. Data point used for 'find' queries is commit_time.</p>
+        <p><b><i>DATA points</i></b></p>
+        <p><i>commit_time</i> - Time of commit. Use string with date for condition.</p>
+        <p><i>num_patches</i> - Number of changes made within a commit. Useful as a metric for commit size.</p>
+        <p><i>build_break_status</i> - 1 if build was broken with this commit. 0 otherwise.</p>
+        <br />
+        <p class="queryhelp-paragraph"><b>branches</b></p>
+        <p>Find branches on the repository. Data point used for 'find' queries is num_commits.</p>
+        <p><b><i>DATA points</i></b></p>
+        <p><i>num_commits</i> - Number of commits on this branch.</p>
+        <p><i>num_files</i> - Number of files on this branch.</p>
+        <br />
+        <p class="queryhelp-paragraph"><b>files</b></p>
+        <p>Find files within repository. Data point used for 'find' queries is num_edit.</p>
+        <p><b><i>DATA points</i></b></p>
+        <p><i>additions</i> - Number of additions made to this file over all time.</p>
+        <p><i>deletions</i> - Number of deletions made to this file over all time.</p>
+        <p><i>num_edit</i> - Number of edits made to this file over all time.</p>
+    </div>
+
+{% endblock %}

@@ -213,7 +213,16 @@ def delete_repo(request, id):
         return render_to_response("index")
 
 def queryhelp(request):
-    return render_to_response("queryhelp.html", {})
+    context_instance = RequestContext(request)
+    return render_to_response("queryhelp.html", context_instance)
+
+def queryref(request):
+    context_instance = RequestContext(request)
+    return render_to_response("queryReference.html", context_instance)
+
+def queryexamples(request):
+    context_instance = RequestContext(request)
+    return render_to_response("queryExamples.html", context_instance)
 
 def edit_user_settings(request):
     context_instance = RequestContext(request)

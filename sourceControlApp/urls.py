@@ -18,7 +18,9 @@ urlpatterns = patterns('',
     url(r'^login', views.logon, name='login'),
     url(r'^do_login', views.do_logon, name='do_login'),
 
-    url(r'^queryhelp', views.queryhelp, name='query_help'),
+    url(r'^query/help', views.queryhelp, name='query_help'),
+    url(r'^query/reference', views.queryref, name='query_ref'),
+    url(r'^query/examples', views.queryexamples, name='query_example'),
     url(r'^edit_user_settings', views.edit_user_settings, name='edit_user_settings'),
 
     url(r'^logout', views.do_logout, name='logout'),
