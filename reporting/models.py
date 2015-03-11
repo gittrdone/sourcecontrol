@@ -30,6 +30,8 @@ class Query(models.Model):
             return "commit"
         elif "files" in self.query_command:
             return "file"
+        elif "branches" in self.query_command:
+            return "branch"
         else:
             pass
 
