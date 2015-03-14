@@ -26,127 +26,140 @@
 
 
 <body>
+<div id="wrapper">
 
-{% block navbar %}
-    <nav class="top-bar" data-topbar>
-        <ul class="title-area">
+    {% block navbar %}
+        <nav class="top-bar" data-topbar>
+            <ul class="title-area">
 
-            <li class="name">
-                <h1>
-                    <a href="/">
-                        {% load staticfiles %}
-                        <img src="{% static "images/topbanner.png" %}" alt="Banner and logo" style="height:45px;"/>
-                    </a>
-                </h1>
-            </li>
-            <li class="toggle-topbar menu-icon"><a href="#"><span>menu</span></a></li>
-        </ul>
-        <section class="top-bar-section">
+                <li class="name">
+                    <h1>
+                        <a href="/">
+                            {% load staticfiles %}
+                            <img src="{% static "images/topbanner.png" %}" alt="Banner and logo" style="height:45px;"/>
+                        </a>
+                    </h1>
+                </li>
+                <li class="toggle-topbar menu-icon"><a href="#"><span>menu</span></a></li>
+            </ul>
+            <section class="top-bar-section">
 
-            <ul class="right">
-                {% block optional_nav %}
+                <ul class="right">
+                    {% block optional_nav %}
 
-                {% endblock %}
+                    {% endblock %}
 
-                <li class="divider"></li>
-                {% if user.is_authenticated %}
-
-
-                    <li><a href="/"><i class="fa fa-home"></i>&nbsp;Home</a></li>
                     <li class="divider"></li>
+                    {% if user.is_authenticated %}
 
-                    {% if repo_nav_options %}
+
+                        <li><a href="/"><i class="fa fa-home"></i>&nbsp;Home</a></li>
+                        <li class="divider"></li>
+
+                        {% if repo_nav_options %}
+                            <li class="has-dropdown">
+                                <a> My Repositories</a>
+                                <ul class="dropdown">
+                                    {% for repo in repo_nav_options %}
+                                        <li><a href="/repo/detail/{{ repo.0.pk }}/{{ repo.1 }}">{{ repo.0.name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            <li class="divider"></li>
+                        {% endif %}
+                        {% if repo_nav_options_reports %}
+                            {% regroup repo_nav_options_reports by name as report_list %}
+
+                            <li class="has-dropdown">
+                                <a> My Reports</a>
+                                <ul class="dropdown">
+                                    {% for r in report_list %}
+                                        <li {% if r.list %}class="has-dropdown"{% endif %}>
+                                            <a>{{ r.grouper }}</a>
+                                            <ul class="dropdown">
+                                                <li><a href="/repo/{{ r.list.0.pk }}/reports">All Reports</a></li>
+                                                {% for item in r.list %}
+                                                    {% if item.pk and item.report__pk %}
+                                                    <li><a href="{% url "view_report" item.pk item.report__pk %}">{{ item.report__name }}</a></li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% endif %}
+
+
+                        <li class="divider"></li>
                         <li class="has-dropdown">
-                            <a> My Repositories</a>
+                            <a> Hello, {{ user.username }}</a>
                             <ul class="dropdown">
-                                {% for repo in repo_nav_options %}
-                                    <li><a href="/repo/detail/{{ repo.0.pk }}/{{ repo.1 }}">{{ repo.0.name }}</a></li>
-                                {% endfor %}
+                                <li><a href="/logout">Logout</a></li>
+                                <li class="has-dropdown">
+                                    <a>Help</a>
+                                    <ul class="dropdown">
+                                        <li><a target="_blank" href="/query/help">Query Help</a></li>
+                                    </ul>
+                                </li>
+                                <li id="editSettings" data-reveal-id="modalSettingsEditForm"><a href="#">Settings</a></li>
                             </ul>
                         </li>
                         <li class="divider"></li>
+                            <div id="modalSettingsEditForm" class="reveal-modal" data-reveal>
+                                <div class="big_heading" id="editSettingsModalHeading">User Settings</div>
+                                <form id="editSettingsForm" action="/edit_user_settings/" method="POST" style="margin-top:10px;">
+
+                                <div id="nameValidate_edit" class="report_list_validate_label"></div>
+                                <label>Username
+                                    <input name="edit_name" id="editSettingsNameField" type="text" placeholder="{{ user }}">
+                                </label>
+
+                                <label>Email
+                                    <input name="edit_email" id="editSettingsEmailField" type="text" placeholder="{{ user.email }}">
+                                </label>
+
+                                <input type="hidden" id="editSettingsReportField" name="editReport" value="">
+
+                                <input id="editSettingsReport_edit" type="submit" value="Save" class="button save-submit-button">
+                                {% csrf_token %}
+                                </form>
+                            <a class="close-reveal-modal">&#215;</a>
+                        </div>
+
+                    {% else %}
+                        <li class="divider"></li>
+                        <li><a href="/login">Log In</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/signup">Sign Up</a></li>
                     {% endif %}
-                    {% if repo_nav_options_reports %}
-                        {% regroup repo_nav_options_reports by name as report_list %}
-
-                        <li class="has-dropdown">
-                            <a> My Reports</a>
-                            <ul class="dropdown">
-                                {% for r in report_list %}
-                                    <li {% if r.list %}class="has-dropdown"{% endif %}>
-                                        <a>{{ r.grouper }}</a>
-                                        <ul class="dropdown">
-                                            <li><a href="/repo/{{ r.list.0.pk }}/reports">All Reports</a></li>
-                                            {% for item in r.list %}
-                                                {% if item.pk and item.report__pk %}
-                                                <li><a href="{% url "view_report" item.pk item.report__pk %}">{{ item.report__name }}</a></li>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </ul>
-                                    </li>
-
-                                {% endfor %}
-                            </ul>
-                        </li>
-                    {% endif %}
-
-
                     <li class="divider"></li>
-                    <li class="has-dropdown">
-                        <a> Hello, {{ user.username }}</a>
-                        <ul class="dropdown">
-                            <li><a href="/logout">Logout</a></li>
-                            <li class="has-dropdown">
-                                <a>Help</a>
-                                <ul class="dropdown">
-                                    <li><a target="_blank" href="/query/help">Query Help</a></li>
-                                </ul>
-                            </li>
-                            <li id="editSettings" data-reveal-id="modalSettingsEditForm"><a href="#">Settings</a></li>
-                        </ul>
-                    </li>
-                    <li class="divider"></li>
-                        <div id="modalSettingsEditForm" class="reveal-modal" data-reveal>
-                            <div class="big_heading" id="editSettingsModalHeading">User Settings</div>
-                            <form id="editSettingsForm" action="/edit_user_settings/" method="POST" style="margin-top:10px;">
+                </ul>
+            </section>
+        </nav>
+    {%  endblock %}
 
-                            <div id="nameValidate_edit" class="report_list_validate_label"></div>
-                            <label>Username
-                                <input name="edit_name" id="editSettingsNameField" type="text" placeholder="{{ user }}">
-                            </label>
+    <div id="content">>
+        <div class="row">
+            <div class="large-12 columns">
+                {% block content %}
 
-                            <label>Email
-                                <input name="edit_email" id="editSettingsEmailField" type="text" placeholder="{{ user.email }}">
-                            </label>
-
-                            <input type="hidden" id="editSettingsReportField" name="editReport" value="">
-
-                            <input id="editSettingsReport_edit" type="submit" value="Save" class="button save-submit-button">
-                            {% csrf_token %}
-                            </form>
-                        <a class="close-reveal-modal">&#215;</a>
-                    </div>
-
-                {% else %}
-                    <li class="divider"></li>
-                    <li><a href="/login">Log In</a></li>
-                    <li class="divider"></li>
-                    <li><a href="/signup">Sign Up</a></li>
-                {% endif %}
-                <li class="divider"></li>
-            </ul>
-        </section>
-    </nav>
-{%  endblock %}
-
-<div class="row">
-    <div class="large-12 columns">
-        {% block content %}
-
-        {% endblock %}
+                {% endblock %}
+            </div>
+        </div><br>
     </div>
-</div><br>
 
+    <div id="footer">
+        <div style="width:60%; margin:0 auto;">
+            <hr style="height:2px;border:none;color:#C0C0C0;background-color:#C0C0C0;">
+            <div style="text-align:center;font-size:13px;color:#686868;">
+                Justin Chines, Andrew Iovanna, Thanaporn Patikorn, Anjali Venkatesh
+                <div style="font-style:italic;margin-top: 10px;">Worcester Polytechnic Institute</div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <!-- jQuery CDN -->
