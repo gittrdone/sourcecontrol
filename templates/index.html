@@ -1,64 +1,124 @@
 {%  extends "base.html" %}
 
 {% block content %}
-    <div class="row">
-        <div class="large-12 columns card">
-            <div class="large-4 columns">
-                {% load staticfiles %}
-                <img src="{% static "images/Logo1.png" %}" class="show-for-large-up">
-            </div>
-            <div class="large-8 columns">
-                <h2><b>Welcome to SourceControl.me</b></h2>
-                <div class="large-6 columns">
-                    <br>Not a member? Here are some reasons you should sign up:<br><br>
-                    <ul>
-                        <li>It's free</li>
-                        <li>It's pretty</li>
-                        <li>It's intuitive</li>
-                        <li>It's flexible</li>
-                    </ul>
-                    Already a member?<br>
-                    <a href="/login" class="button expand" style="margin-top: 5px;">Login</a>
-
+    <div class="show-for-large-up">
+        <div class="row">
+            <div class="large-12 columns card">
+                <div class="large-4 columns">
+                    {% load staticfiles %}
+                    <img src="{% static "images/Logo1.png" %}">
                 </div>
-                <div class="large-6 columns">
-                    <br>Here's some of what you'll be able to do:<br><br>
-                    <ul>
-                        <li>View various repo stats</li>
-                        <li>View data visualizations</li>
-                        <li>Judge progress and author quality</li>
-                        <li>Define your own metrics</li>
-                    </ul>
-                    <br>
-                    <a href="/signup" class="button success expand" style="margin-top:5px;">Sign Up!</a>
+                <div class="large-8 columns">
+                    <h2><b>Welcome to SourceControl.me</b></h2>
+                    <div class="large-6 columns">
+                        <br>Not a member? Here are some reasons you should sign up:<br><br>
+                        <ul>
+                            <li>It's free</li>
+                            <li>It's pretty</li>
+                            <li>It's intuitive</li>
+                            <li>It's flexible</li>
+                        </ul>
+                        Already a member?<br>
+                        <a href="/login" class="button expand" style="margin-top: 5px;">Login</a>
+
+                    </div>
+                    <div class="large-6 columns">
+                        <br>Here's some of what you'll be able to do:<br><br>
+                        <ul>
+                            <li>View various repo stats</li>
+                            <li>View data visualizations</li>
+                            <li>Judge progress and author quality</li>
+                            <li>Define your own metrics</li>
+                        </ul>
+                        <br>
+                        <a href="/signup" class="button success expand" style="margin-top:5px;">Sign Up!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Horrendous, will re-do -->
+        <div class="row">
+            <div class="large-4 columns" style="padding-left: 0px;padding-right: 0px;">
+                <div class="card large-centered" style="margin-right: 10px;">
+                    <h5><b>Github? BitBucket? No Sweat!</b></h5>
+                    SourceControl does not depend on particular Git hosting service. Simply
+                    supply the URL of your Git repository and we'll take care of the rest, branches and all.
+                </div>
+            </div>
+            <div class="large-4 columns" style="padding-left: 0px;padding-right: 0px;">
+                <div class="card" style="margin-left: 5px;margin-right: 5px;">
+                    <h5><b>Always Up-to-Date Stats</b></h5>
+                    SourceControl conveniently and automatically updates your repositories with new data. Every time
+                    you come back, all statistics will be up-to-date.
+                </div>
+            </div>
+            <div class="large-4 columns" style="padding-left: 0px;padding-right: 0px;">
+                <div class="card" style="margin-left: 10px;">
+                    <h5><b>Custom Queries and Reports</b></h5>
+                    Use our custom query language to create reports. With several
+                    types of data to query on and flexible conditions, the possibilities are
+                    almost limitless.
                 </div>
             </div>
         </div>
     </div>
-    <!-- Horrendous, will re-do -->
-    <div class="row">
-        <div class="large-4 columns" style="padding-left: 0px;padding-right: 0px;">
-            <div class="card large-centered" style="margin-right: 10px;">
-                <h5><b>Github? BitBucket? No Sweat!</b></h5>
-                SourceControl does not depend on particular Git hosting service. Simply
-                supply the URL of your Git repository and we'll take care of the rest, branches and all.
-            </div>
-        </div>
-        <div class="large-4 columns" style="padding-left: 0px;padding-right: 0px;">
-            <div class="card" style="margin-left: 5px;margin-right: 5px;">
-                <h5><b>Always Up-to-Date Stats</b></h5>
-                SourceControl conveniently and automatically updates your repositories with new data. Every time
-                you come back, all statistics will be up-to-date.
-            </div>
-        </div>
-        <div class="large-4 columns" style="padding-left: 0px;padding-right: 0px;">
-            <div class="card" style="margin-left: 10px;">
-                <h5><b>Custom Queries and Reports</b></h5>
-                Use our custom query language to create reports. With several
-                types of data to query on and flexible conditions, the possibilities are
-                almost limitless.
-            </div>
-        </div>
 
+    <!--Mobile divs-->
+    <div class="hide-for-large-up">
+        <div class="row" style="margin-left: 5px;margin-right: 5px;">
+            <div class="large-12 columns card" align="center">
+                <div style="font-weight: bold;font-size: 30px;"><img src="{% static "images/Logo1.png" %}" height="60px" width="60px">
+                    Welcome to SourceControl.me
+                </div>
+            </div>
+        </div>
+        <div class="row mobile-row" style="margin-left: 5px;margin-right: 5px;">
+            <div class="large-12 columns card">
+                    <br>Not a member? Here are some reasons you should sign up:<br><br>
+                            <ul>
+                                <li>It's free</li>
+                                <li>It's pretty</li>
+                                <li>It's intuitive</li>
+                                <li>It's flexible</li>
+                            </ul>
+                    <div style="width: 100%" align="center">
+                        <a href="/signup" class="button success" style="margin-top:5px;padding-left:120px;padding-right:120px;">Sign Up!</a>
+                    </div>
+            </div>
+        </div>
+        <div class="row mobile-row" style="margin-left: 5px;margin-right: 5px;">
+            <div class="large-12 columns card">
+                 <br>Here's some of what you'll be able to do:<br><br>
+                        <ul>
+                            <li>View various repo stats</li>
+                            <li>View data visualizations</li>
+                            <li>Judge progress and author quality</li>
+                            <li>Define your own metrics</li>
+                        </ul>
+
+                <div style="width: 100%" align="center">
+                    Already a member?<br>
+                    <a href="/login" class="button" style="margin-top: 5px;padding-left:130px;padding-right:130px;">Login</a>
+                </div>
+            </div>
+        </div>
+        <div class="row mobile-row" style="margin-left: 5px;margin-right: 5px;">
+            <div class="large-12 columns card">
+                <h5><b>Github? BitBucket? No Sweat!</b></h5>
+                    SourceControl does not depend on particular Git hosting service. Simply
+                    supply the URL of your Git repository and we'll take care of the rest, branches and all.
+                <br><br>
+                <h5><b>Always Up-to-Date Stats</b></h5>
+                    SourceControl conveniently and automatically updates your repositories with new data. Every time
+                    you come back, all statistics will be up-to-date.
+                <br><br>
+                <h5><b>Custom Queries and Reports</b></h5>
+                    Use our custom query language to create reports. With several
+                    types of data to query on and flexible conditions, the possibilities are
+                    almost limitless.
+            </div>
+        </div>
     </div>
 {% endblock %}

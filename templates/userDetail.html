@@ -5,21 +5,22 @@
     </script>
 {% endblock %}
 {% block content %}
-    <div class="large-12 columns card">
-        <div class="large-12 columns">
-            <div class="large-8 columns">
-                <h3><b>{{ author.name }}</b></h3>
-                <b>{{ author.git_branch.git_repository_url }}</b><br><br>
+    <div class="show-for-large-up">
+        <div class="large-12 columns card">
+            <div class="large-12 columns">
+                <div class="large-8 columns">
+                    <h3><b>{{ author.name }}</b></h3>
+                    <b>{{ author.git_branch.git_repository_url }}</b><br><br>
 
-            </div>
-            <div class="large-1 columns detail-big-numerals">
-                {{ author.num_commits }}
-                <br/><div class="detail-small-titles">commits</div>
-            </div>
+                </div>
+                <div class="large-1 columns detail-big-numerals">
+                    {{ author.num_commits }}
+                    <br/><div class="detail-small-titles">commits</div>
+                </div>
 
-            <div class="large-1 columns detail-big-numerals">
-                {{ author.additions }}
-                <br/><div class="detail-small-titles"">insertions</div>
+                <div class="large-1 columns detail-big-numerals">
+                    {{ author.additions }}
+                    <br/><div class="detail-small-titles"">insertions</div>
             </div>
 
             <div class="large-2 columns detail-big-numerals">
@@ -70,21 +71,69 @@
                 {{ author.num_fix_build }}
                 <br/><div class="detail-small-titles">build fix(es)</div>
             </div>
-
-
-
         </div>
     {% endif %}
+    </div>
+
+    <div class="hide-for-large-up">
+        <div class="large-12 columns card">
+            <div class="large-12 columns">
+                <div class="large-8 columns">
+                    <h3><b>{{ author.name }}</b></h3>
+                    <b>{{ author.git_branch.git_repository_url }}</b><br><br>
+                </div>
+            </div>
+
+            <div class="small-12 columns">
+                 <div class="small-4 columns detail-big-numerals">
+                    {{ author.num_commits }}
+                    <br/><div class="detail-small-titles">commits</div>
+                </div>
+
+                <div class="small-4 columns detail-big-numerals">
+                    {{ author.additions }}
+                    <br/><div class="detail-small-titles"">insertions</div>
+                </div>
+
+                <div class="small-4 columns detail-big-numerals">
+                    {{ lines_per_commit }}
+                    <br/><div class="detail-small-titles">lines/commit</div>
+                </div>
+            </div>
+
+            <div class="small-12 columns" style="margin-top: 20px;">
+                <div class="small-9 columns">
+                    <div>
+                    {% load staticfiles %}
+                    <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
+                    <a href="#" data-dropdown="dropsmall" style="vertical-align:middle;">{{ branch.branch_name }} <i class="fa fa-caret-down"></i></a>
+                    <ul id="dropsmall" class="small f-dropdown" data-dropdown-content>
+                        {% for branchObject in branches %}
+                            {% if branchObject.pk != branch.pk %}
+                                <!-- {{ branch.pk }} -->
+                                <li><a href="/authors/detail/{{ branchObject.codeauthor__pk }}/{{ repo_pk }}/{{ branchObject.pk }}">{{ branchObject.branch_name }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                </div>
+                <div class="small-3 columns">
+                    <b><a href="/repo/detail/{{ repo_pk }}/{{ branch.pk }}">Repository View</a></b>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="large-12 columns card chart-div">
-        <div class="large-6 columns">
+        <div class="large-6 columns" style="padding-top:15px;">
             <h6><b>Insertions vs. Deletions</b></h6>
             <div id="piecontainer" class="chart-div-height"></div>
         </div>
-        <div class="large-6 columns">
+        <div class="large-6 columns" style="padding-top:15px;">
             <h6><b>Commits Over Time</b></h6>
             <div id="barcontainer" class="chart-div-height"></div>
         </div>
+        <div class="clear"></div>
     </div>
 
 

@@ -65,11 +65,11 @@
         {% for repo in repo_list %}
             <div id="repo-{{ repo.0.pk }}" class="large-12 columns card">
                 <div class="large-10 columns">
-                    <h4>{% if repo.0.git_repo.status == 3 %}<a href="/repo/detail/{{ repo.0.pk }}/{{ repo.1 }}"><b id="name-{{ repo.0.pk }}">{{ repo.0.name }}</b></a>
-                        {% else %}<b id="name-{{ repo.0.pk }}">{{ repo.0.name }}</b>
-                    {% endif %}
-                    </h4>
-                    <h5><b id="url-{{ repo.0.pk }}">{{ repo.0.git_repo.git_repository_url }}</b></h5>
+                        <h4>{% if repo.0.git_repo.status == 3 %}<a href="/repo/detail/{{ repo.0.pk }}/{{ repo.1 }}"><b id="name-{{ repo.0.pk }}">{{ repo.0.name }}</b></a>
+                            {% else %}<b id="name-{{ repo.0.pk }}">{{ repo.0.name }}</b>
+                        {% endif %}
+                        </h4>
+                    <h6><b id="url-{{ repo.0.pk }}">{{ repo.0.git_repo.git_repository_url }}</b></h6>
                     {% if repo.0.git_repo.status != 3 %}
                         <!-- TODO: Messages for each possible state -->
                         <h6 id="status-{{ repo.0.pk }}"><img src="{% static "images/spinner.gif" %}">Repo currently being processed.</h6>
@@ -80,11 +80,11 @@
                     {% endif %}
                 </div>
                 {% if repo.0.git_repo.status == 3 %}
-                    <div class="large-1 columns detail-big-numerals">
+                    <div class="large-1 columns detail-big-numerals show-for-large-up">
                         {{ repo.2 }}
                         <br/><div class="detail-small-titles">files</div>
                     </div>
-                    <div class="large-1 columns detail-big-numerals">
+                    <div class="large-1 columns detail-big-numerals show-for-large-up">
                         {{ repo.0.git_repo.num_commits }}
                         <br/><div class="detail-small-titles">commits</div>
                     </div>
@@ -102,6 +102,9 @@
                 <!-- {{ repo.1 }} -->
                 <!-- {{ repo.2 }} -->
             </div>
+
+            <!--Mobile-->
+
         {% endfor %}
     {% else %}
         <div class="large-12 columns card no-repos-card">

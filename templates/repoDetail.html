@@ -1,74 +1,64 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="large-12 columns card">
-        <div class="large-12 columns">
-            <div class="large-8 columns">
-                <h3><b>{{ repo.name }}</b></h3>
+    <div class="show-for-large-up">
+        <div class="large-12 columns card">
+            <div class="large-12 columns">
+                <div class="large-8 columns">
+                    <h3><b>{{ repo.name }}</b></h3>
 
-                <b>{{ repo.git_repo.git_repository_url }}</b><br><br>
+                    <b>{{ repo.git_repo.git_repository_url }}</b><br><br>
 
-                {% if repo.repo_description %}
-                    <div style="color:grey;font-style:italic;padding-bottom: 10px">{{ repo.repo_description }}</div>
-                {% endif %}
-            </div>
-            <div class="large-1 columns detail-big-numerals">
-                {{ branch.num_files }}
-                <br/><div class="detail-small-titles">files</div>
-            </div>
+                    {% if repo.repo_description %}
+                        <div style="color:grey;font-style:italic;padding-bottom: 10px">{{ repo.repo_description }}</div>
+                    {% endif %}
+                </div>
+                <div class="large-1 columns detail-big-numerals">
+                    {{ branch.num_files }}
+                    <br/><div class="detail-small-titles">files</div>
+                </div>
 
-            <div class="large-1 columns detail-big-numerals">
-                {{ branch.num_commits }}
-                <br/><div class="detail-small-titles">commits</div>
-            </div>
+                <div class="large-1 columns detail-big-numerals">
+                    {{ branch.num_commits }}
+                    <br/><div class="detail-small-titles">commits</div>
+                </div>
 
-            <div class="large-2 columns detail-big-numerals">
-                {{ authors|length }}
-                <br/><div class="detail-small-titles">committers</div>
-            </div>
-        </div>
-        <div class="large-12 columns">
-            <div class="large-9 columns">
-
-                {% if repo.git_repo.jenkins_url != "" and repo.git_repo.jenkins_url != None %}
-                   <div style="font-style: italic; margin-bottom: 8px;color:gray;font-size: 15px"><i class="fa fa-check" style="color:green;"></i>&nbsp;Jenkins Info</div>
-                {% endif %}
-
-                <div>
-                    {% load staticfiles %}
-                    <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
-                    <a href="#" data-dropdown="drop" style="vertical-align:middle;">{{ branch.branch_name }} <i class="fa fa-caret-down"></i></a>
-                    <ul id="drop" class="small f-dropdown" data-dropdown-content>
-                        {% for branchObject in branches %}
-                            {% if branchObject.pk != branch.pk %}
-                                <!-- {{ branch.pk }} -->
-                                <li><a href="/repo/detail/{{ repo.pk }}/{{ branchObject.pk }}">{{ branchObject.branch_name }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
+                <div class="large-2 columns detail-big-numerals">
+                    {{ authors|length }}
+                    <br/><div class="detail-small-titles">committers</div>
                 </div>
             </div>
+            <div class="large-12 columns">
+                <div class="large-9 columns">
 
-            <div class="large-3 columns" style="text-align: right;padding-right: 50px;">
-                <b><a href="{% url 'reports' repo.pk %}"><i class="fa fa-line-chart"></i>&nbsp;View Reports</a></b>
-            </div>
-        </div>
-    </div>
+                    {% if repo.git_repo.jenkins_url != "" and repo.git_repo.jenkins_url != None %}
+                        <div style="font-style: italic; margin-bottom: 8px;color:gray;font-size: 15px"><i class="fa fa-check" style="color:green;"></i>&nbsp;Jenkins Info</div>
+                    {% endif %}
 
-    <div class="large-12 columns card">
-        {% for author in authors %}
-            {% if forloop.counter <= 4 %}
-                <div class="large-6 columns" style="float:left;">
-                    <div class="large-8 columns" style="margin-bottom:10px;">
-                        <a href="/authors/detail/{{ author.pk }}/{{ repo_pk }}/{{ branch.pk }}"><h5 class="blue-clicky-text"><b>{{ author.name }}</b></h5></a>
-                    </div>
-                    <div class="large-4 columns committers-big-numerals">
-                        {{ author.num_commits }}
-                        &nbsp;<div class="detail-small-titles">commits</div>
+                    <div>
+                        {% load staticfiles %}
+                        <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
+                        <a href="#" data-dropdown="drop" style="vertical-align:middle;">{{ branch.branch_name }} <i class="fa fa-caret-down"></i></a>
+                        <ul id="drop" class="small f-dropdown" data-dropdown-content>
+                            {% for branchObject in branches %}
+                                {% if branchObject.pk != branch.pk %}
+                                    <!-- {{ branch.pk }} -->
+                                    <li><a href="/repo/detail/{{ repo.pk }}/{{ branchObject.pk }}">{{ branchObject.branch_name }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
-            {% else %}
-                <div class="hide extra_committers">
+
+                <div class="large-3 columns" style="text-align: right;padding-right: 50px;">
+                    <b><a href="{% url 'reports' repo.pk %}"><i class="fa fa-line-chart"></i>&nbsp;View Reports</a></b>
+                </div>
+            </div>
+        </div>
+
+        <div class="large-12 columns card">
+            {% for author in authors %}
+                {% if forloop.counter <= 4 %}
                     <div class="large-6 columns" style="float:left;">
                         <div class="large-8 columns" style="margin-bottom:10px;">
                             <a href="/authors/detail/{{ author.pk }}/{{ repo_pk }}/{{ branch.pk }}"><h5 class="blue-clicky-text"><b>{{ author.name }}</b></h5></a>
@@ -78,23 +68,25 @@
                             &nbsp;<div class="detail-small-titles">commits</div>
                         </div>
                     </div>
-                </div>
-            {% endif %}
-        {% endfor %}
-        <div class="large-12 columns commithider blue-clicky-text" style="text-align:center;margin-top:10px;color:black;">
-            {% if authors.count > 4 %}
-                View All ({{ authors.count }})
-            {% endif %}
-        </div>
-    </div>
-    <div class="large-12 columns card chart-div">
-        <div class="large-6 columns">
-            <h6><b>Commits per Author</b></h6>
-            <div id="piecontainer" class="chart-div-height"></div>
-        </div>
-        <div class="large-6 columns">
-            <h6><b>Commits Over Time</b></h6>
-            <div id="barcontainer"class="chart-div-height"></div>
+                {% else %}
+                    <div class="hide extra_committers">
+                        <div class="large-6 columns" style="float:left;">
+                            <div class="large-8 columns" style="margin-bottom:10px;">
+                                <a href="/authors/detail/{{ author.pk }}/{{ repo_pk }}/{{ branch.pk }}"><h5 class="blue-clicky-text"><b>{{ author.name }}</b></h5></a>
+                            </div>
+                            <div class="large-4 columns committers-big-numerals">
+                                {{ author.num_commits }}
+                                &nbsp;<div class="detail-small-titles">commits</div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <div class="large-12 columns commithider blue-clicky-text" style="text-align:center;margin-top:10px;color:black;">
+                {% if authors.count > 4 %}
+                    View All ({{ authors.count }})
+                {% endif %}
+            </div>
         </div>
     </div>
 
@@ -105,6 +97,102 @@
          top: 399px; left: 1043px; display: none;
          background-color: rgb(255, 238, 238);">
         sin(x) of 10.00 = -0.54
+    </div>
+
+    <!--Mobile divs-->
+    <div class="hide-for-large-up">
+        <div class="large-12 columns card">
+            <div class="large-12 columns">
+                <h3><b>{{ repo.name }}</b></h3>
+
+                <b>{{ repo.git_repo.git_repository_url }}</b><br><br>
+
+                {% if repo.repo_description %}
+                    <div style="color:grey;font-style:italic;padding-bottom: 10px">{{ repo.repo_description }}</div>
+                {% endif %}
+            </div>
+
+            <div class="small-12 columns">
+                <div class="small-4 columns detail-big-numerals">
+                    {{ branch.num_files }}
+                    <br/><div class="detail-small-titles">files</div>
+                </div>
+
+                <div class="small-4 columns detail-big-numerals">
+                    {{ branch.num_commits }}
+                    <br/><div class="detail-small-titles">commits</div>
+                </div>
+
+                <div class="small-4 columns detail-big-numerals">
+                    {{ authors|length }}
+                    <br/><div class="detail-small-titles">committers</div>
+                </div>
+            </div>
+
+            <div class="small-12 columns" style="margin-top: 30px;">
+                <div class="small-9 columns">
+                    <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
+                    <a href="#" data-dropdown="dropsmall" style="vertical-align:middle;">{{ branch.branch_name }} <i class="fa fa-caret-down"></i></a>
+                    <ul id="dropsmall" class="small f-dropdown" data-dropdown-content>
+                        {% for branchObject in branches %}
+                            {% if branchObject.pk != branch.pk %}
+                                <!-- {{ branch.pk }} -->
+                                <li><a href="/repo/detail/{{ repo.pk }}/{{ branchObject.pk }}">{{ branchObject.branch_name }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="small-3 columns">
+                    <b><a href="{% url 'reports' repo.pk %}"><i class="fa fa-line-chart"></i>&nbsp;View Reports</a></b>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="large-12 columns card">
+            {% for author in authors %}
+                {% if forloop.counter <= 4 %}
+                    <div class="small-12 columns" style="float:left;">
+                        <div class="small-9 columns" style="margin-bottom:10px;">
+                            <a href="/authors/detail/{{ author.pk }}/{{ repo_pk }}/{{ branch.pk }}"><h5 class="blue-clicky-text"><b>{{ author.name }}</b></h5></a>
+                        </div>
+                        <div class="small-3 columns committers-big-numerals">
+                            {{ author.num_commits }}
+                            &nbsp;<div class="detail-small-titles">commits</div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="hide extra_committers">
+                        <div class="small-12 columns" style="float:left;">
+                            <div class="small-9 columns" style="margin-bottom:10px;">
+                                <a href="/authors/detail/{{ author.pk }}/{{ repo_pk }}/{{ branch.pk }}"><h5 class="blue-clicky-text"><b>{{ author.name }}</b></h5></a>
+                            </div>
+                            <div class="small-3 columns committers-big-numerals">
+                                {{ author.num_commits }}
+                                &nbsp;<div class="detail-small-titles">commits</div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <div class="large-12 columns commithider blue-clicky-text" style="text-align:center;margin-top:10px;color:black;">
+                {% if authors.count > 4 %}
+                    View All ({{ authors.count }})
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="large-12 columns card chart-div">
+        <div class="large-6 columns" style="padding: 20px;">
+            <h6><b>Commits per Author</b></h6>
+            <div id="piecontainer" class="chart-div-height"></div>
+        </div>
+        <div class="large-6 columns" style="padding: 20px;">
+            <h6><b>Commits Over Time</b></h6>
+            <div id="barcontainer"class="chart-div-height"></div>
+        </div>
     </div>
 
 {% endblock %}
