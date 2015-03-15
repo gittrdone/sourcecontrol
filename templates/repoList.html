@@ -69,7 +69,7 @@
                             {% else %}<b id="name-{{ repo.0.pk }}">{{ repo.0.name }}</b>
                         {% endif %}
                         </h4>
-                    <h6><b id="url-{{ repo.0.pk }}">{{ repo.0.git_repo.git_repository_url }}</b></h6>
+                    <h6 class="ellipsis"><b id="url-{{ repo.0.pk }}">{{ repo.0.git_repo.git_repository_url }}</b></h6>
                     {% if repo.0.git_repo.status != 3 %}
                         <!-- TODO: Messages for each possible state -->
                         <h6 id="status-{{ repo.0.pk }}"><img src="{% static "images/spinner.gif" %}">Repo currently being processed.</h6>
@@ -102,8 +102,6 @@
                 <!-- {{ repo.1 }} -->
                 <!-- {{ repo.2 }} -->
             </div>
-
-            <!--Mobile-->
 
         {% endfor %}
     {% else %}

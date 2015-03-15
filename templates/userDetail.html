@@ -76,11 +76,11 @@
     </div>
 
     <div class="hide-for-large-up">
-        <div class="large-12 columns card">
+        <div class="large-12 columns mobile-card">
             <div class="large-12 columns">
                 <div class="large-8 columns">
                     <h3><b>{{ author.name }}</b></h3>
-                    <b>{{ author.git_branch.git_repository_url }}</b><br><br>
+                    <b class="ellipsis">{{ author.git_branch.git_repository_url }}</b><br><br>
                 </div>
             </div>
 
@@ -102,7 +102,7 @@
             </div>
 
             <div class="small-12 columns" style="margin-top: 20px;">
-                <div class="small-9 columns">
+                <div class="small-8 columns">
                     <div>
                     {% load staticfiles %}
                     <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
@@ -117,7 +117,7 @@
                     </ul>
                 </div>
                 </div>
-                <div class="small-3 columns">
+                <div class="small-4 columns">
                     <b><a href="/repo/detail/{{ repo_pk }}/{{ branch.pk }}">Repository View</a></b>
                 </div>
             </div>

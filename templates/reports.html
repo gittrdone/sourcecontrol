@@ -5,8 +5,13 @@
 {% endblock %}
 {% block content %}
     {% load staticfiles %}
-    <h2 class="my-repositories-heading" style="font-family: 'Francois One', sans-serif;">{{ repo_name }} REPORTS</h2>
 
+    <div class="show-for-large-up">
+        <h2 class="my-repositories-heading" style="font-family: 'Francois One', sans-serif;">{{ repo_name }} REPORTS</h2>
+    </div>
+    <div class="hide-for-large-up">
+         <span class="my-repositories-heading" style="font-family: 'Francois One', sans-serif;font-size: 24px;">{{ repo_name }} REPORTS</span>
+    </div>
     <a href="/repo/{{ repo_id }}/reports/addReport.html"><img src="{% static "images/add.png" %}" class="add-repo-button"/></a>
 
     <div id="modalEditForm" class="reveal-modal" data-reveal>

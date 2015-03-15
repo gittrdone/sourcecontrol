@@ -28,6 +28,13 @@ body {
     padding: 30px;
 }
 
+.mobile-card {
+    background: white;
+    box-shadow: 0px 2px 5px #AAAAAA;
+    margin-top: 25px;
+    padding: 10px;
+}
+
 .columnswithbottompadding {
     padding-bottom: 20px;
 }
@@ -178,4 +185,13 @@ body {
 .queryhelp-paragraph {
     margin-left: 30px;
     font-family: monospace;
+}
+
+.ellipsis {
+    /* essential */
+    display: inline-block;
+	text-overflow: ellipsis;
+	width: 240px;
+	white-space: nowrap;
+	overflow: hidden;
 }

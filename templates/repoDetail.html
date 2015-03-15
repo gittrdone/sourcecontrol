@@ -101,11 +101,11 @@
 
     <!--Mobile divs-->
     <div class="hide-for-large-up">
-        <div class="large-12 columns card">
+        <div class="large-12 columns mobile-card">
             <div class="large-12 columns">
                 <h3><b>{{ repo.name }}</b></h3>
 
-                <b>{{ repo.git_repo.git_repository_url }}</b><br><br>
+                <b class="ellipsis">{{ repo.git_repo.git_repository_url }}</b><br><br>
 
                 {% if repo.repo_description %}
                     <div style="color:grey;font-style:italic;padding-bottom: 10px">{{ repo.repo_description }}</div>
@@ -130,7 +130,7 @@
             </div>
 
             <div class="small-12 columns" style="margin-top: 30px;">
-                <div class="small-9 columns">
+                <div class="small-8 columns">
                     <img src="{% static "images/git-branch.png" %}" class="branch-icon"/>
                     <a href="#" data-dropdown="dropsmall" style="vertical-align:middle;">{{ branch.branch_name }} <i class="fa fa-caret-down"></i></a>
                     <ul id="dropsmall" class="small f-dropdown" data-dropdown-content>
@@ -143,19 +143,19 @@
                     </ul>
                 </div>
 
-                <div class="small-3 columns">
+                <div class="small-4 columns">
                     <b><a href="{% url 'reports' repo.pk %}"><i class="fa fa-line-chart"></i>&nbsp;View Reports</a></b>
                 </div>
             </div>
         </div>
 
 
-        <div class="large-12 columns card">
+        <div class="large-12 columns mobile-card">
             {% for author in authors %}
                 {% if forloop.counter <= 4 %}
                     <div class="small-12 columns" style="float:left;">
                         <div class="small-9 columns" style="margin-bottom:10px;">
-                            <a href="/authors/detail/{{ author.pk }}/{{ repo_pk }}/{{ branch.pk }}"><h5 class="blue-clicky-text"><b>{{ author.name }}</b></h5></a>
+                            <a href="/authors/detail/{{ author.pk }}/{{ repo_pk }}/{{ branch.pk }}"><h5 class="blue-clicky-text ellipsis"><b>{{ author.name }}</b></h5></a>
                         </div>
                         <div class="small-3 columns committers-big-numerals">
                             {{ author.num_commits }}
