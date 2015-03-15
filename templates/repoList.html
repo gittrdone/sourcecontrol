@@ -65,7 +65,7 @@
         {% for repo in repo_list %}
             <div id="repo-{{ repo.0.pk }}" class="large-12 columns card">
                 <div class="large-10 columns">
-                        <h4>{% if repo.0.git_repo.status == 3 %}<a href="/repo/detail/{{ repo.0.pk }}/{{ repo.1 }}"><b id="name-{{ repo.0.pk }}">{{ repo.0.name }}</b></a>
+                        <h4>{% if repo.0.git_repo.status == 3 %}<a href="/repo/detail/{{ repo.0.pk }}/{{ repo.0.git_repo.default_branch.pk }}"><b id="name-{{ repo.0.pk }}">{{ repo.0.name }}</b></a>
                             {% else %}<b id="name-{{ repo.0.pk }}">{{ repo.0.name }}</b>
                         {% endif %}
                         </h4>

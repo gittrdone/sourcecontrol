@@ -220,7 +220,7 @@ def count_commits_per_author_branch(repo, branch_db_object):
     DAY = 86400
     DAYS7 = 604800
     DAYS30 = 2592000
-    MIN_EDITS_PER_FILES = 3
+    MIN_EDITS_PER_FILES = 2
     MIN_COMMITS = 30
 
     try:
@@ -306,12 +306,6 @@ def count_commits_per_author_branch(repo, branch_db_object):
             git_repo.num_commits += 1
 
     filtered_list = filter(lambda x: x[1] >= MIN_EDITS_PER_FILES, list_all_files)
-
-    import json
-    from django.core.mail import send_mail
-    content = json.dumps(filtered_list)
-    send_mail('SourceControl.me: Files Report', content,
-              'no_reply@SourceControl.me', ['tpatikorn@hotmail.com'])
 
     for e in filtered_list:
         FileEntry.objects.create(file_path=e[0], git_branch=branch_db_object, num_edit=e[1], in_current_built=e[2])
