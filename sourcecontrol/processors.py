@@ -10,8 +10,8 @@ def repo_nav_options(request):
         for repo in repos:
             if repo.git_repo and repo.git_repo.status == 3:
                 repos_to_display.append(repo)
-                default_branch_files.append(repo.git_repo.branches.all()[0].num_files)
-                default_branch_ids.append(repo.git_repo.branches.all()[0].pk)
+                default_branch_files.append(repo.git_repo.default_branch.num_files)
+                default_branch_ids.append(repo.git_repo.default_branch.pk)
         return {'repo_nav_options':zip(repos_to_display, default_branch_ids, default_branch_files)}
     else:
         return {'repo_nav_options':None}

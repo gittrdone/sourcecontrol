@@ -21,7 +21,7 @@ def view_reports(request, repo_id):
     context_instance['reports_list'] = Report.objects.filter(user=sourceControlUser, repo=repo)
     context_instance['repo_name'] = repo.name
     context_instance['repo_id'] = repo.pk
-    context_instance['branch_id'] = repo.git_repo.branches.all()[0].pk
+    context_instance['branch_id'] = repo.git_repo.default_branch.pk
 
 
     return render_to_response("reports.html", context_instance)
@@ -35,7 +35,7 @@ def view_report(request, repo_id, report_id):
     report = Report.objects.get(user=request.user.sourcecontroluser, repo=repo, pk=report_id)
 
     context_instance = RequestContext(request)
-    context_instance['default_branch_id'] = repo.git_repo.branches.all()[0].pk
+    context_instance['default_branch_id'] = repo.git_repo.default_branch.pk
     context_instance['repo_id'] = repo_id
     context_instance['report'] = report
 

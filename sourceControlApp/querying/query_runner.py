@@ -101,12 +101,12 @@ def filter_on_query(q, repo):
 
   if db_model == CodeAuthor:
     # XXX change to kwargs for different repo column names
-    objs = db_model.objects.filter(git_branch=repo.git_repo.branches.all()[0])
+    objs = db_model.objects.filter(git_branch=repo.git_repo.default_branch)
   elif db_model == Commit:
     # TODO Fix this stuff to use branches
     objs = db_model.objects.filter(git_repo=repo.git_repo)
   elif db_model == FileEntry:
-    objs = db_model.objects.filter(git_branch=repo.git_repo.branches.all()[0])
+    objs = db_model.objects.filter(git_branch=repo.git_repo.default_branch)
   elif db_model == GitBranch:
     objs = repo.git_repo.branches.all()
 
