@@ -43,6 +43,11 @@
         <b id="desc-{{ query.query.pk }}">{{ query.query.desc }}</b><br />
         <div class="report-query-text"><span style="font-style:normal">Command:</span> <span id="command-{{ query.query.pk }}">{{ query.query.query_command }}</span></div>
         </div>
+        {% if query.status == "error" %}
+            <div class="large-12 columns">
+            <h3>Query returned an error.</h3>
+            </div>
+        {% else %}
         {% if query.query.model == "user" %}
             {% for result in query.query_result %}
                 {% if forloop.counter <= 4 %}
@@ -74,6 +79,7 @@
                     View All ({{ query.query_result.count }})
                 {% endif %}
             </div>
+        {% endif %}
         {% endif %}
         <div class="large-12 columns report-chart-card" align="center">
             <div id="chartcontainer-{{ query.query.pk }}" style="height:200px;width: 80%;margin:0 auto;"></div>
@@ -136,6 +142,10 @@
     }
 
         {% for query in queries %}
+        {% if query.status == "error" %}
+            // Nothing to do
+        {% else %}
+
         $(document).ready(function(){
             $(".commithider-{{ query.query.pk }}").click(
                     function(e){
@@ -304,6 +314,7 @@
                     previousPoint = null;
                 }
             });
+        {% endif %}
         {% endif %}
         {% endfor %}
     </script>

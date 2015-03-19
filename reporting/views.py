@@ -44,14 +44,17 @@ def view_report(request, repo_id, report_id):
     for query in queries:
         query_result = process_string(query.query_command, repo)
 
-        # XXX Check for error
+        if query_result["status"] == "error":
+            query_data.append({'query': query, 'status': "error"})
+            continue
 
         custom_value = None
-        if query.query_command[:3] == 'get': # XXX gross
-            custom_value = query.query_command.split()[1] # XXX also gross
+        if query_result["type"] == 'get':
+            custom_value = query.query_command.split()[1] # XXX gross
             query_result = query_result[len(query_result) - 1]
 
-        #MANGLE CHART DATA HERE (based on chart type)
+        # MANGLE CHART DATA HERE (based on chart type)
+        query_result = query_result["result"]
         if query.chart_type == "pie":
             if query.model == "user":
                 values = query_result.extra(
@@ -117,7 +120,10 @@ def view_report(request, repo_id, report_id):
 
             response = json.dumps(valueslist)
 
-        query_data.append({'query': query, 'query_result': query_result, 'response': response})
+        query_data.append({'query': query,
+                           'status': "success",
+                           'query_result': query_result,
+                           'response': response})
 
     context_instance['queries'] = query_data
     return render_to_response("report.html", context_instance)

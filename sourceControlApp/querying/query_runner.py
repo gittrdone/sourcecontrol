@@ -25,7 +25,7 @@ def process_string(str, repo):
   elif isinstance(child, SourceControlParser.CountContext): 
     ret = process_count(child, repo)
   else:
-    ret = "error!"
+    ret = {'status': "error"}
 
   return ret
 
@@ -123,17 +123,17 @@ def process_find(find, repo):
   q = find.query()
   
   if q is None:
-    return
+    return {"status": "error"}
 
   objects = filter_on_query(q, repo)
-  return objects
+  return {"status": "success", "type": "find", "result": objects}
 
 # Appends list of objects to the end
 def process_get(get, repo):
   q = get.query()
 
   if q is None:
-    return
+    return {"status": "error"}
 
   objects = filter_on_query(q, repo)
 
@@ -151,15 +151,15 @@ def process_get(get, repo):
     result.append(current)
 
   result.append(objects)
-  return result
+  return {"status": "success", "type": "get", "result": result}
 
 
 def process_count(count, repo):
   q = count.query()
 
   if q is None:
-    return
+    return {"status": "error"}
 
   objects = filter_on_query(q, repo)
-  return len(objects)
+  return {"status": "success", "type": "count", "result": len(objects) }
   
