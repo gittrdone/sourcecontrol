@@ -48,6 +48,12 @@ def view_report(request, repo_id, report_id):
             query_data.append({'query': query, 'status': "error"})
             continue
 
+        if query_result["type"] == "count":
+            query_data.append({'query': query,
+                               'status': "success",
+                               'query_result': query_result})
+            continue
+
         custom_value = None
         if query_result["type"] == 'get':
             custom_value = query.query_command.split()[1] # XXX gross

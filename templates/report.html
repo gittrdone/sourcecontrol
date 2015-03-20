@@ -47,8 +47,11 @@
             <div class="large-12 columns">
             <h3>Query returned an error.</h3>
             </div>
-        {% else %}
-        {% if query.query.model == "user" %}
+        {% elif query.query_result.type == "count" %}
+            <div class="large-12 columns">
+            <h3>Result: {{ query.query_result.result }}</h3>
+            </div>
+        {% elif query.query.model == "user" %}
             {% for result in query.query_result %}
                 {% if forloop.counter <= 4 %}
                     <div class="large-6 columns" style="float:left;">
@@ -80,11 +83,13 @@
                 {% endif %}
             </div>
         {% endif %}
-        {% endif %}
+
+        {% if query.status != "error" and query.query_result.type != "count" %}
         <div class="large-12 columns report-chart-card" align="center">
             <div id="chartcontainer-{{ query.query.pk }}" style="height:200px;width: 80%;margin:0 auto;"></div>
             <div class="clear"></div>
         </div>
+        {% endif %}
 
         <!--Edit button-->
         <div class="large-12 columns">
@@ -142,9 +147,7 @@
     }
 
         {% for query in queries %}
-        {% if query.status == "error" %}
-            // Nothing to do
-        {% else %}
+        {% if query.status != "error" and query.query_result.type != "count" %}
 
         $(document).ready(function(){
             $(".commithider-{{ query.query.pk }}").click(
