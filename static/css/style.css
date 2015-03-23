@@ -191,7 +191,7 @@ body {
     /* essential */
     display: inline-block;
 	text-overflow: ellipsis;
-	width: 240px;
+	width: 80%;
 	white-space: nowrap;
 	overflow: hidden;
 }

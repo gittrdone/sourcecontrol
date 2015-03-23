@@ -163,7 +163,7 @@
                         </div>
                     </div>
                 {% else %}
-                    <div class="hide extra_committers">
+                    <div class="hide extra_committers-mobile">
                         <div class="small-12 columns" style="float:left;">
                             <div class="small-9 columns" style="margin-bottom:10px;">
                                 <a href="/authors/detail/{{ author.pk }}/{{ repo_pk }}/{{ branch.pk }}"><h5 class="blue-clicky-text"><b>{{ author.name }}</b></h5></a>
@@ -176,7 +176,7 @@
                     </div>
                 {% endif %}
             {% endfor %}
-            <div class="large-12 columns commithider blue-clicky-text" style="text-align:center;margin-top:10px;color:black;">
+            <div class="large-12 columns commithider-mobile blue-clicky-text" style="text-align:center;margin-top:10px;color:black;">
                 {% if authors.count > 4 %}
                     View All ({{ authors.count }})
                 {% endif %}
@@ -321,7 +321,17 @@
                         });
                     }
             )
-        })
+        });
+        $(document).ready(function(){
+            $(".commithider-mobile").click(
+                    function(e){
+                        e.preventDefault();
+                        $(".extra_committers-mobile").slideToggle(200,function() {
+                            $(".commithider-mobile").text($(this).is(':visible') ? "Show Less" : "View All ({{ authors.count }})");
+                        });
+                    }
+            )
+        });
     </script>
 {% endblock %}
 
