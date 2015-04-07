@@ -13,6 +13,8 @@ from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 # DB URL support
 import dj_database_url
 
+DATABASE_URL = "postgres://xqxyrljduzoqzb:xbJndoQsZj3xqXjzSs0pH4QsS5@ec2-54-204-45-196.compute-1.amazonaws.com:5432/d1ii2r5g0om1q1"
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -62,7 +64,7 @@ from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
     'update_repos': {
         'task': 'sourceControlApp.tasks.reprocess_repos',
-        'schedule': timedelta(seconds=1800), # 1800 seconds = 30 minutes
+        'schedule': timedelta(seconds=1800),  # 1800 seconds = 30 minutes
     },
 }
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
@@ -80,23 +82,23 @@ WSGI_APPLICATION = 'sourcecontrol.wsgi.application'
 # We choose the database based on how the app is being run
 # By default, it uses our heroku database
 DATABASES = {
-    'default': dj_database_url.parse("postgres://xqxyrljduzoqzb:xbJndoQsZj3xqXjzSs0pH4QsS5@ec2-54-204-45-196.compute-1.amazonaws.com:5432/d1ii2r5g0om1q1")
+    'default': dj_database_url.parse(DATABASE_URL)
 }
 # When running on Travis CI, we use their database
 if 'TRAVIS' in os.environ:
     DATABASES = {
-            'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'travisci',
-            'USER': 'postgres',
-            'PASSWORD': '',
-            'HOST': 'localhost',
-            'PORT': '',
+        'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'travisci',
+        'USER': 'postgres',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '',
         }
     }
 # Test database to start with a clean slate
 elif "test" in sys.argv:
-    DATABASES['default'] = { "ENGINE": "django.db.backends.sqlite3" }
+    DATABASES['default'] = {"ENGINE": "django.db.backends.sqlite3"}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
@@ -116,7 +118,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, '..' ,'static')
+STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 

@@ -1,17 +1,18 @@
 from django.test import TestCase
-from sourceControlApp.models import GitStore
+from sourceControlApp.models import GitRepo
 
 import repo_mgmt
 
 
-# Tests the GitStore model
-class GitStoreTest(TestCase):
+# Tests the GitRepo model
+class GitRepoTest(TestCase):
     def setUp(self):
-        GitStore.objects.create(gitRepositoryURL="test", numFiles=100)
+        GitRepo.objects.create(git_repository_url="test", status=100)
 
     def test_dummy(self):
-        dummy_object = GitStore.objects.get(numFiles=100)
-        self.assertEqual(dummy_object.gitRepositoryURL, "test")
+        dummy_object = GitRepo.objects.get(status=100)
+        self.assertEqual(dummy_object.git_repository_url, "test")
+
 
 class RepoMgmtTest(TestCase):
     def test_canonicalizeurl(self):

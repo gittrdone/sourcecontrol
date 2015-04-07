@@ -11,7 +11,7 @@ from pygit2 import clone_repository, GitError, GIT_SORT_TIME
 from django.core.exceptions import ObjectDoesNotExist
 import random
 
-from sourceControlApp.models import UserGitStore, GitStore, CodeAuthor, Commit, GitRepo, GitBranch, FileEntry
+from sourceControlApp.models import UserGitStore, CodeAuthor, Commit, GitRepo, GitBranch, FileEntry
 
 # Prefix used when creating folders for repos
 repo_path = '_repo'
@@ -50,9 +50,10 @@ def update_repo(repo_object):
     os.system("rm -rf " + repo_path + "*")
 
     try:
-        repo = clone_repository(url=repo_object.git_repository_url, path=repo_path, checkout_branch=repo_object.branch_name)
+        repo = clone_repository(url=repo_object.git_repository_url,
+                                path=repo_path, checkout_branch=repo_object.branch_name)
     except GitError:
-        return -1 # Error flag
+        return -1  # Error flag
 
     process_repo(repo, repo_object, repo_path)
     repo_object.save()
@@ -90,12 +91,12 @@ def get_repo_data_from_url(url, name, description, user, email_address=""):
     #     return -1
 
     try:
-        repo_object = GitRepo.objects.get(git_repository_url = url)
+        repo_object = GitRepo.objects.get(git_repository_url=url)
         repo_entry = UserGitStore(git_repo=repo_object, name=name, repo_description=description)
         repo_entry.save()
         return repo_entry
     except:
-        repo_object = GitRepo(git_repository_url = url)
+        repo_object = GitRepo(git_repository_url=url)
         repo_object.save()
         repo_entry = UserGitStore(git_repo=repo_object, name=name, repo_description=description)
         repo_entry.save()
@@ -110,17 +111,20 @@ def get_repo_data_from_url(url, name, description, user, email_address=""):
 
     return repo_entry
 
+
 @task
 def download_and_process_repo(repo_object, branch_name=None, email_to=""):
     """
-    more robust way to process repo
+    More robust way to process repo
     :param repo_object: The pygit2 repo to pull information from
+    :param branch_name: Name of the branch to download and process
+    :param email_to: Email address to notify of success
     :return:
     """
     url = repo_object.git_repository_url
 
-    # XXX this should generate unique path
-    this_path = repo_path + str(random.randrange(0,10000))
+    # XXX This should generate unique path
+    this_path = repo_path + str(random.randrange(0, 10000))
 
     try:
         os.system("rm -rf " + this_path)
@@ -132,14 +136,14 @@ def download_and_process_repo(repo_object, branch_name=None, email_to=""):
         os.system("rm -rf " + this_path)
         return
 
-    branch_db_object = GitBranch(git_repository_url = url)
-    branch_db_object.status = 1 #initialized properly
+    branch_db_object = GitBranch(git_repository_url=url)
+    branch_db_object.status = 1  # Initialized properly
     if branch_name is None:
-        branch_db_object.is_default = 1 #set it to default
+        branch_db_object.is_default = 1  # Set it to default
     branch_db_object.save()
 
     repo_object = GitRepo.objects.get(id = repo_object.id)
-    repo_object.status = 2 # Processing
+    repo_object.status = 2  # Processing
     repo_object.branches.add(branch_db_object)
     repo_object.save()
 
@@ -154,7 +158,7 @@ def download_and_process_repo(repo_object, branch_name=None, email_to=""):
                 download_and_process_repo(repo_object, branch)
                 #download_and_process_repo.apply_async((repo_object, branch, ))
 
-    repo_object = GitRepo.objects.get(id = repo_object.id)
+    repo_object = GitRepo.objects.get(id=repo_object.id)
 
     #XXX I call the jenkins thing here XXX
     #only call on default branch
@@ -163,8 +167,8 @@ def download_and_process_repo(repo_object, branch_name=None, email_to=""):
             try:
                 get_jenkins_result(repo_object)
             except:
-                #something wrong
-                #for now just wipe out the jenkins info, i guess
+                # Something wrong
+                # XXX For now just wipe out the jenkins info, i guess
                 repo_object.jenkins_url = ""
                 repo_object.jenkins_job_name = ""
 
@@ -185,7 +189,8 @@ def process_repo(repo, branch_db_object, path):
     Updates a single repo by recloning the repo
     and updating the information in the database
     :param repo: The pygit2 repo to pull information from
-    :param repo_object: The model to store information in
+    :param branch_db_object: The model to store information in
+    :param path: Path of the repo to process
     :return:
     """
     branch_db_object.num_commits = count_commits(repo)
@@ -194,7 +199,7 @@ def process_repo(repo, branch_db_object, path):
 
     # Count commits per author
     count_commits_per_author_branch(repo, branch_db_object)
-    branch_db_object.status = 3 # Done
+    branch_db_object.status = 3  # Done
     branch_db_object.save()
 
 
@@ -237,8 +242,8 @@ def count_commits_per_author_branch(repo, branch_db_object):
     except ObjectDoesNotExist:
         latest_commit = None
 
-    last_commit = None
     #Get last commit
+    last_commit = None
     for commit in repo.walk(repo.head.target, GIT_SORT_TIME):
         last_commit = commit
         break
@@ -255,12 +260,12 @@ def count_commits_per_author_branch(repo, branch_db_object):
     commit_count = 0
     for commit in repo.walk(repo.head.target, GIT_SORT_TIME):
         tz = VariableNonDstTZ(commit.author.offset)
-        time=datetime.fromtimestamp(commit.author.time, tz=tz)
+        time = datetime.fromtimestamp(commit.author.time, tz=tz)
 
-        if (latest_commit is not None and time <= latest_commit.commit_time):
+        if latest_commit is not None and time <= latest_commit.commit_time:
             continue
 
-        #count additions and deletions
+        # Count additions and deletions
         p = commit.parents
         additions = 0
         deletions = 0
@@ -304,11 +309,11 @@ def count_commits_per_author_branch(repo, branch_db_object):
             code_author.deletions += deletions
             code_author.save()
         try:
-            commit_db_object = Commit.objects.get(commit_id = commit.id)
+            commit_db_object = Commit.objects.get(commit_id=commit.id)
             commit_db_object.branches.add(branch_db_object)
             commit_db_object.save()
         except ObjectDoesNotExist:
-            commit_db_object = Commit.objects.create(commit_id = commit.id, commit_time=time, author=code_author)
+            commit_db_object = Commit.objects.create(commit_id=commit.id, commit_time=time, author=code_author)
             commit_db_object.git_repo = git_repo
             commit_db_object.branches.add(branch_db_object)
             commit_db_object.save()
@@ -336,12 +341,12 @@ def count_commits_per_author(repo, repo_db_object):
 
     for commit in repo.walk(repo.head.target):
         tz = VariableNonDstTZ(commit.author.offset)
-        time=datetime.fromtimestamp(commit.author.time, tz=tz)
+        time = datetime.fromtimestamp(commit.author.time, tz=tz)
 
-        if (latest_commit is not None and time <= latest_commit.commit_time):
+        if latest_commit is not None and time <= latest_commit.commit_time:
             continue
 
-        #count additions and deletions
+        # Count additions and deletions
         p = commit.parents
         additions = 0
         deletions = 0
@@ -350,8 +355,8 @@ def count_commits_per_author(repo, repo_db_object):
         else:
             diff = commit.tree.diff_to_tree()
         for patch in diff:
-            #Note that the comparison is backward,
-            #So addition should become deletions and vice versa
+            # Note that the comparison is backward,
+            # So addition should become deletions and vice versa
             additions += patch.deletions
             deletions += patch.additions
 
@@ -370,7 +375,8 @@ def count_commits_per_author(repo, repo_db_object):
             code_author.deletions += deletions
             code_author.save()
 
-        commit_db_object = Commit.objects.get_or_create(repository=repo_db_object,author=code_author,commit_time=time)[0]
+        commit_db_object = Commit.objects.get_or_create(repository=repo_db_object,
+                                                        author=code_author, commit_time=time)[0]
         commit_db_object.save()
 
 
@@ -408,37 +414,37 @@ def canonicalize_repo_url(url):
     return "http" + re.match("https?(.*)", url).group(1)
 
 
-def update_jenkins_info(git_repo, jenkins_url = "", jenkins_job_name = ""):
-    if jenkins_url == None or jenkins_url == "" or jenkins_job_name == None or jenkins_job_name == "":
+def update_jenkins_info(git_repo, jenkins_url="", jenkins_job_name=""):
+    if jenkins_url is None or jenkins_url == "" or jenkins_job_name is None or jenkins_job_name == "":
         return -1
     git_repo.jenkins_url = jenkins_url
     git_repo.jenkins_job_name = jenkins_job_name
     git_repo.save()
 
 
-#Note to self
-#adjust model:
-#AAA for jenkins things e.g. jenkins url and stuff: add to git_repo or git_branch???
-#add fields or add new models?
-#1. add field to commit that reflect whether that commit breaks the build or not
-#   problem: can it break only one of the branches?
-#2. new model that contains all jenkins info.
-#   problem: array of dynamic size
+# Note to self
+# Adjust model:
+# AAA for jenkins things e.g. jenkins url and stuff: add to git_repo or git_branch???
+# Add fields or add new models?
+# 1. add field to commit that reflect whether that commit breaks the build or not
+#    problem: can it break only one of the branches?
+# 2. new model that contains all jenkins info.
+#    problem: array of dynamic size
 def get_jenkins_result(git_repo):
     jenkinsurl = git_repo.jenkins_url
     jobname = git_repo.jenkins_job_name
     job = Jenkins(jenkinsurl)[jobname]
     last_build_number = job.get_last_buildnumber()
     results = range(last_build_number)
-    prev = True #the previous build status. used to determined fixer
+    prev = True  # The previous build status, used to determined fixer
     for i in range(last_build_number):
         build = job[i+1]
         #print build.get_revision() #this is actually commit id
         #print build.get_revision_branch() #contain in about branch
-        commit = git_repo.commit_set.all().filter(commit_id = build.get_revision())[0] #commit_id should be unique
+        commit = git_repo.commit_set.all().filter(commit_id=build.get_revision())[0]  # commit_id should be unique
         author = commit.author
         if not build.is_good():
-            #find a commit that matches the id of broken builds
+            # Find a commit that matches the id of broken builds
             commit.break_build_status = 1
             commit.save()
             author.num_break_build += 1

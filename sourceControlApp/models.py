@@ -1,31 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
-import json
 
 
-# XXX Delete me!!!
-class GitStore(models.Model):
-    branch_name = models.CharField(max_length=50)
-    gitRepositoryURL = models.CharField(max_length=300)
-    numFiles = models.IntegerField(default=0)
-    numCommits = models.IntegerField(default=0)
-    status = models.IntegerField(default=0)
-    branch_list = models.CharField(max_length=300) # Please use getter and setter
-
-    def set_branch_list(self,input_branch_list):
-        self.branch_list = json.dumps(input_branch_list)
-
-    def get_branch_list(self):
-        json_dec = json.decoder.JSONDecoder()
-        return json_dec.decode(self.branch_list)
-
-    def __unicode__ (self):
-        return self.gitRepositoryURL
-
-
-# New model for git branch
-# Commit objects point back to this
 class GitBranch(models.Model):
+    """
+    New model for git branch
+    Commit objects point back to this
+    """
     git_repository_url = models.CharField(max_length=300)
     branch_name = models.CharField(max_length=50)
     num_files = models.IntegerField(default=0)
@@ -34,26 +15,28 @@ class GitBranch(models.Model):
     is_default = models.IntegerField(default=0)
 
     def __unicode__ (self):
-           return unicode(self.git_repository_url) + ":" + unicode(self.branch_name)
+        return unicode(self.git_repository_url) + ":" + unicode(self.branch_name)
 
 
-# New model for git repository
-# Contains information related to a whole repository, including
-# branches and jenkins associations
 class GitRepo(models.Model):
+    """
+    New model for git repository
+    Contains information related to a whole repository, including
+    branches and jenkins associations
+    """
     git_repository_url = models.CharField(max_length=300)
     status = models.IntegerField(default=0)
     branches = models.ManyToManyField(GitBranch)
     num_commits = models.IntegerField(default=0)
 
-    #might be moved somewhere else in the future?
+    # Might be moved somewhere else in the future?
     jenkins_url = models.CharField(max_length=300, null=True, blank=True)
     jenkins_job_name = models.CharField(max_length=100, null=True, blank=True)
 
     @property
     def default_branch(self):
         for branch in self.branches.all():
-            if branch.is_default==1:
+            if branch.is_default == 1:
                 return branch
         return self.branches.all()[0]  # This is for legacy support only
 
@@ -72,8 +55,10 @@ class GitRepo(models.Model):
         return unicode(self.git_repository_url)
 
 
-# User data associated with git repository entry
 class UserGitStore(models.Model):
+    """
+    User data associated with git repository entry
+    """
     git_repo = models.ForeignKey(GitRepo, null=True, blank=True)
     name = models.CharField(max_length=100)
     repo_description = models.CharField(max_length=1000)
@@ -82,17 +67,20 @@ class UserGitStore(models.Model):
         return unicode(self.git_repo) + self.name
 
 
-# Actual user model. Holds references to owned repositories
 class SourceControlUser(models.Model):
+    """
+    Actual user model. Holds references to owned repositories
+    """
     user = models.OneToOneField(User)
     ownedRepos = models.ManyToManyField(UserGitStore)
 
 
-# Author of code as recorded in git history
 class CodeAuthor(models.Model):
+    """
+    Author of code as recorded in git history
+    """
     name = models.CharField(max_length=100)
     num_commits = models.IntegerField(default=0)
-    repository = models.ForeignKey(GitStore, null=True, blank=True)
     git_branch = models.ForeignKey(GitBranch, null=True, blank=True)
     additions = models.IntegerField(default=0)
     deletions = models.IntegerField(default=0)
@@ -112,7 +100,6 @@ class CodeAuthor(models.Model):
 # Patch to a file as included in a commit. Has number
 # of additions and deletions
 class Patch(models.Model):
-    repository = models.ForeignKey(GitStore)
     filename = models.CharField(max_length=100)
     addition = models.IntegerField(default=0)
     deletion = models.IntegerField(default=0)
@@ -128,7 +115,6 @@ class Commit(models.Model):
     # Try many authors later
     #authors = models.ManyToManyField(CodeAuthor)
     commit_id = models.CharField(max_length=50)
-    repository = models.ForeignKey(GitStore, null=True, blank=True)
     git_repo = models.ForeignKey(GitRepo, null=True, blank=True)
     branches = models.ManyToManyField(GitBranch)
     author = models.ForeignKey(CodeAuthor)
