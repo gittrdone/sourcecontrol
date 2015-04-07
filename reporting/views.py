@@ -7,27 +7,38 @@ from django.template import RequestContext
 from sourceControlApp.querying.query_runner import process_string
 from reporting.models import Report, Query, auto_chart_type
 from sourceControlApp.models import UserGitStore
-from django.http import JsonResponse
 
-# View existing reports list
+
 def view_reports(request, repo_id):
+    """
+    View existing reports list
+    :param request:
+    :param repo_id:
+    :return:
+    """
     if not request.user.is_authenticated():
         return redirect("index")
 
     repo = UserGitStore.objects.get(pk=repo_id)
-    sourceControlUser = request.user.sourcecontroluser
+    source_control_user = request.user.sourcecontroluser
 
     context_instance = RequestContext(request)
-    context_instance['reports_list'] = Report.objects.filter(user=sourceControlUser, repo=repo)
+    context_instance['reports_list'] = Report.objects.filter(user=source_control_user, repo=repo)
     context_instance['repo_name'] = repo.name
     context_instance['repo_id'] = repo.pk
     context_instance['branch_id'] = repo.git_repo.default_branch.pk
 
-
     return render_to_response("reports.html", context_instance)
 
-# View an individual report
+
 def view_report(request, repo_id, report_id):
+    """
+    View an individual report
+    :param request:
+    :param repo_id:
+    :param report_id:
+    :return:
+    """
     if not request.user.is_authenticated():
         return redirect("index")
 
@@ -56,7 +67,7 @@ def view_report(request, repo_id, report_id):
 
         custom_value = None
         if query_result["type"] == 'get':
-            custom_value = query.query_command.split()[1] # XXX gross
+            custom_value = query.query_command.split()[1]  # XXX gross
             query_result = query_result[len(query_result) - 1]
 
         # MANGLE CHART DATA HERE (based on chart type)
@@ -64,7 +75,7 @@ def view_report(request, repo_id, report_id):
         if query.chart_type == "pie":
             if query.model == "user":
                 values = query_result.extra(
-                    select={'label':'name', 'data': custom_value or 'num_commits'}).values(
+                    select={'label': 'name', 'data': custom_value or 'num_commits'}).values(
                         'label', 'data')
             elif query.model == "commit":
                 vals = OrderedDict()
@@ -95,7 +106,7 @@ def view_report(request, repo_id, report_id):
                         vals[date] = 0
                     vals[date] += 1
                 vals = OrderedDict(sorted(vals.items()))
-                valueslist = [[str(k), v] for k,v in vals.iteritems()]
+                valueslist = [[str(k), v] for k, v in vals.iteritems()]
             elif query.model == "file":
                 values = query_result.values_list('file_path', custom_value or 'num_edit')
                 valueslist = [list(i) for i in values]
@@ -134,17 +145,14 @@ def view_report(request, repo_id, report_id):
     context_instance['queries'] = query_data
     return render_to_response("report.html", context_instance)
 
-# The interface for making a new report
-def new_report(request, repo_id):
-    if not request.user.is_authenticated():
-        return redirect("index")
-
-    context_instance = RequestContext(request)
-    context_instance['queries'] = Query.objects.filter(user=request.user)
-
-    return render_to_response("newReport.html", context_instance)
 
 def addReport(request, repo_id):
+    """
+    The page for creating reports
+    :param request:
+    :param repo_id:
+    :return:
+    """
     if not request.user.is_authenticated():
         return redirect("index")
 
@@ -153,8 +161,14 @@ def addReport(request, repo_id):
 
     return render_to_response("addReport.html", context_instance)
 
-# Endpoint for adding a new report to the DB
+
 def add_report(request, repo_id):
+    """
+    Endpoint for adding a new report to the DB
+    :param request:
+    :param repo_id:
+    :return:
+    """
     if not request.user.is_authenticated():
         return redirect("index")
 
@@ -169,19 +183,20 @@ def add_report(request, repo_id):
         query_one_chart_type = auto_chart_type(query_one_query)
 
     user = request.user
-    sourceControlUser = user.sourcecontroluser
-    repo = UserGitStore.objects.get(sourcecontroluser=sourceControlUser, pk=repo_id)
+    source_control_user = user.sourcecontroluser
+    repo = UserGitStore.objects.get(sourcecontroluser=source_control_user, pk=repo_id)
 
-    query_one = Query(name=query_one_name, query_command=query_one_query, desc=query_one_desc, user=sourceControlUser, chart_type=query_one_chart_type)
+    query_one = Query(name=query_one_name, query_command=query_one_query, desc=query_one_desc,
+                      user=source_control_user, chart_type=query_one_chart_type)
     query_one.save()
 
-    report = Report(user=sourceControlUser, name=report_name, description=report_desc, repo=repo)
+    report = Report(user=source_control_user, name=report_name, description=report_desc, repo=repo)
     report.save()
     report.queries.add(query_one)
 
     num_queries = 1
     #count the queries
-    for i in range(2,10+1):
+    for i in range(2, 10+1):
         query_name = request.POST['query_' + str(i) + '_name']
         if query_name:
             num_queries = i
@@ -194,18 +209,25 @@ def add_report(request, repo_id):
         query_chart_type = request.POST['chart_' + str(i) + '_type']
         if query_chart_type == "auto":
             query_chart_type = auto_chart_type(query_query)
-        query = Query(name=query_name, desc=query_desc, query_command=query_query, user=sourceControlUser, chart_type=query_chart_type)
+        query = Query(name=query_name, desc=query_desc, query_command=query_query,
+                      user=source_control_user, chart_type=query_chart_type)
         query.save()
         report.queries.add(query)
         report.save()
 
     context_instance = RequestContext(request)
-    context_instance['reports_list'] = Report.objects.filter(user=sourceControlUser, repo=repo)
+    context_instance['reports_list'] = Report.objects.filter(user=source_control_user, repo=repo)
     context_instance['repo_name'] = repo.name
 
     return redirect("reports", repo_id=repo_id)
 
+
 def edit_report(request):
+    """
+    Endpoint for editing a report (name, desc)
+    :param request:
+    :return:
+    """
     if not request.user.is_authenticated():
         return redirect("index")
 
@@ -221,7 +243,15 @@ def edit_report(request):
 
     return redirect("reports", repo_id=report.repo.pk)
 
+
 def delete_report(request, repo_id, report_id):
+    """
+    Delete a given report
+    :param request:
+    :param repo_id:
+    :param report_id:
+    :return:
+    """
     if not request.user.is_authenticated():
         return redirect("index")
 
@@ -230,7 +260,13 @@ def delete_report(request, repo_id, report_id):
 
     return redirect("reports", repo_id=repo_id)
 
+
 def edit_query(request):
+    """
+    Edit a query.
+    :param request:
+    :return:
+    """
     if not request.user.is_authenticated():
         return redirect("index")
 
@@ -250,6 +286,14 @@ def edit_query(request):
 
 
 def delete_query(request, repo_id, report_id, query_id):
+    """
+    Delete a query from a report
+    :param request:
+    :param repo_id:
+    :param report_id:
+    :param query_id:
+    :return:
+    """
     if not request.user.is_authenticated():
         return redirect("index")
 

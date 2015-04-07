@@ -12,13 +12,13 @@ class UpdateUserGitStoreForm(forms.ModelForm):
     name = forms.CharField(max_length=UserGitStore._meta.get_field('name').max_length)
     repo_description = forms.CharField(max_length=UserGitStore._meta.get_field('repo_description').max_length)
 
-    #def save(self, commit=True):
-    #    instance = super(UpdateUserGitStore, self).save(commit=False)
-
-#        if commit:
-            #save
- #           instance.save(update_fields=['name', 'repo_description'])
-  #      return instance
+    # def save(self, commit=True):
+    #     instance = super(UpdateUserGitStore, self).save(commit=False)
+    #
+    #     if commit:
+    #         # Save
+    #         instance.save(update_fields=['name', 'repo_description'])
+    #     return instance
 
     class Meta:
         model = UserGitStore

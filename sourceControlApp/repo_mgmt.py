@@ -402,6 +402,12 @@ def is_valid_repo(url):
 
 
 def canonicalize_repo_url(url):
+    """
+    Returns a canonicalized form of the given url to be used in the database
+    Trailing slashes are removed, .git is removed, and http (not 'https') is enforced.
+    :param url:
+    :return:
+    """
     # Remove trailing slash
     if url[-1:] == '/':
         url = url[:-1]
@@ -415,6 +421,13 @@ def canonicalize_repo_url(url):
 
 
 def update_jenkins_info(git_repo, jenkins_url="", jenkins_job_name=""):
+    """
+    Sets the jenkins configuration for a repo
+    :param git_repo:
+    :param jenkins_url:
+    :param jenkins_job_name:
+    :return:
+    """
     if jenkins_url is None or jenkins_url == "" or jenkins_job_name is None or jenkins_job_name == "":
         return -1
     git_repo.jenkins_url = jenkins_url
