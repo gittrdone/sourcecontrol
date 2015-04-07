@@ -1,7 +1,8 @@
 from django.test import TestCase
 from reporting.models import auto_chart_type
 
-# Create your tests here.
+
+# Test query model utilty functions
 class ModelUtilTest(TestCase):
     def test_charttype(self):
         chart_type = auto_chart_type("get users")

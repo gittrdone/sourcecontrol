@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import sys
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 
-#DB URL support
+# DB URL support
 import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -55,15 +55,20 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+
+# Define the celery schedule.
+# Updates repos after every specified period
 from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
     'update_repos': {
         'task': 'sourceControlApp.tasks.reprocess_repos',
-        'schedule': timedelta(seconds=1800),
+        'schedule': timedelta(seconds=1800), # 1800 seconds = 30 minutes
     },
 }
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 
+
+# Here be URLs
 ROOT_URLCONF = 'sourcecontrol.urls'
 
 WSGI_APPLICATION = 'sourcecontrol.wsgi.application'
@@ -72,9 +77,12 @@ WSGI_APPLICATION = 'sourcecontrol.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
+# We choose the database based on how the app is being run
+# By default, it uses our heroku database
 DATABASES = {
     'default': dj_database_url.parse("postgres://xqxyrljduzoqzb:xbJndoQsZj3xqXjzSs0pH4QsS5@ec2-54-204-45-196.compute-1.amazonaws.com:5432/d1ii2r5g0om1q1")
 }
+# When running on Travis CI, we use their database
 if 'TRAVIS' in os.environ:
     DATABASES = {
             'default': {
@@ -86,6 +94,7 @@ if 'TRAVIS' in os.environ:
             'PORT': '',
         }
     }
+# Test database to start with a clean slate
 elif "test" in sys.argv:
     DATABASES['default'] = { "ENGINE": "django.db.backends.sqlite3" }
 
@@ -111,11 +120,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, '..' ,'static')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
+# Add more context processors
+# Modify nav options based on logged in status
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'sourcecontrol.processors.repo_nav_options',
     'sourcecontrol.processors.repo_nav_options_reports'
 )
 
+# Email for submitting notifications
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

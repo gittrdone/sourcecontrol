@@ -12,8 +12,14 @@ from django.http import HttpResponse
 from django.core import serializers
 from .forms import UpdateUserGitStoreForm
 
-# Create your views here.
+
 def index(request):
+    """
+    Renders the main page of SourceControl.
+    If the user is logged in, she gets a repo list.
+    :param request:
+    :return:
+    """
     if not request.user.is_authenticated():
         return render(request, 'index.html', {})
 
@@ -35,6 +41,11 @@ def index(request):
     return render_to_response('repoList.html', context_instance)
 
 def add_repo(request):
+    """
+    Adds a repos to a user's list of repos
+    :param request:
+    :return:
+    """
     repo_url = request.GET['repo']
     repo_name = request.GET['name']
     repo_description = request.GET['desc']
@@ -64,8 +75,9 @@ def add_repo(request):
             error = True
             already_own = True
         else:
-            repo = get_repo_data_from_url(repo_url, repo_name, repo_description, sourceControlUser, email_address=email_to)
-            error = (repo == -1) # Check for error flag
+            repo = get_repo_data_from_url(repo_url, repo_name, repo_description,
+                                          sourceControlUser, email_address=email_to)
+            error = (repo == -1)  # Check for error flag
             already_own = False
 
         if error:
@@ -79,7 +91,14 @@ def add_repo(request):
 
     return redirect("index")
 
+
 def repo_detail(request, repo_id, branch_id):
+    """
+    Renders the main page of SourceControl.
+    If the user is logged in, she gets a repo list.
+    :param request:
+    :return:
+    """
     repo = UserGitStore.objects.get(pk=repo_id)
     branch = GitBranch.objects.get(pk=branch_id)
 
@@ -108,12 +127,12 @@ def repo_detail(request, repo_id, branch_id):
     context_instance['week_commits'] = dumps(daily_commit_counts)
     return render_to_response("repoDetail.html", context_instance)
 
+
 def repo_status(request, repo_id):
     user_repo = UserGitStore.objects.get(pk=repo_id)
     repo = user_repo.git_repo
 
-    ret = {}
-    ret['status'] = repo.status
+    ret = {'status': repo.status}
     if repo.status == 3:
         ret['numFiles'] = repo.default_branch.num_files
         ret['numCommits'] = repo.num_commits
@@ -123,7 +142,8 @@ def repo_status(request, repo_id):
 
 
 def logon(request):
-    return render(request, 'login.html', { "failed": False })
+    return render(request, 'login.html', {"failed": False})
+
 
 def do_logon(request):
     username = request.POST["user_name"]
@@ -140,14 +160,16 @@ def do_logon(request):
 
     return page_result
 
+
 def signup(request):
-    return render(request, 'signup.html', { })
+    return render(request, 'signup.html', {})
+
 
 def do_signup(request):
-    #create a user
+    # Create a user
     user_name = request.POST["user_name"]
 
-    #check if user object with same name already exists
+    # Check if user object with same name already exists
     if User.objects.filter(username=user_name):
         return render(request, 'signup.html', {'fail': True})
 
@@ -159,16 +181,20 @@ def do_signup(request):
 
         auth_result = authenticate(username = user_name, password = password)
         login(request, auth_result)
-    
-        sourceControlUser = SourceControlUser.objects.create(user=user)
+
+        # Create the actual user
+        SourceControlUser.objects.create(user=user)
         return redirect('index')
+
 
 def do_logout(request):
     logout(request)
     return redirect('index')
 
+
 def load_repo_page(request):
     repo_url = request.repo_url
+
 
 def edit_repo(request):
     context_instance = RequestContext(request)
@@ -197,6 +223,7 @@ def edit_repo(request):
         # XXX Throw error
         return redirect("index")
 
+
 def delete_repo(request, id):
     context_instance = RequestContext(request)
 
@@ -212,24 +239,27 @@ def delete_repo(request, id):
         # XXX Throw error
         return render_to_response("index")
 
+
 def queryhelp(request):
     context_instance = RequestContext(request)
     return render_to_response("queryhelp.html", context_instance)
+
 
 def queryref(request):
     context_instance = RequestContext(request)
     return render_to_response("queryReference.html", context_instance)
 
+
 def queryexamples(request):
     context_instance = RequestContext(request)
     return render_to_response("queryExamples.html", context_instance)
+
 
 def edit_user_settings(request):
     context_instance = RequestContext(request)
 
     if request.user.is_authenticated():
         user = request.user
-        sourceControlUser = user.sourcecontroluser
         user_name = request.POST["edit_name"]
         email = request.POST["edit_email"]
         user.username = user_name

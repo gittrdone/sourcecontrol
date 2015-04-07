@@ -13,7 +13,9 @@ import random
 
 from sourceControlApp.models import UserGitStore, GitStore, CodeAuthor, Commit, GitRepo, GitBranch, FileEntry
 
+# Prefix used when creating folders for repos
 repo_path = '_repo'
+
 
 class VariableNonDstTZ(tzinfo):
 
@@ -28,6 +30,7 @@ class VariableNonDstTZ(tzinfo):
     def dst(self, date_time):
         return timedelta(0)
 
+
 def update_repos():
     """
     Updates all of the repos in the database with
@@ -35,6 +38,7 @@ def update_repos():
     """
     for repo in GitBranch.objects.all():
         update_repo(repo)
+
 
 def update_repo(repo_object):
     """
@@ -52,6 +56,7 @@ def update_repo(repo_object):
 
     process_repo(repo, repo_object, repo_path)
     repo_object.save()
+
 
 def get_repo_data_from_url(url, name, description, user, email_address=""):
     """
@@ -168,11 +173,12 @@ def download_and_process_repo(repo_object, branch_name=None, email_to=""):
             send_mail('SourceControl.me: Your repository is ready!', 'Your repository: '+url+' is ready',
                       'no_reply@SourceControl.me', [email_to])
 
-    repo_object.status = 3 # Done
+    repo_object.status = 3  # Done
     repo_object.save()
 
     os.system("rm -rf " + this_path)
     return repo_object
+
 
 def process_repo(repo, branch_db_object, path):
     """
@@ -191,12 +197,14 @@ def process_repo(repo, branch_db_object, path):
     branch_db_object.status = 3 # Done
     branch_db_object.save()
 
+
 def count_commits(repo):
     """
     :param repo: A pygit2 repo to process
     :return: The number of commits in the given repo
     """
     return len(list(repo.walk(repo.head.target)))
+
 
 def count_files(path):
     """
@@ -208,11 +216,12 @@ def count_files(path):
     except GitError:
         return -1
 
+
 def count_commits_per_author_branch(repo, branch_db_object):
     """
     Stores a count of all commits associated with author
     :param repo: The pygit2 repo to process
-    :param repo_db_object: The model to update
+    :param branch_db_object: The model to update
     """
     url = branch_db_object.git_repository_url
     git_repo = GitRepo.objects.get(git_repository_url = url)
@@ -312,6 +321,7 @@ def count_commits_per_author_branch(repo, branch_db_object):
 
     git_repo.save()
 
+
 def count_commits_per_author(repo, repo_db_object):
     """
     Stores a count of all commits associated with author
@@ -384,6 +394,7 @@ def is_valid_repo(url):
 
     return resp.status_code == 200
 
+
 def canonicalize_repo_url(url):
     # Remove trailing slash
     if url[-1:] == '/':
@@ -396,12 +407,14 @@ def canonicalize_repo_url(url):
     # Use HTTP URL as canonical for now
     return "http" + re.match("https?(.*)", url).group(1)
 
+
 def update_jenkins_info(git_repo, jenkins_url = "", jenkins_job_name = ""):
     if jenkins_url == None or jenkins_url == "" or jenkins_job_name == None or jenkins_job_name == "":
         return -1
     git_repo.jenkins_url = jenkins_url
     git_repo.jenkins_job_name = jenkins_job_name
     git_repo.save()
+
 
 #Note to self
 #adjust model:

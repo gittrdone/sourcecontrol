@@ -9,6 +9,7 @@ def auto_chart_type(query_command):
     else:
         return "bar"
 
+
 # Create your models here.
 class Query(models.Model):
     name = models.CharField(max_length=256)
@@ -40,6 +41,7 @@ class Query(models.Model):
 
     def __unicode__(self):
         return unicode(self.name) + u' ' + unicode(self.query_command)
+
 
 class Report(models.Model):
     name = models.CharField(max_length=256)

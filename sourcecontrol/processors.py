@@ -1,5 +1,7 @@
 from reporting.models import Report
 
+
+# Generates data for header nav options when logged in
 def repo_nav_options(request):
     user = request.user
     if request.user.is_authenticated() and hasattr(request.user, 'sourcecontroluser'):
@@ -17,6 +19,7 @@ def repo_nav_options(request):
         return {'repo_nav_options':None}
 
 
+# Generates header nav options for reports
 def repo_nav_options_reports(request):
     user = request.user
     if request.user.is_authenticated() and hasattr(request.user, 'sourcecontroluser'):

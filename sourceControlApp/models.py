@@ -2,26 +2,29 @@ from django.db import models
 from django.contrib.auth.models import User
 import json
 
-# Create your models here.
+
+# XXX Delete me!!!
 class GitStore(models.Model):
     branch_name = models.CharField(max_length=50)
     gitRepositoryURL = models.CharField(max_length=300)
     numFiles = models.IntegerField(default=0)
     numCommits = models.IntegerField(default=0)
     status = models.IntegerField(default=0)
-    branch_list = models.CharField(max_length=300) #please use getter and setter
+    branch_list = models.CharField(max_length=300) # Please use getter and setter
 
     def set_branch_list(self,input_branch_list):
         self.branch_list = json.dumps(input_branch_list)
 
     def get_branch_list(self):
-        jsonDec = json.decoder.JSONDecoder()
-        return jsonDec.decode(self.branch_list)
+        json_dec = json.decoder.JSONDecoder()
+        return json_dec.decode(self.branch_list)
 
     def __unicode__ (self):
         return self.gitRepositoryURL
 
-#new model for git branch
+
+# New model for git branch
+# Commit objects point back to this
 class GitBranch(models.Model):
     git_repository_url = models.CharField(max_length=300)
     branch_name = models.CharField(max_length=50)
@@ -33,7 +36,10 @@ class GitBranch(models.Model):
     def __unicode__ (self):
            return unicode(self.git_repository_url) + ":" + unicode(self.branch_name)
 
-#new model for git repository
+
+# New model for git repository
+# Contains information related to a whole repository, including
+# branches and jenkins associations
 class GitRepo(models.Model):
     git_repository_url = models.CharField(max_length=300)
     status = models.IntegerField(default=0)
@@ -49,7 +55,7 @@ class GitRepo(models.Model):
         for branch in self.branches.all():
             if branch.is_default==1:
                 return branch
-        return self.branches.all()[0] #this should not happen
+        return self.branches.all()[0]  # This is for legacy support only
 
     @property
     def get_branch_list(self):
@@ -65,6 +71,8 @@ class GitRepo(models.Model):
     def __unicode__ (self):
         return unicode(self.git_repository_url)
 
+
+# User data associated with git repository entry
 class UserGitStore(models.Model):
     git_repo = models.ForeignKey(GitRepo, null=True, blank=True)
     name = models.CharField(max_length=100)
@@ -73,10 +81,14 @@ class UserGitStore(models.Model):
     def __unicode__ (self):
         return unicode(self.git_repo) + self.name
 
+
+# Actual user model. Holds references to owned repositories
 class SourceControlUser(models.Model):
     user = models.OneToOneField(User)
     ownedRepos = models.ManyToManyField(UserGitStore)
 
+
+# Author of code as recorded in git history
 class CodeAuthor(models.Model):
     name = models.CharField(max_length=100)
     num_commits = models.IntegerField(default=0)
@@ -84,18 +96,21 @@ class CodeAuthor(models.Model):
     git_branch = models.ForeignKey(GitBranch, null=True, blank=True)
     additions = models.IntegerField(default=0)
     deletions = models.IntegerField(default=0)
-    #the total number of broken builds by THIS CodeAuthor
-    #Note: this CodeAuthor might not be the one who start the breaking sequence
+    # The total number of broken builds by THIS CodeAuthor
+    # Note: this CodeAuthor might not be the one who start the breaking sequence
     num_break_build = models.IntegerField(default=0)
-    #the total number of builds that fix by THIS CodeAuthor
-    #Note: this CodeAuthor is the one that stop the breaking sequence
+    # The total number of builds that fix by THIS CodeAuthor
+    # Note: this CodeAuthor is the one that stop the breaking sequence
     num_fix_build = models.IntegerField(default=0)
-    #the total number of builds by THIS CodeAuthor
+    # The total number of builds by THIS CodeAuthor
     num_build = models.IntegerField(default=0)
 
     def __unicode__ (self):
         return unicode(self.git_branch) + self.name
 
+
+# Patch to a file as included in a commit. Has number
+# of additions and deletions
 class Patch(models.Model):
     repository = models.ForeignKey(GitStore)
     filename = models.CharField(max_length=100)
@@ -106,8 +121,11 @@ class Patch(models.Model):
     def __unicode__(self):
         return unicode(self.repository) + ":" + self.filename
 
+
+# Reference to a commit. Holds reference to branches, authors,
+# and patches that are associated with it
 class Commit(models.Model):
-    #Try many authors later
+    # Try many authors later
     #authors = models.ManyToManyField(CodeAuthor)
     commit_id = models.CharField(max_length=50)
     repository = models.ForeignKey(GitStore, null=True, blank=True)
@@ -125,6 +143,9 @@ class Commit(models.Model):
     def __unicode__ (self):
         return unicode(self.git_repo) + unicode(self.author)
 
+
+# Data related to a file in the repository. Stores total number of additions,
+# deletions, and number of edits.
 class FileEntry(models.Model):
     file_path = models.CharField(max_length=300)
     git_branch = models.ForeignKey(GitBranch)

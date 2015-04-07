@@ -1,9 +1,7 @@
 import datetime
 from django.http import JsonResponse
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
-import pytz
-from sourceControlApp.models import GitStore, SourceControlUser, UserGitStore, GitBranch, CodeAuthor
+from django.shortcuts import get_object_or_404
+from sourceControlApp.models import UserGitStore, GitBranch, CodeAuthor
 
 
 def dates_between_datetimes(start,end):
@@ -16,7 +14,8 @@ def dates_between_datetimes(start,end):
     while start < end:
         yield start.date()
         start += datetime.timedelta(days=1)
-# Create your views here.
+
+
 def json_pie_data_for_repo(request, repo_id, branch_id):
     r = UserGitStore.objects.get(pk=repo_id)
     b = GitBranch.objects.get(pk=branch_id)
@@ -30,6 +29,7 @@ def json_pie_data_for_repo(request, repo_id, branch_id):
     )
     response = JsonResponse(list(values), safe=False)
     return response
+
 
 def json_bar_data_for_repo_commits(request, repo_id, branch_id):
     r = UserGitStore.objects.get(pk=repo_id)
@@ -60,6 +60,7 @@ def json_bar_data_for_repo_commits(request, repo_id, branch_id):
 
     response = JsonResponse(daily_commit_list, safe=False)
     return response
+
 
 def json_bar_data_for_user_repo_commits(request, committer_id, start=None, end=None, days=7):
     author=get_object_or_404(CodeAuthor, pk=committer_id)
@@ -96,5 +97,3 @@ def json_bar_data_for_user_repo_commits(request, committer_id, start=None, end=N
     daily_commit_list = [[i.strftime("%a"),e[i]] for i in daily_commit_keys]
 
     return JsonResponse(daily_commit_list, safe=False)
-
-
