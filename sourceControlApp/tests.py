@@ -28,24 +28,24 @@ class RepoMgmtTest(TestCase):
         self.assertEqual(canonicalized_url, repo_mgmt.canonicalize_repo_url(url3))
         self.assertEqual(canonicalized_url, repo_mgmt.canonicalize_repo_url(url4))
 
-    # def test_isvalidurl(self):
-    #     # XXX We should use mocks for this test
-    #     url = "https://google.com/code"
-    #
-    #     self.assertFalse(repo_mgmt.is_valid_repo(url))
-    #
-    #     self.assertTrue(repo_mgmt.is_valid_repo("http://github.com/gittrdone/sourcecontrol"))
+    def test_isvalidurl(self):
+        # XXX We should use mocks for this test
+        url = "https://google.com/code"
+
+        self.assertFalse(repo_mgmt.is_valid_repo(url))
+
+        self.assertTrue(repo_mgmt.is_valid_repo("http://github.com/gittrdone/sourcecontrol"))
 
     def test_getrepodatafailoninvalidurl(self):
         self.assertEqual(-1, repo_mgmt.get_repo_data_from_url("bad data!", "Test", "Test", "Test"))
 
-    # def test_getrepodata(self):
-    #     # XXX We should be using mocks!!
-    #     repo = repo_mgmt.get_repo_data_from_url("http://github.com/gittrdone/sourcecontrol.git", "Repo", "Desc", None)
-    #     self.assertEqual("Repo", repo.name)
-    #     self.assertEqual("Desc", repo.repo_description)
-    #     self.assertEqual("http://github.com/gittrdone/sourcecontrol", repo.git_repo.git_repository_url)
-    #
-    #     new_repo = repo_mgmt.get_repo_data_from_url("http://github.com/gittrdone/sourcecontrol", "Repo", "Desc", None)
-    #     self.assertNotEqual(repo, new_repo)
-    #     self.assertEqual(repo.git_repo, new_repo.git_repo)
+    def test_getrepodata(self):
+        # XXX We should be using mocks!!
+        repo = repo_mgmt.get_repo_data_from_url("http://github.com/gittrdone/sourcecontrol.git", "Repo", "Desc", None)
+        self.assertEqual("Repo", repo.name)
+        self.assertEqual("Desc", repo.repo_description)
+        self.assertEqual("http://github.com/gittrdone/sourcecontrol", repo.git_repo.git_repository_url)
+
+        new_repo = repo_mgmt.get_repo_data_from_url("http://github.com/gittrdone/sourcecontrol", "Repo", "Desc", None)
+        self.assertNotEqual(repo, new_repo)
+        self.assertEqual(repo.git_repo, new_repo.git_repo)
